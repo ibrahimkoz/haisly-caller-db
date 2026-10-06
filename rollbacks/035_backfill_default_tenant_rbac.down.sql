@@ -1,0 +1,2 @@
+-- Data-only RBAC backfill. Rollback intentionally avoids deleting roles,
+-- permissions, or user assignments that may be used after the migration runs.

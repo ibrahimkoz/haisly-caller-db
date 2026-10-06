@@ -1,0 +1,5 @@
+DROP INDEX IF EXISTS public.management_support_sessions_status_updated_at_idx;
+DROP INDEX IF EXISTS public.management_support_sessions_requester_status_created_at_idx;
+DROP INDEX IF EXISTS public.management_support_sessions_tenant_status_expires_at_idx;
+
+DROP TABLE IF EXISTS public.management_support_sessions;

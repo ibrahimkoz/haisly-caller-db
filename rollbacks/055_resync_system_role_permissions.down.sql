@@ -1,0 +1,3 @@
+-- This migration repairs current system role permission data.
+-- Rollback is intentionally a no-op because reverting would restore stale or
+-- partially missing RBAC rows and break tenant navigation/authorization.

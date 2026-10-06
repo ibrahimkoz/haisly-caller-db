@@ -1,0 +1,2 @@
+-- Data-only RBAC permission sync. Rollback intentionally avoids restoring
+-- broader default-role permissions that were removed by the forward migration.

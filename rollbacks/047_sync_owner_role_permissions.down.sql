@@ -1,0 +1,2 @@
+-- Intentionally left empty.
+-- Owner roles are expected to keep full tenant permissions.

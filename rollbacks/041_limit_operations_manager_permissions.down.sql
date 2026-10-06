@@ -1,0 +1,3 @@
+-- The previous operations manager scope exposed sales and working-hours
+-- configuration access. This rollback is intentionally manual-only because
+-- re-granting broader permissions can overexpose tenant data after deployment.
