@@ -1,0 +1,1 @@
+ALTER TABLE contact_import_job_rows DROP CONSTRAINT contact_import_job_rows_complete_snapshot;
