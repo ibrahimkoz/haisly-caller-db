@@ -33,8 +33,10 @@ and the existing bundle-size warning remain. Desktop/mobile browser regression:
 4 passed. Database migrations 072/073 verified on the isolated test DB; local
 haisly_caller upgraded to 73 after a pre-phase backup (no seeds/fixtures on it).
 
-Current dependency audit is pending explicit user authorization. Automatic approval
-review rejected npm audit because it sends dependency metadata to npm registry.
-No new dependency was added; no claim of zero known vulnerabilities is made.
-All unaffected implementation and verification is complete. This outstanding
-external check is recorded rather than silently marked successful.
+Dependency audit was authorized and completed on 20 October 2026. API: 3
+vulnerable packages (1 high, 2 moderate); client: 5 (3 high, 2 moderate); no
+critical findings. No package was changed by the audit. API findings affect
+runtime dependencies; client findings are in the development/test toolchain.
+The API/client repositories contain detailed security-audit-2026-10-20.md reports.
+Security closure remains open for dependency remediation and regression tests;
+the earlier permission blocker is resolved.
