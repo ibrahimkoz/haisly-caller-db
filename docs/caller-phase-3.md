@@ -82,3 +82,23 @@ Bu adım yalnız dosya içi önizlemedir: kişi, liste üyeliği, izin veya DNC 
 
 
 Doğrulama: API `verify:ci` 118/118 test, tip/lint/build/OpenAPI başarılı. Client 75 dosyada 307/307 test, typecheck/build başarılı; lint 0 hata ve önceden mevcut 6 uyarı. Build mevcut büyük chunk uyarısını veriyor. 390 ve 1440 px Chromium'da aktarım önizlemesi ve mevcut liste üyeliği akışları toplam 4 testle geçti; eşleme/önizleme ekran görüntüleri incelendi. Tarayıcı testleri mock API kullanır; backend davranışı ayrı entegrasyon testlerinde doğrulandı. Yeni bağımlılık eklenmedi. Üretim dağıtımı yapılmadı.
+
+
+## 20 Ekim 2026 — Önizlemede mevcut kayıt karşılaştırması
+
+F03-T02 kapsamında önizleme satırları tenantın güncel kişi ve liste üyeliği kayıtlarıyla karşılaştırılır. Geçerli temsilci satır için yeni/mevcut kişi veya eski numara eşleşmesi incelemesi ayrımı; mevcut üyelik, arşiv/kimlik incelemesi engelleri ve aranmama bilgisi döner. Hatalı/mükerrer satırlar kişiyle eşleştirilmez. Önizlemenin sayısal özeti dosya doğrulamasını anlatmaya devam eder; aktarılabilir kişi veya arama uygunluğu sayısı değildir.
+
+Dolu alan farklarında mevcut ve gelen değer gösterilir, varsayılan etki mevcut değeri korumaktır. Boş mevcut alanlar için tamamlama önerilir; dosyadaki boş hücre mevcut değeri silmez. Aranmama engeli aktarım onayıyla kaldırılamaz. Dolu alanı değiştirme onayı bu dilimde alınmaz; asenkron aktarımın onay sözleşmesine bağlanacaktır.
+
+`GET /api/v1/contact-import-previews/:public_id` cevabına satır bazında `comparison`, üst seviyede `compared_at` ve `target_list_archived` eklendi. Karşılaştırma her okuma/yenilemede, en fazla 100 satırlık sayfa (bir sonraki sayfa için 1 ek satır) üzerinde yapılır. Metadata/satırlar/kişi/üyelik aynı repeatable-read transaction snapshot'ından okunur. Dönen kişi public ID, version ve identity revision gelecekteki uygulama kontrolüne girdidir; kalıcı onay veya kilit değildir. Uygulama workerı kişi sürümü/kimliği, liste, üyelik ve tercihler dahil tüm kuralları yazma anında yeniden kontrol etmelidir.
+
+Legacy numara kontrolü manuel kişi oluşturma ve önizlemede ortaklaştırıldı: normalize edilmemiş/belirsiz eski telefon claim'i yeni kişi önerisini engeller. Tenant filtreli parametrik EXISTS kontrolleri mevcut telefon indexlerini kullanabilecek biçimdedir; kişi/üyelik eşleşmesi tek sayfalı sorgudadır, uygulama katmanında N+1 sorgu yoktur. Karşılaştırma kaydetme veya kişisel veri kopyasını saklama işlemi yapmaz. Yeni migration yok; yerel DB 088 seviyesinde kalır.
+
+Client mevcut/gelen değerleri, boş alan tamamlama ve dolu alan koruma etkilerini, üyelik ve engel açıklamalarını gösterir. Karşılaştırma yenilenebilir; okuma hatasında eski sonuç gösterilmez. Eski API sürümü comparison alanını göndermiyorsa yeni kişi varsaymak yerine karşılaştırmanın alınamadığı belirtilir. Önce API, ardından client dağıtılabilir; additive sözleşme ve şema değişikliği olmaması geri dönüşü kolaylaştırır. Üretime dağıtım yapılmadı.
+
+F03-T01/T02 bütün aktarım akışı tamamlanana kadar kısmi; F03-T03/T04 açık. Sıradaki dilim ayrı dolu-alan onayıyla kalıcı import işi, batch worker, sürüm/kimlik değişiminde güvenli çatışma davranışı ve sonuç/iptal akışıdır. Fiziksel 7 günlük temizleme ve hata raporu ayrıca tamamlanacaktır.
+
+
+Doğrulama: API tam `verify:ci` 118/118 test; typecheck/lint/build/OpenAPI başarılı. Mevcut DNC/profilin değişmemesi, tenantlar arasında aynı numaranın karışmaması, üyeliğin yenilemede değişmesi, boş alan tamamlama/dolu alan koruma, boş girdinin dolu alanı silmemesi, legacy claim ve arşiv/kimlik engelleri entegrasyon testinde doğrulandı. Ortak legacy kontrolünün manuel kayıt regresyonları da geçti. Client 76 dosyada 310/310 test, typecheck/build başarılı; lint 0 hata ve mevcut 6 uyarı, build mevcut büyük chunk uyarısı. 390/820/1440 px Chromium'da 3 akış geçti, ekran görüntüleri incelendi; browser API'si mock, backend doğrulaması ayrı test DB'dedir. XSS metni, Türkçe engel açıklamaları ve eski API fallback'i bileşen testinde kapsandı. API/client npm audit 0 bulgu; bağımlılık değişmedi.
+
+Sorgunun eşdeğer SQL şekli test DB'de EXPLAIN ANALYZE ile incelendi: satır PK, canonical telefon ve üyelik indexleri kullanıldı; küçük fixture'da claim tabloları için planner sequential scan seçti. Dört satırlık fixture ölçümü yük/50.000 satır kapasite testi olarak yorumlanmamalı. Yeni query başına iş sayfalıdır; tam ölçek performans kabulü worker/operasyon fazında ayrıca yapılacaktır.
