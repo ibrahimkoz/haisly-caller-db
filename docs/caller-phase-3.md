@@ -68,3 +68,17 @@ Yerel `haisly_caller` 088 seviyesine geçirildi. Önce `backups/haisly-caller-pr
 API tam `verify:ci`: 118 test geçti, 0 atlandı; tip/lint/build/OpenAPI başarılı. Tenant/yetki ayrımı, eşzamanlı replay, farklı payload çakışması, sayfalama, composite FK reddi, süre sonu, audit PII sınırı, mevcut DNC/profil/sürüm ve üyeliklerin değişmemesi doğrulandı. Sıfır izole DB'de 88 migration, boş rollback/reapply, seed/fixture ve şema doğrulaması geçti. Dolu rollback'in reddi ayrı transaction'da doğrulandı. Client runtime değişmedi; arayüz E2E'si bu dilimde kapsam dışı. Sırada kolon eşleme/önizleme arayüzü ve mevcut kayıt farkları; sonra açık onaylı asenkron aktarım var. F03-T01/T02 bütün uçtan uca akış kapanana kadar kısmi, F03-T03/T04 açık.
 
 Son güvenlik taraması: npm audit tüm seviyelerde 0 bulgu. Parser kapasite hatası 429, parser süreç/timeout hatası 503; bozuk dosya/eşleme 400 döndürür. Son hata sınıflandırması sonrası typecheck geçti.
+
+
+## 20 Ekim 2026 — Dosya yükleme, kolon eşleme ve önizleme ekranı
+
+Liste detayına CSV/XLS/XLSX yükleme, CSV ayraç seçimi, şablon indirme, gerçek dosya başlıklarıyla kolon eşleme ve yerel telefonlar için ISO ülke seçimi eklendi. Telefon zorunlu; isim, soyisim ve ünvan opsiyonel. Aynı kolon birden fazla alana eşlenemez. Dosya boyutu/türü istemcide de kontrol edilir; asıl doğrulama API'dedir.
+
+Yeni `POST /api/v1/contact-import-previews/inspect` dosyayı mevcut izole parser ile okuyup başlıkları ve veri satırı sayısını döndürür; DB veya dosya deposuna kayıt oluşturmaz. Önizleme oluşturmayla aynı yetki, tenant/liste, arşiv, body limiti ve hassas endpoint rate-limit kontrollerine bağlıdır. Başlığı hatalı veya veri satırı olmayan dosyalar reddedilir.
+
+Kullanıcı eşlemeyi onaylayınca kalıcı önizleme hazırlanır. Ekran geçerli/hatalı/mükerrer satır sayılarını, satır hatalarını, temsilci satırı ve erişim bitişini sayfalı gösterir. Dosya içeriği düz metin olarak görüntülenir. Ağ/sunucu hatasında değişmeyen eşleme aynı idempotency anahtarıyla yeniden denenir. Yükleme/hata/boş durumları ve klavye odağı ele alınır; arşivli liste ve eksik yetkiyle yükleme açılmaz.
+
+Bu adım yalnız dosya içi önizlemedir: kişi, liste üyeliği, izin veya DNC değiştirmez ve arama başlatmaz. Mevcut DB kaydıyla farkların gösterimi, kullanıcı onaylı asenkron toplu kayıt, iptal/sonuç ekranları ve fiziksel temizleme sonraki dilimlerdir. F03-T01/T02 kısmi, F03-T03/T04 açık kalır. Yeni migration yoktur; DB 088 seviyesindedir. DB reposunda yalnız faz notu güncellendi.
+
+
+Doğrulama: API `verify:ci` 118/118 test, tip/lint/build/OpenAPI başarılı. Client 75 dosyada 307/307 test, typecheck/build başarılı; lint 0 hata ve önceden mevcut 6 uyarı. Build mevcut büyük chunk uyarısını veriyor. 390 ve 1440 px Chromium'da aktarım önizlemesi ve mevcut liste üyeliği akışları toplam 4 testle geçti; eşleme/önizleme ekran görüntüleri incelendi. Tarayıcı testleri mock API kullanır; backend davranışı ayrı entegrasyon testlerinde doğrulandı. Yeni bağımlılık eklenmedi. Üretim dağıtımı yapılmadı.
