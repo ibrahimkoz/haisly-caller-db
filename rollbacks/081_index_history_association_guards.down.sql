@@ -1,0 +1,12 @@
+DROP INDEX public.cases_identity_call_idx;
+DROP INDEX public.leads_identity_call_idx;
+DROP INDEX public.follow_up_tasks_identity_call_idx;
+DROP INDEX public.handoff_requests_identity_call_idx;
+DROP INDEX public.workflow_runs_identity_call_idx;
+DROP INDEX public.external_object_references_identity_call_idx;
+DROP INDEX public.follow_up_tasks_identity_lead_idx;
+DROP INDEX public.handoff_requests_identity_lead_idx;
+DROP INDEX public.workflow_runs_identity_lead_idx;
+DROP INDEX public.external_object_references_identity_lead_idx;
+DROP INDEX public.handoff_requests_identity_session_idx;
+DROP INDEX public.consent_records_identity_session_idx;
