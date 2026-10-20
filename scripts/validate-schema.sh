@@ -1227,3 +1227,18 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='082_partition_customer_contact_channels.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='customer_contacts_snapshot_identity' AND NOT tgisinternal) THEN
+   RAISE EXCEPTION 'Contact channel identity guard missing'; END IF;
+  IF EXISTS(SELECT 1 FROM public.customer_contacts WHERE customer_identity_revision IS NULL OR customer_identity_revision<1) THEN
+   RAISE EXCEPTION 'Invalid contact channel identity'; END IF;
+ END IF;
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='083_snapshot_contact_identity_profiles.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='contact_identity_revisions_snapshot_profile' AND NOT tgisinternal) THEN
+   RAISE EXCEPTION 'Identity profile archive guard missing'; END IF;
+ END IF;
+END $$;
+SQL

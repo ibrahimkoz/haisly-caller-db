@@ -108,3 +108,13 @@ Local `haisly_caller` is at migration 081, backed up before this slice to `backu
 Verification: API full `verify:ci` passed 97 tests with zero skips, typecheck/lint/build/OpenAPI. Tests exercise all six revision tables, historical handoff names, old-profile link suppression, source/identity immutability, sanitized conflicts, old-call rejection, ordinary unassigned-lead conversion, conflicting dependent rejection, cross-tenant reads and concurrent child-insert/conversion locking. The fresh schema test covered 79 from scratch and 80/81 upgrades, seeds/fixtures, rollback/reapply and schema validation. A transaction-only test confirmed populated 079 rollback refusal. API npm audit: zero findings; no dependencies added. Client runtime code is unchanged.
 
 The ownership/phone correction endpoint is still disabled. Next: preserve secondary contact channels and profile details, block/reconcile active work and late finalization, then implement an audited atomic revision transition with DNC preserved and old consent isolated. F02-T03 remains partial, with runtime DNC/outbox and preference editing UI also pending.
+
+### İkincil iletişim kanalları ve profil arşivi — 20 Ekim 2026
+
+082 migrationı ek telefon/e-posta kanallarını kimlik revizyonuna bağlar. Güncel kişi list/detail sorguları ve AI finalize eşleştirmesi yalnızca mevcut revizyonu kullanır. Eski kanalın kimliği ve içeriği UPDATE ile değiştirilemez; aynı değer yeni revizyonda ayrıca doğrulanarak kaydedilebilir. Tarihsel telefon iddiaları canonical tekillik korumasında bilinçli olarak tutulur; numara düzeltmesi eski numarayı otomatik olarak serbest bırakmaz.
+
+083 migrationı kimlik arşivi oluşturulurken mevcut profilin ad, telefon, e-posta, ünvan, not, metadata, ülke/saat dilimi ve durum alanlarını DB tarafından snapshot olarak kaydeder. Arşiv UPDATE ile değiştirilemez; geçmişte oluşturulmuş arşivler için bilinmeyen profil NULL kalır, yeni sahibin verisiyle doldurulmaz. Bu alanlar yeni bir public API ile açılmadı.
+
+Doğrulama: 97 API testi, typecheck/lint/build/OpenAPI; migration/fixture/rollback/reapply kontrolleri. Client runtime değişmedi. Yerel çalışma DB yedeklenerek 083'e geçirildi. DNC, izinler ve liste üyelikleri değişmedi.
+
+F02-T03 hâlâ kısmi: aktif iş/geç finalize koruması, atomik sahip/numara düzeltme endpoint'i ve tercih düzenleme UI'si sırada. Bu dilim düzeltme endpoint'ini açmaz. F02-T04 runtime DNC/outbox işi ayrıca bekliyor.
