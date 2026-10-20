@@ -27,16 +27,20 @@ fixes and compatible application versions rather than dropping data.
 
 ## Verification record — 20 October 2026
 
-API full verification: 87 passed, 0 skipped, typecheck/lint/build/OpenAPI passed.
+API full verification: 88 passed, 0 skipped, typecheck/lint/build/OpenAPI passed.
 Client: 288 tests passed, typecheck/lint/build passed; 6 existing lint warnings
 and the existing bundle-size warning remain. Desktop/mobile browser regression:
 4 passed. Database migrations 072/073 verified on the isolated test DB; local
 haisly_caller upgraded to 73 after a pre-phase backup (no seeds/fixtures on it).
 
-Dependency audit was authorized and completed on 20 October 2026. API: 3
-vulnerable packages (1 high, 2 moderate); client: 5 (3 high, 2 moderate); no
-critical findings. No package was changed by the audit. API findings affect
-runtime dependencies; client findings are in the development/test toolchain.
-The API/client repositories contain detailed security-audit-2026-10-20.md reports.
-Security closure remains open for dependency remediation and regression tests;
-the earlier permission blocker is resolved.
+Dependency remediation completed on 20 October 2026 (F01-T07). Fresh npm audits
+report zero vulnerabilities for both API and client. Fastify/fast-uri/Nodemailer
+and the affected client test/build dependencies were upgraded; the API/client
+security-audit-2026-10-20.md reports preserve the initial findings and record
+resolved versions and verification. Nodemailer major compatibility is covered
+by an authenticated local SMTP regression for auth codes and invitations.
+API: 88 passed, 0 skipped, typecheck/lint/build/OpenAPI passed. Client: 288 passed,
+typecheck/lint/build passed; targeted desktop/mobile Playwright: 4 passed.
+The existing six client lint warnings and bundle-size warning remain.
+Phase 1 security closure is complete. No new schema migration was needed;
+Phase 2 has not started and customer-call dispatch remains disabled.
