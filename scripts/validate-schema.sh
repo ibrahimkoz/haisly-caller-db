@@ -1058,9 +1058,19 @@ if [[ "${ai_call_session_key_deprecated_applied}" == "t" ]]; then
   fi
 fi
 
+hotel_booking_removed="$(psql_command "${URL}" -tA -c "SELECT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '071_remove_hotel_booking_modules.sql');")"
+
+if [[ "${hotel_booking_removed}" == "t" ]]; then
+  remaining_booking_tables="$(psql_command "${URL}" -tA -c "SELECT COUNT(*) FROM (VALUES ('public.bookable_resources'), ('public.resource_offers'), ('public.resource_availability'), ('public.booking_reservation_requests'), ('public.hotelrunner_reservation_outbox'), ('public.hotelrunner_webhook_debug_logs')) AS removed_table(name) WHERE to_regclass(removed_table.name) IS NOT NULL;")"
+  if [[ "${remaining_booking_tables}" != "0" ]]; then
+    echo "Schema validation failed: retired hotel booking tables remain." >&2
+    exit 1
+  fi
+fi
+
 booking_availability_cache_applied="$(psql_command "${URL}" -tA -c "SELECT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '051_create_booking_availability_cache.sql');")"
 
-if [[ "${booking_availability_cache_applied}" == "t" ]]; then
+if [[ "${booking_availability_cache_applied}" == "t" && "${hotel_booking_removed}" != "t" ]]; then
   missing_booking_availability_tables="$(psql_command "${URL}" -tA -c "SELECT COUNT(*) FROM (VALUES ('public.bookable_resources'), ('public.resource_offers'), ('public.resource_availability')) AS required_table(name) WHERE to_regclass(required_table.name) IS NULL;")"
 
   if [[ "${missing_booking_availability_tables}" != "0" ]]; then

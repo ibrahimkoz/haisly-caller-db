@@ -58,3 +58,15 @@ Work is executed from `specs/haisly-db-implementation-plan.md` in small commit b
 - Store large/binary artifacts outside PostgreSQL; this repository stores metadata and provider-neutral storage references only.
 - Preserve tenant isolation with explicit ownership columns, foreign keys, constraints, and indexes.
 - Treat billing provider choice, production billing rules, telephony provider choice, and the tenant lifecycle enforcement matrix as open until accepted in specs.
+
+## Outbound cleanup (migration 071)
+
+Migration 071 retires hotel inventory and reservation tables and disables existing
+HotelRunner integrations, mappings, automation rules, and provider credentials.
+Shared customer, call, lead, task and industry data are retained.
+
+Stop old booking/webhook writers and deploy the caller API/client without these
+routes before applying the migration. Take a full backup first. The rollback
+recreates empty booking tables; it does not recover deleted rows or reactivate
+credentials/automations. Restore the pre-migration dump for full data recovery.
+Do not deploy this caller-only migration to the running inbound Haisly product.
