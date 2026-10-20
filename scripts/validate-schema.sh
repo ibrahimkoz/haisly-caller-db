@@ -1267,3 +1267,15 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='091_add_import_retention_summary.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='contact_import_previews' AND column_name='data_purged_at')
+    OR NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conname='contact_import_jobs_retained_counts_complete')
+    OR to_regclass('public.contact_import_previews_retention_idx') IS NULL THEN
+   RAISE EXCEPTION 'Import retention schema incomplete';
+  END IF;
+ END IF;
+END $$;
+SQL
