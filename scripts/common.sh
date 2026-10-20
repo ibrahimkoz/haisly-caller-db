@@ -28,6 +28,16 @@ require_command() {
 }
 
 database_url() {
+  # Explicit isolated-test override takes precedence over the local development .env.
+  if [[ -n "${TEST_DATABASE_URL:-}" ]]; then
+    if [[ ! "${TEST_DATABASE_URL%%\?*}" =~ /[a-zA-Z0-9_]*_test$ ]]; then
+      echo "TEST_DATABASE_URL must point to a database ending in _test." >&2
+      exit 2
+    fi
+    printf '%s\n' "${TEST_DATABASE_URL}"
+    return 0
+  fi
+
   if [[ -n "${DATABASE_URL:-}" ]]; then
     printf '%s\n' "${DATABASE_URL}"
     return 0
