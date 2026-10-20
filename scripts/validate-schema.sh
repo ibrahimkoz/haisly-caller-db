@@ -1242,3 +1242,19 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='084_guard_historical_work_reactivation.sql') THEN
+  IF (SELECT count(*) FROM pg_trigger WHERE NOT tgisinternal AND tgname IN
+   ('cases_guard_reactivation','leads_guard_reactivation','follow_up_tasks_guard_reactivation',
+    'handoff_requests_guard_reactivation','workflow_runs_guard_reactivation','external_object_references_guard_reactivation',
+    'calls_guard_identity_reactivation','call_sessions_guard_identity_reactivation'))<>8 THEN
+   RAISE EXCEPTION 'Historical work reactivation guards missing'; END IF;
+ END IF;
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='085_serialize_ai_session_identity.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='ai_call_sessions_guard_identity' AND NOT tgisinternal) THEN
+   RAISE EXCEPTION 'AI session identity serialization missing'; END IF;
+ END IF;
+END $$;
+SQL

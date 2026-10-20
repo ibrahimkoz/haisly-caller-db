@@ -1,6 +1,6 @@
 # Phase 2 — contact and list checkpoint
 
-Status (20 October 2026): F02-T01 and F02-T02 are implemented. F02-T05 manual person/list workflows are delivered; preferences/history UI is pending. Phase 2 is **not complete**. Customer dispatch remains disabled.
+Status (20 October 2026): F02-T01/T02/T03 backend are implemented. F02-T05 manual person/list and read-only history workflows are delivered; preference/identity editing UI and F02-T04 runtime DNC/outbox are pending. Phase 2 is **not complete**. Customer dispatch remains disabled.
 
 ## Identity and compatibility
 
@@ -118,3 +118,17 @@ The ownership/phone correction endpoint is still disabled. Next: preserve second
 Doğrulama: 97 API testi, typecheck/lint/build/OpenAPI; migration/fixture/rollback/reapply kontrolleri. Client runtime değişmedi. Yerel çalışma DB yedeklenerek 083'e geçirildi. DNC, izinler ve liste üyelikleri değişmedi.
 
 F02-T03 hâlâ kısmi: aktif iş/geç finalize koruması, atomik sahip/numara düzeltme endpoint'i ve tercih düzenleme UI'si sırada. Bu dilim düzeltme endpoint'ini açmaz. F02-T04 runtime DNC/outbox işi ayrıca bekliyor.
+
+### Atomik sahip/numara düzeltme API’si — 20 Ekim 2026
+
+`POST /api/v1/caller-contacts/:public_id/identity` eklendi. `kind` owner_change veya phone_correction, phone, reason ve evidence_reference zorunlu; Idempotency-Key ve If-Match gerekir. Owner/operations_manager rolü ile contacts.manage ve lists.manage izinleri birlikte kontrol edilir; rol kontrolü replay öncesinde yapılır. Tenant kapsamı, sürüm ve numara/legacy claim çakışmaları korunur.
+
+Sahip değişimi aynı canonical numarada yeni kimlik revizyonu açar; opsiyonel ad/soyad/ünvan yeni kişiye aittir. Eski profil arşivlenir; not/metadata ve liste üyelikleri temizlenir, etkilenen liste sürümleri artar. Telefon düzeltmesi farklı doğrulanmış numara ister; ad/ünvan/not/metadata ve liste üyelikleri korunur. Her iki işlem ek kanalları eski revizyonda bırakır, primary email ve doğrulanmış saat dilimini temizler, aktif izinleri kapatır, durumu new yapar; DNC ve legacy blocked durumu korunur. Eski canonical numara tarihsel kanal olarak rezerv tutulur, yeniden kişi oluşturup DNC aşma yolu açılmaz. İzin yeniden kaydedilmeden yeni kimlik aramaya uygun olmaz.
+
+Aktif vaka, lead, görev, handoff, workflow/dış işlem ve bağlı görüşme varken 409 alınır; otomatik sonlandırma yapılmaz. Legacy AI oturumlarında caller numarasının son 10 hanesiyle aktif oturum kontrolü muhafazakârdır (ülke kodu farklı ama son 10 hanesi aynı numarayı da engelleyebilir). Caller bilgisi olmayan eski oturumlar kişiye bağlanamaz; geç finalize işleminde oturum tarihi ve revizyon sınırı kontrol edilir, eski numara rezervinden yeni kişi oluşturulmaz. Tam outbound hedef/deneme bağlantısı ilgili sonraki fazda kurulacaktır.
+
+084–086 migrationları eski revizyona ait işleri/görüşmeleri yeniden aktifleştirmeyi engeller; AI oturumları ve finalize aynı tenant kilidiyle düzeltmeye karşı sıralanır. Tarihsel işi terminal duruma alma mümkündür. API yeni migrationlardan sonra dağıtılmalıdır; guard rollback öncesinde kimlik düzeltme endpoint’i kapatılmalı/yazıcılar durdurulmalıdır.
+
+Doğrulama: tam API 98 test, typecheck/lint/build/OpenAPI ve npm audit 0 bulgu. Ek hedefli test: aktif iş/oturum reddi, eski finalize rollback’i, DNC ve izin izolasyonu, liste ayrımı, telefon rezervi/çakışması, tenant/rol/replay kontrolleri, operasyon rolüyle eşzamanlı iki düzeltmeden yalnızca birinin uygulanması. Test DB migration/fixture/rollback/reapply geçti. Client runtime değişmedi; tercih ve düzeltme formu hâlâ bekliyor. F02-T03 backend uygulandı; Faz 2 tamamlanmadı. F02-T04 runtime DNC/outbox ve F02-T05 kalan UI işleri sürüyor.
+
+Yerel `haisly_caller` 086 seviyesine geçirildi; 421 kişi, 588 çağrı, 25 ek kanal ve 176 görev sayıları korundu. Öncesinde `backups/haisly-caller-pre-identity-correction-2026-10-20/haisly_caller.dump` alındı ve arşiv listesi okundu; tam restore provası yapılmadı.
