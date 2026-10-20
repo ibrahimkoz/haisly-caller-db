@@ -1,6 +1,6 @@
 # Phase 2 — contact and list checkpoint
 
-Status (20 October 2026): F02-T01/T02/T03 backend are implemented. F02-T05 manual person/list and read-only history workflows are delivered; preference/identity editing UI and F02-T04 runtime DNC/outbox are pending. Phase 2 is **not complete**. Customer dispatch remains disabled.
+Status (20 October 2026): F02-T01/T02/T03 backend are implemented. F02-T05 manual person/list and read-only history workflows are delivered; preference/identity editing UI is pending. F02-T04 runtime DNC/outbox and shared eligibility reads are implemented; dispatcher/tool consumers remain pending. Phase 2 is **not complete**. Customer dispatch remains disabled.
 
 ## Identity and compatibility
 
@@ -132,3 +132,17 @@ Aktif vaka, lead, görev, handoff, workflow/dış işlem ve bağlı görüşme v
 Doğrulama: tam API 98 test, typecheck/lint/build/OpenAPI ve npm audit 0 bulgu. Ek hedefli test: aktif iş/oturum reddi, eski finalize rollback’i, DNC ve izin izolasyonu, liste ayrımı, telefon rezervi/çakışması, tenant/rol/replay kontrolleri, operasyon rolüyle eşzamanlı iki düzeltmeden yalnızca birinin uygulanması. Test DB migration/fixture/rollback/reapply geçti. Client runtime değişmedi; tercih ve düzeltme formu hâlâ bekliyor. F02-T03 backend uygulandı; Faz 2 tamamlanmadı. F02-T04 runtime DNC/outbox ve F02-T05 kalan UI işleri sürüyor.
 
 Yerel `haisly_caller` 086 seviyesine geçirildi; 421 kişi, 588 çağrı, 25 ek kanal ve 176 görev sayıları korundu. Öncesinde `backups/haisly-caller-pre-identity-correction-2026-10-20/haisly_caller.dump` alındı ve arşiv listesi okundu; tam restore provası yapılmadı.
+
+### Runtime DNC ve tercih outbox altyapısı — 20 Ekim 2026
+
+İmzalı `POST /api/internal/v1/call-sessions/:call_session_public_id/do-not-call` eklendi. `runtime.preferences.write` scope’u, servis anahtarı/imzası ve tenant/environment doğrulanır. Payload contact_public_id, identity_revision, idempotency_key, reason ve evidence_reference ister; block kaldırma alanı yoktur. Görüşme ile kişi/revizyon ilişkisi DB’de etkileşim veya oturuma bağlı handoff/consent kaydından doğrulanır. Henüz ilişkisi kurulmamış oturum 409 alır; gelecek outbound hedef/deneme akışı ilişkiyi çağrı öncesinde kurmalıdır. Tenant kilidi altında DNC, kişi sürümü, geçmiş, servis hesabı audit’i, idempotency cevabı ve outbox tek transaction’dır. Replay scope yetkisini tekrar kontrol eder; aynı anahtar/farklı içerik reddedilir. Başarılı cevap `stop_further_actions: true` içerir; bu bir runtime sözleşmesidir, provider kapatma işlemi yapılmış sayılmaz.
+
+`POST /api/internal/v1/caller-contacts/:public_id/eligibility`, `runtime.preferences.read` scope’u ile tenant ekranıyla aynı authoritative DB sorgusunu kullanır. Amaç ve ülke, DNC, durum, revizyon/izin ve arşiv kontrol edilir. Bu cevap yalnız kişi önkoşuludur; dispatcher kararı, kota/saat aralığı ve çağrı başlatma yetkisi değildir. Karar anında tekrar okunmalıdır.
+
+087 migrationı tercih/durum/kimlik/arşiv geçmiş olaylarından `caller.contact_preference.changed` outbox olayını atomik üretir. Anahtar geçmiş olayının public ID’sidir. Payload schema_version, event_public_id, contact_public_id, identity_revision, contact_version, event_type ve occurred_at içerir; telefon, gerekçe ve kanıt içermez. DNC ve izinlerin manuel API yolları da kapsamdadır. Eski olaylar geriye dönük yayınlanmaz. Consumer henüz yoktur; olaylar pending kalır, teslim edilmiş sayılmaz. Sonraki dispatcher/araç entegrasyonu güncel tercihi tekrar okuyacak; eski veya sırasız olayı yeni izin gibi uygulamayacak. Bu bağlantı tamamlanmadan F02-T04 bütünüyle kapatılmaz.
+
+Beklenmeyen persistence hatası 503 döndürür ve runtime’a sonraki aksiyonları durdurup aynı anahtarla tekrar denemesini bildirir. Ayrı işlemde yalnız aktif owner/operations_manager kullanıcılarına kritik sistem bildirimi denenir; DB tamamen erişilemezse bildirim kalıcılaştırılamayabilir, yapılandırılmış hata logu ve 503 korunur. Beklenen auth/kaynak/ilişki çakışmaları 401/403/404/409 olarak kalır. Raw hata veya kanıt loglanmaz. Runtime idempotency kayıtları için mevcut altyapı kullanılır; cleanup politikası Faz 13’te replay güvenliğini korumalıdır.
+
+Doğrulama: tam API 99 test, tip/lint/build/OpenAPI ve npm audit 0 bulgu. Outbox hatası enjekte edilen entegrasyon testinde kişi/geçmiş/receipt rollback’i, operasyon bildirimi ve aynı anahtarla başarılı retry doğrulandı. Eşzamanlı replay, scope iptali, environment/ilişki reddi, güncel uygunluk ve manuel tercih outbox eşleşmesi test edildi. Migration/fixture/rollback/reapply geçti. Yerel DB 087’ye yedekle geçirildi; 421 kişi ve 588 çağrı korundu, mevcut geçmiş/outbox sayısı 0 olarak kaldı. Yedek: `backups/haisly-caller-pre-runtime-preference-2026-10-20/haisly_caller.dump`; arşiv listesi okundu, tam restore provası yapılmadı.
+
+Client runtime değişmedi; tercih/kimlik düzenleme UI’si sırada. F02-T04 yazma/outbox/ortak okuma kısmı hazır, dispatcher ve araç uygulama bağlantıları sonraki ilgili fazlarda tamamlanacak. Faz 2 tamamlanmadı.
