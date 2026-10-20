@@ -50,3 +50,17 @@ F02-T03: status/consent/eligibility services, owner-only DNC removal and verifie
 Phase-end commit/push policy remains in force. This is a vertical slice checkpoint, not Phase 2 acceptance or a production release.
 
 Client verification: typecheck, lint (zero errors; six existing warnings), 292 tests across 73 files and production build passed. Two mocked-API Playwright workflows passed at 390px/1440px, including profile correction and list membership/archive; screenshots were visually reviewed with no horizontal overflow. Existing bundle-size warning remains. These browser tests complement real-DB API integration tests; they are not live end-to-end telephony tests.
+
+## Preference service checkpoint — 20 October 2026
+
+F02-T03 is partially implemented through three authenticated endpoints:
+
+- `PATCH /api/v1/caller-contacts/{public_id}/do-not-call`: set the tenant-wide block; removing it requires both contact/unblock permissions and the active `owner` role, rechecked on receipt replay. Removal requires a reason, evidence reference and renewed-request timestamp strictly after the latest refusal and no later than now. Repeated explicit refusals supersede older renewal evidence. No evidence URL is fetched; the reference is an operator-supplied record locator, not automatic evidence verification.
+- `POST /api/v1/caller-contacts/{public_id}/consents`: grant or withdraw for the current identity revision, purpose (`marketing`/`survey`) and country. Records retain source, reason, evidence and event time. Replacement/withdrawal closes every active grant for the scope. Equal/older evidence is rejected; delayed grants cannot revive withdrawn consent. A grant requires a validated canonical identity and matching country, and never clears DNC.
+- `GET /api/v1/caller-contacts/{public_id}/eligibility?purpose=marketing&country_code=TR`: a single-statement snapshot reports contact prerequisites and explicit blockers. DNC, archive, blocked legacy status, invalid/unverified identity, blocking number status, country mismatch and missing current-revision consent fail closed. `contact_eligible` is **not** permission to dispatch: schedule, campaign, country policy, limits, budget and provider gates remain pending.
+
+Writes use the existing tenant lock, expected version and atomic mutation receipt/history/audit transaction. No new migration or local/hosted customer data change was needed. Existing migrations 074/076 supply the fields and tables. Real-DB tests run only on `haisly_caller_phase1_test` with synthetic tenants.
+
+Verification: API full `verify:ci` passed (94 tests, zero skipped; typecheck/lint/build/OpenAPI). The subsequent consent-query extraction passed typecheck and the targeted preference integration test. npm audit: zero findings; no dependencies added. Tests cover wrong tenant, unauthenticated access, mass assignment, missing/old/future evidence, stale consent, owner-role enforcement even with an explicitly granted unblock permission, replay after owner loss, preserved DNC on consent grant, purpose isolation, old-identity consent rejection, archive and invalid-number blockers, and append-only history/replay counts.
+
+Remaining F02-T03: status event/correction APIs, verified wrong-number/ownership change and history partitioning. F02-T04 runtime DNC/outbox/dispatch gates and F02-T05 preference/history UI remain unimplemented. This checkpoint changes API behavior only; client screens are unchanged. Outbound dispatch remains disabled and Phase 2 remains incomplete.
