@@ -146,3 +146,16 @@ Beklenmeyen persistence hatası 503 döndürür ve runtime’a sonraki aksiyonla
 Doğrulama: tam API 99 test, tip/lint/build/OpenAPI ve npm audit 0 bulgu. Outbox hatası enjekte edilen entegrasyon testinde kişi/geçmiş/receipt rollback’i, operasyon bildirimi ve aynı anahtarla başarılı retry doğrulandı. Eşzamanlı replay, scope iptali, environment/ilişki reddi, güncel uygunluk ve manuel tercih outbox eşleşmesi test edildi. Migration/fixture/rollback/reapply geçti. Yerel DB 087’ye yedekle geçirildi; 421 kişi ve 588 çağrı korundu, mevcut geçmiş/outbox sayısı 0 olarak kaldı. Yedek: `backups/haisly-caller-pre-runtime-preference-2026-10-20/haisly_caller.dump`; arşiv listesi okundu, tam restore provası yapılmadı.
 
 Client runtime değişmedi; tercih/kimlik düzenleme UI’si sırada. F02-T04 yazma/outbox/ortak okuma kısmı hazır, dispatcher ve araç uygulama bağlantıları sonraki ilgili fazlarda tamamlanacak. Faz 2 tamamlanmadı.
+
+
+### Kişi tercih ve kimlik düzenleme ekranları — 20 Ekim 2026
+
+F02-T05 tamamlandı: kişi ekranından tenant genelinde aranmama engeli koyma/kaldırma, amaç ve ülke bazında izin verme/geri çekme, durum güncelleme, doğrulamalı sahip değişimi ve telefon düzeltmesi yapılabilir. Yetkiye göre işlemler görünür; engel kaldırma owner ve ilgili özel izni, kimlik düzeltme owner/operations_manager ve kişi/liste yönetim izinlerini gerektirir. Backend yetki kontrolleri esas olmaya devam eder.
+
+Her işlem önce gerekçe, kanıt ve etkileriyle incelenir, açık onaydan sonra yazılır. Gerekli olay zamanı tarayıcının saat diliminde girilir ve UTC gönderilir; gelecekteki olay ve eski engel kaldırma talepleri reddedilir. Geçersiz numarayı erişilebilir yapma doğrulama kanıtı ister. Sahip değişiminde eski profil/liste/izin ayrımı, telefon düzeltmesinde korunacak alanlar ve DNC'nin devam ettiği açıklanır. Yeni sahip alanları boş başlar.
+
+Güncel kişi sürümüyle If-Match gönderilir; çakışmada bilgiler yeniden incelenir. Belirsiz ağ/sunucu hatalarında aynı içerik ve idempotency anahtarıyla tekrar denenir. Yükleme hatası, kaydetme, yetki kaybı ve boş alan durumları ele alınır; form taslağı hata durumunda korunur. Kaydetme sonrası klavye odağı geri gelir; kimlik değişirse eski kişiye ait açık düzenleme/geçmiş kapatılır. Kişi sayfası liste, kişi satırları, arama kontrolleri ve tercih bileşenlerine ayrıldı.
+
+Bu dilimde API/DB runtime veya migration değişmedi; yerel DB 087 seviyesinde kalır. F02-T04 dispatcher/araç consumer bağlantıları sonraki ilgili fazlara bağımlı ve açık; Faz 2 bütünüyle tamamlanmış sayılmaz. Sıradaki bağımsız uygulama dilimi Faz 3 Excel/CSV aktarımıdır.
+
+Doğrulama: client 74 dosyada 301 test, typecheck ve build başarılı. Lint 0 hata / önceden mevcut 6 uyarı; build mevcut 500 kB chunk uyarısını veriyor. 390 ve 1440 px Chromium testleri kayıt, onay, klavye odağı, liste üyeliği ve yatay taşma kontrolleriyle geçti; ekran görüntüleri incelendi. Yetki, kanıt/zaman, izin amacı, sürüm çakışması, aynı anahtarla retry ve yükleme hatasından dönüş test edildi. Bu dilimde npm audit 0 bulgu; bağımlılıklar değişmedi. Browser akışı API mock kullanır; gerçek çağrı veya üretim dağıtımı yapılmadı.
