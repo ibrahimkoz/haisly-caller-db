@@ -1216,7 +1216,7 @@ psql_command "${URL}" <<'SQL'
 DO $$ BEGIN
  IF EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '074_add_caller_contact_foundation.sql') THEN
   IF (SELECT count(*) FROM public.contact_statuses) <> 6 THEN RAISE EXCEPTION 'Caller contact status catalog is incomplete'; END IF;
-  IF EXISTS (SELECT 1 FROM (VALUES ('contact_lists'), ('contact_list_members'), ('contact_change_events'), ('contact_consents'), ('contact_identity_revisions')) AS required(name)
+  IF EXISTS (SELECT 1 FROM (VALUES ('contact_import_previews'), ('contact_import_preview_rows'), ('contact_lists'), ('contact_list_members'), ('contact_change_events'), ('contact_consents'), ('contact_identity_revisions')) AS required(name)
              WHERE to_regclass('public.' || required.name) IS NULL) THEN RAISE EXCEPTION 'Caller contact tables are missing'; END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'customers_canonical_phone_unique' AND conrelid = 'public.customers'::regclass) THEN
    RAISE EXCEPTION 'Caller canonical phone uniqueness is missing'; END IF;
