@@ -1,6 +1,6 @@
-# Phase 2 — contact foundation checkpoint
+# Phase 2 — contact and list checkpoint
 
-Status (20 October 2026): F02-T01 foundation implemented and verified; Phase 2 is **not complete**. No new public API or client workflow is delivered by this checkpoint. Customer dispatch remains disabled.
+Status (20 October 2026): F02-T01 and F02-T02 are implemented. F02-T05 manual person/list workflows are delivered; preferences/history UI is pending. Phase 2 is **not complete**. Customer dispatch remains disabled.
 
 ## Identity and compatibility
 
@@ -21,16 +21,32 @@ At most 200 records per transaction; locks wait at most 3 seconds and statements
 
 Missing/invalid numbers, duplicate primary/secondary claims and multiple phone identities are not merged. Unscoped local/free-text secondary claims conservatively prevent promotion of other candidates in that tenant until corrected. Names and historical records are preserved. Country is validated from international metadata; timezone is never inferred from a city/area code. Local input requires an explicitly selected country. The library confirms number structure, not ownership or live reachability.
 
-## Dependency and verification
+## API and client workflows
 
-`libphonenumber-js` 1.13.15 (MIT) uses full `max` validation metadata; there were no runtime dependencies or install lifecycle hooks in registry metadata. It replaces unsafe handwritten international numbering rules. Installed with scripts disabled. Fresh npm audit: zero findings.
+Session-authenticated `/api/v1/caller-contacts` supports tenant-scoped search, phone-only creation, detail and versioned name/title corrections with a required reason. `/api/v1/contact-lists` supports search, creation, rename, archive/unarchive, deletion and membership. Cursor pages are bounded to 100 items. Existing canonical numbers reuse the person without overwriting details. Unresolved legacy claims return 409. Phone/ownership changes are not exposed through profile edits.
 
-API `verify:ci`: 92 tests passed, zero skipped; typecheck/lint/build/OpenAPI passed. New tests cover normalization, invalid/local/extension rejection, dry-run, idempotent promotion, preserved duplicates, cross-tenant uniqueness, formatting-aware legacy guards, list/member uniqueness and cross-tenant FK rejection. Final bounded-lock change was retested with the four affected tests.
+Contact reads/edits require `caller.contacts.manage`; lists require `caller.lists.manage`; membership and the combined client screen require both. Legacy raw customer reads now require contact permission; the old update endpoint rejects canonical identities so it cannot bypass version/history checks. Tenant scoping and current authorization apply before replay.
 
-DB 074/075 upgrade, empty-data rollback/reapply and populated-data rollback refusal passed on `haisly_caller_phase1_test`. The local working `haisly_caller` and hosted inbound server were not migrated by this checkpoint.
+All mutations require `Idempotency-Key`; resource mutations additionally require quoted numeric `If-Match`. Migration 076 stores tenant/actor/scope receipts atomically with writes and audit records. These session workflows are tenant-wide, whereas existing runtime receipts are environment-scoped. Payload/version mismatches and expired receipts return 409. Receipts expire after seven days but remain stored until the Phase 13 retention worker is implemented; their response bodies contain personal data and must be included in retention/deletion policies. Tenant advisory locking follows migration 075's lock order, bounded by a five-second lock timeout.
+
+Unused lists can be deleted; previously used lists are archived. People and campaign targets are not deleted or appended by membership changes. Future campaign snapshot integration must set `first_used_at` in its transaction. Name/title changes append actor/reason/before/after history. List audit records identify the resource and relevant before/after state.
+
+The bilingual client screen provides manual creation/profile editing, duplicate notice, list CRUD/archive impact confirmation, membership, search/pagination and loading/error/empty states. Failed mutations keep their idempotency key for retry; stale versions return a conflict requiring refresh. Excel/CSV import remains Phase 3.
+
+## Local rollout
+
+The local `haisly_caller` database is now at migration 076. Before migration, a custom-format dump was saved to `backups/haisly-caller-pre-phase2-2026-10-20/haisly_caller.dump`; its table of contents was checked (not a full restore rehearsal). Backfill preserved all 421 customers: 25 promoted to validated canonical identities; 396 without phones remain quarantined. No records were merged or deleted, no consent was fabricated. The hosted inbound server was unchanged. Do not run seed/fixture resets on this working database.
+
+## Verification
+
+`libphonenumber-js` 1.13.15 uses full `max` validation metadata. Fresh API and client npm audits reported zero findings on 20 October 2026.
+
+API `verify:ci`: 93 tests passed, zero skipped; typecheck/lint/build/OpenAPI passed. The contact/list integration test additionally rechecked member removal, cross-list preservation and list audit before/after state. DB `verify.sh` passed on a fresh isolated `haisly_caller_phase2_schema_test`: 76 migrations, seeds/fixtures, final empty-table rollback/reapply and schema validation. Populated receipt rollback is intentionally guarded.
 
 ## Remaining Phase 2 work
 
-F02-T02–T05: authorized/idempotent/versioned person/list APIs and membership workflows; audited corrections and owner-only DNC removal; consent/history/eligibility services; runtime DNC tool with outbox and failure handling; client screens and negative/UI tests. Legacy write paths must route through those services before enabling caller contact editing. Existing history must be partitioned by identity revision before an ownership correction is exposed.
+F02-T03: status/consent/eligibility services, owner-only DNC removal and verified number/ownership correction. F02-T04: runtime DNC tool, preference outbox and failure handling. F02-T05: status/preference history and correction UI. Existing history must be partitioned by identity revision before ownership correction is exposed. Identity readiness alone never authorizes a call.
 
-Phase-end commit/push policy remains in force. This is a foundation slice checkpoint, not Phase 2 acceptance or a release.
+Phase-end commit/push policy remains in force. This is a vertical slice checkpoint, not Phase 2 acceptance or a production release.
+
+Client verification: typecheck, lint (zero errors; six existing warnings), 292 tests across 73 files and production build passed. Two mocked-API Playwright workflows passed at 390px/1440px, including profile correction and list membership/archive; screenshots were visually reviewed with no horizontal overflow. Existing bundle-size warning remains. These browser tests complement real-DB API integration tests; they are not live end-to-end telephony tests.
