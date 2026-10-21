@@ -1279,3 +1279,18 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='092_create_caller_campaign_drafts.sql') THEN
+  IF to_regclass('public.caller_campaigns') IS NULL
+   OR to_regclass('public.caller_campaign_versions_one_draft_idx') IS NULL
+   OR to_regclass('public.caller_campaign_source_lists_list_idx') IS NULL THEN
+   RAISE EXCEPTION 'Campaign draft schema incomplete';
+  END IF;
+  IF EXISTS(SELECT 1 FROM public.caller_campaigns WHERE state <> 'draft') THEN
+   RAISE EXCEPTION 'Publication is not enabled in draft foundation';
+  END IF;
+ END IF;
+END $$;
+SQL
