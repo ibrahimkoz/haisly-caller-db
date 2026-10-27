@@ -749,3 +749,12 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Karar isteği key/version/decision/reason ile sabitlenir; belirsiz sonuçta aynı payload tekrar gönderilir, alanlar ve kuyruk seçimi kilitlenir. Kesin hatada form eski kanıtla yeniden gönderilemez; kapatıp güncel incelemeyi açma mesajı verilir. Başarıda kuyruk yenilenir; oluşan göreve link gösterilir.
 - Form/schema testleri açık teyit, reason sınırı, archived-team onay reddi ve aynı-key retry için yazıldı. Test/browser/typecheck/build çalıştırılmadı. Responsive/accessibility kabulü ve olumlu HTTP uçtan uca senaryo final doğrulamada açık.
 - Bu formun belirsiz karar state'i henüz sayfa yenilemesi/başka route sonrası kalıcı değil; atama formundaki recovery yaklaşımının reason içeren review isteğine uygulanması sonraki iş. DB/API kontratı bu dilimde değişmedi.
+
+
+### 2026-10-27 — Belirsiz inceleme kararını geri yükleme
+
+- Onay/ret isteği gönderimden önce sessionStorage'da tenant+actor kapsamında strict UUID/version/decision/reason/key sözleşmesiyle kaydedilir. Aynı actor/sekmede çözülmemiş tek review tutulur; farklı istek üzerine yazılmaz. Kullanıcının teyit ettiği gerekçe payload'ın parçası olarak tutulur; skor, soru, müşteri alanları ve credentials kopyalanmaz.
+- Kuyruk sayfası mount olduğunda bekleyen isteği ayrı recovery panelinde gösterir. Otomatik replay yoktur. Kuyrukta aksiyon artık bulunmasa veya GET evidence404 olsa bile kullanıcı aynı POST/key ile receipt sonucunu alabilir. Yeni karar seçimi recovery çözülene kadar kapalıdır. Başarıda görev linki, kesin ret/hata halinde güncel kuyruğu inceleme mesajı gösterilir.
+- Network/belirsiz sonuç kaydı korur; başarılı veya kesin HTTP sonuçta sadece eşleşen key temizlenir. Okuma/yazma/bozuk veri hataları yeni gönderimi durdurur. Aynı sekme reload ve route dönüşü kapsanır; sessionStorage temizlenmesi/sekme sonlandırılması kapsam dışıdır. Server If-Match ve receipt koruması devam eder.
+- Exact request replay, otomatik gönderim olmaması, kullanıcı/tenant izolasyonu, başka karar üzerine yazma reddi, yanlış key ile silmeme ve bozuk kayıt koruma testleri yazıldı. Önceki form testleri yeni storage scope'a uyarlandı. Testler çalıştırılmadı; browser/end-to-end kabulü açık.
+- API/DB değişmedi. Önceki dilimde açık kalan review reload kurtarma işi kaynak kodda tamamlandı; Faz9'un diğer işleri ve final doğrulama devam ediyor.
