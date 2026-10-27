@@ -1294,3 +1294,16 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='093_add_campaign_operational_settings.sql') THEN
+  IF to_regclass('public.caller_campaign_versions_agent_idx') IS NULL
+   OR NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conname='caller_campaign_versions_window')
+   OR NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conname='caller_campaign_versions_dates')
+   OR NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conname='caller_campaign_versions_agent_fk') THEN
+   RAISE EXCEPTION 'Campaign operational settings schema incomplete';
+  END IF;
+ END IF;
+END $$;
+SQL
