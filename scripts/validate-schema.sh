@@ -1522,3 +1522,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='113_caller_dispatch_event_receipts.sql') THEN
+  IF to_regclass('public.caller_dispatch_event_receipts') IS NULL OR to_regclass('public.caller_dispatch_event_receipts_history') IS NULL
+   OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='caller_dispatch_event_receipt_guard' AND NOT tgisinternal AND tgenabled='O') THEN
+   RAISE EXCEPTION 'Dispatch provider event receipt safeguards missing';
+  END IF;
+ END IF;
+END $$;
+SQL
