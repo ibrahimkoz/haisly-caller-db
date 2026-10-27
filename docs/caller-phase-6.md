@@ -621,3 +621,11 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Belirsiz mutation sonucu aynı anahtar ve payload ile tekrar edilir; form değerleri ve ekran içi ekip geçişleri kilitlenir. Üye paneli ana liste refetch hatasında kaybolmaz. Sayfadan tamamen ayrılma/reload sonrası pending isteğin geri yüklenmesi sağlanmıyor; kullanıcıya ekranı açık tutma metni gösterilir.
 - Loading/empty/error/permission durumları, cursor ileri/ilk sayfa kontrolleri ve üyelik başarı geri bildirimi eklendi. Editör için belirsiz sonuç/replay ve arşivleme sürümü test kodu yazıldı.
 - Kullanıcı talimatıyla test/typecheck/lint/build/browser çalıştırılmadı. Görsel, erişilebilirlik, route smoke, gerçek API uçtan uca ve üyelik bileşeni senaryoları final doğrulamada açık. Kampanya rule/task entegrasyonu ve görev rol uygunluğu henüz tamamlanmadı.
+
+### 2026-10-27 — Kampanya anket takip kurallarının kalıcı tanımı (137)
+
+- Migration137 tenant ve kampanya sürümü kapsamında düşük memnuniyet kurallarını saklar; ekip FK'sı aynı tenantı zorunlu kılar. Bir soru için tek kural, threshold/mode/iş günü sınırları ve aktif ekip/survey draft yazma guardları vardır. Rollback dolu tabloda reddeder.
+- Kampanya create/update `survey_follow_up_rules` kabul eder. Omission mevcut kuralları korur, [] temizler. Soru düzenlemelerinden sonra eski kurallar da tekrar doğrulanır; geçersiz soru tipi/eşik veya arşivli ekip kaydı durdurur. Marketing'e geçişte kuralların açıkça temizlenmesi gerekir.
+- Kurallar draft read, immutable snapshot, definition hash ve clone içine bağlandı. Önceki snapshotlarda alan yoksa boş kural kabul edilir. Kurallar boşken önceki definition hash şekli korunur. Preflight arşivlenmiş/eksik ekipleri engeller. Kurallar snapshot içinde donduğu için sonraki taslak değişikliği geçmiş görüşmenin kuralını değiştirmez.
+- OpenAPI üretildi. Transaction tabanlı preserve/clear, soru/eşik/geçersiz ekip/type/archived davranışı testi yazıldı; çalıştırılmadı. Yerel haisly_caller yedeklenip 137 uygulandı; üretime dokunulmadı. Test DB migrasyonları ve test/typecheck/lint/build finalde.
+- Bu dilim görev üretmez. Marketing ilgi/belirsiz sonuç kuralları, client kural editörü, çalışan role uygunluğu, action reservation/consumer/task dedupe, hedef iş günü hesabı ve yönetici bildirimi açık.
