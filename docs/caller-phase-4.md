@@ -23,3 +23,16 @@ Yerel DB güncellemesinden önce `backups/haisly-caller-pre-campaign-drafts-2026
 Faz 4 tamamlanmadı. Sıradaki dilim kampanya listesi/taslak düzenleme ekranı ve eksik yapılandırma alanları; ardından değişmez yayın adayı, hedef snapshot/fark dahil etme, anket akışı ve test/yayın kapıları. F04-T01–T06 kutuları henüz kapatılmadı.
 
 Yerel uygulama DB doğrulaması tamamlandı: 92 migration, 421 kişi, 588 çağrı, 0 kampanya. Müşteri/çağrı sayıları değişmedi; schema kontrolü geçti.
+
+
+## 2026-10-27 — Kampanya listesi ve taslak düzenleme client akışı
+
+`/app/campaigns` sayfası ve yetkiye bağlı menü eklendi. Kullanıcı marketing/survey tipi, isim, amaç, davranış/konu talimatları, tr/en görüşme dili ve kaynak listeler ile eksik taslağı kaydedebilir; kayıtları sayfalayabilir ve tekrar açabilir. Liste seçimi en fazla 100 kayıttır; arşivli liste yeni seçilemez, mevcut arşivli kaynak görünür. Arama hedefi veya çağrı oluşturulmaz. Takvim, agent/ses, bütçe/aksiyon ve anket soruları bu ekranın sonraki dilimleridir; yayın kullanılamadığı açıkça belirtilir.
+
+Client katmanları ayrı model/Zod, RTK Query API, alanlar/kaynak seçici ve sayfa bileşenlerinden oluşur. Kaydetme mevcut API'nin tam PUT sözleşmesini kullanır; tüm alanlar ve seçili kaynak ID'leri gönderilir. If-Match düzenlemeye başlanılan sürümden alınır. Ağ/5xx belirsizliğinde gövde, anahtar ve sürüm sabitlenir; form kilitlenir ve aynı istek tekrar denenir. 409'da yazılan metin korunur, yeniden kaydetme kapanır; güncel veriyi yükleyip yerel değişikliklerden vazgeçmek açık onay ister. Başarılı kayıt sonrası kampanya/liste cache'i yenilenir. Otomatik sorgu yenilemesi açık düzenleyicinin metnini değiştirmez.
+
+Salt okunur kullanıcılar kaydetme/oluşturma kontrolünü görmez. Kaynak listeleri değiştirmek için caller.lists.manage gerekir; bu izin yokken liste API'si çağrılmaz ve seçili kaynaklı taslak kaydı backend sözleşmesi gereği kapalıdır. Route/menü caller.campaigns.read ile korunur; backend yetki denetimleri nihai kaynaktır. Değişmiş formu kapatma, route değiştirme ve tarayıcıdan ayrılma korumaları vardır. İçerik yalnız bellekte/formda tutulur, localStorage'a taslak metni yazılmaz.
+
+Doğrulama: tam client paketi 324/324 (79 dosya) geçti. Son eklenen gezinme koruması testi dahil hedefli kampanya paketi 6/6; son TypeScript kontrolü başarılı. Build başarılı, lint 0 hata/mevcut 6 uyarı. Mevcut büyük chunk ve Vite native-config uyarıları sürüyor. Chromium 390/820/1440 px'de 3/3 oluşturma-kaydetme-tekrar açma akışı ve yatay taşma kontrolü geçti; ekran görüntüleri görsel olarak incelendi. Browser testleri API mock kullanır; backend'in gerçek PostgreSQL testleri önceki dilimde 124/124 geçti. Bu dilimde backend/DB davranışı değişmedi, gerçek DB'ye kayıt yazılmadı. Bağımlılık değişmedi; npm audit yeniden çalıştırılmadı.
+
+Dağıtım için DB092 ve kampanya taslak API'si gerekir; ardından client yayınlanır. Client geri alınabilir; kaydedilmiş kampanyalar DB'de kalır. Faz 4 ve F04-T02 bütünü henüz tamamlanmadı. Sırada takvim/deneme/kapasite ve agent yapılandırması, ardından hedef snapshot ve anket akışları var.
