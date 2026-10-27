@@ -1621,3 +1621,11 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='123_campaign_terminal_cancellation.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='public.caller_campaigns'::regclass AND conname='caller_campaigns_state_check' AND pg_get_constraintdef(oid) LIKE '%canceled%') THEN RAISE EXCEPTION 'Terminal campaign cancellation constraint missing'; END IF;
+ END IF;
+END $$;
+SQL

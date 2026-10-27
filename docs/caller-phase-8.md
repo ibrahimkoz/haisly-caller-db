@@ -310,3 +310,11 @@
 - Cancel kampanyasında pending geri aramalar worker tarafından250'lik batch ile kapatılır, pause planları korur. Aynı transaction/tenant kilidi ve source provider environment sınırı kullanılır; iptal nedeni/zamanı saklanır. Worker has_more ve callbacks_canceled metriği genişletildi.
 - Yerel DB yedeklenip122 uygulandı. İzole fixture'a tek pending plan, immutable zaman,30dk pencere, yanlış ortam, pause/cancel farkı, accepted kaynak çağrısına dokunmama ve tekrar testi eklendi. OpenAPI üretildi; test/typecheck/lint/build/schema-validator/rollback/browser çalıştırılmadı. Final test DB'lerine122 uygulanmalı.
 - Plan missed/dispatch/accepted yaşam döngüsü, insan görev/bildirim bağı, API/client takvim, kampanya terminal cancel ve kalan fazlar açık; goal aktif.
+
+### 2026-10-27 — Kampanya terminal iptali
+
+- DB123 canceled durumunu ekler. Pausing→canceled için cancel isteği, tüm ortamlarda sıfır prepared/submitting/uncertain/accepted çağrı, iptal edilmemiş hedef ve callback kalmaması zorunludur. Terminal kampanya satırı değiştirilemez/yeniden açılamaz; state-event geçmişi korunur. Yeni callback durumları eklenirken terminal iş hesabı ayrıca genişletilmeli; mevcut bilinmeyen durumlar fail-closed kalır.
+- Ortak finishCampaignStop pause/cancel farkını uygular; drain worker hazır kampanyaları25'lik gruplarla kesinleştirir. Bekleyen çağrı/hedef/callback aday filtresinden dışlanır, hazır sonraki işler aç kalmaz. Henüz dispatch geçmişi olmayan kampanyayı public stop komutu tenant kapsamında bu servisle sonuçlandırmalı.
+- API taslak düzenlemede canceled kampanyayı reddeder. Client terminal durumu gösterir, formu kilitler; içerik değiştirmeyen snapshot alma ve yeni ID ile clone akışı korunur. Clone yeni kampanyadır, numara tercihlerini veya geçmiş sayaçlarını sıfırlamaz.
+- Yerel DB yedeklenip123 uygulandı. Erken terminal iptalde bekleyen hedef DB reddi, cancel event/version, tekrarda ek geçiş olmaması ve yeniden açma reddi test kodları; client canceled durum testi eklendi. OpenAPI üretildi. Test/typecheck/lint/build/schema-validator/rollback/browser çalıştırılmadı; final test DB'lerine123 uygulanmalı.
+- Public stop onay/yetki akışı, gerçek çağrı sonlandırma/mutabakat, resume/yayın ve callback dispatch/missed yaşam döngüsü ile diğer fazlar açık. Goal aktif.
