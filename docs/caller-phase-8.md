@@ -172,3 +172,11 @@
 - Provider detay drawer'ına10sn odaklı polling paneli eklendi: devre durumu, ardışık hata, kesinti başlangıcı, en erken probe zamanı/probe hakkı bitişi, bekleyen/kuyruklanmış bildirim ve son kontrol. Queued teslimat sayılmaz; closed hat sahipliği/SIP uygunluğu/arama izni değildir. Reset/retry/arama butonu eklenmedi.
 - API null state'in yazmaması, auth/tenant izolasyonu, açık/devam eden/expired görünüm ve özel alanların yokluğu; client bilinmeyen bağlantı, bekleyen bildirim ve teslimat ayrımı test kodu eklendi. OpenAPI üretildi; test/typecheck/lint/build/browser çalıştırılmadı. Yeni migration yok.
 - Gerçek provider/STAGING/SIP girdileri, tam outbound gönderim ve reconciliation/campaign lifecycle ile kalan fazlar açık. Bu görünüm canlı entegrasyon kabulü değildir; goal aktif.
+
+### 2026-10-27 — Tek SIP çağrısı gönderim transportu
+
+- Internal createElevenLabsSubmitClient sabit resmi origin üzerinde tek POST yapar; strict agent/phone/E.164 girişi, redirect reddi,10sn timeout,2MiB bounded JSON ve retry olmaması korunur. Read adapter ile bounded response okuyucu ortaklaştırıldı.
+- Yalnız ağ öncesi config/input/abort hatası not_submitted olur. HTTP hata, success=false, bozuk/eksik referans, ağ kopması ve gönderim sonrası abort uncertain kalır; doküman bunların çağrı yaratmadığını garanti etmediği için rejected veya sıfır maliyet üretilmez. success+conversation referansı acknowledged döner; sağlayıcı kabul zamanı, insan yanıtı ve nihai maliyet uydurulmaz.
+- Kaynak: https://elevenlabs.io/docs/api-reference/sip-trunk/outbound-call/ . Ham message/özel hata gövdesi çıktıdan çıkarılır. SIP referansı conversation kimliğinden ayrı tutulur.
+- Transport henüz secret resolver/dispatcher/runtime endpointine bağlı değildir. Final yayın/time/budget/consent/hat yetkinlik kapıları ve kalıcı intent claim tamamlanmadan çağrı gönderimi açılmamalı. Correlation, provider kabul kanıtı, status/hangup ve gerçek staging kabulü açık.
+- Tek istek/no retry, yanlış giriş/eksik anahtar/erken iptal, HTTP negatifleri, eksik referans, bozuk/büyük yanıt ve gönderim sonrası iptal test kodu yazıldı; test/typecheck/lint/build çalıştırılmadı. Gerçek API isteği veya müşteri araması yapılmadı. Migration/client davranış değişikliği yok; goal aktif.
