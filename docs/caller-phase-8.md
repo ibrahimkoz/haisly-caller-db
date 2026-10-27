@@ -294,3 +294,11 @@
 - API/client durum sözleşmeleri genişletildi; kampanya listesi ve10 saniyelik operasyon görünümü gerçek durumu gösterir. İlerideki publish/resume hâlâ kapalıdır.
 - Yerel DB yedeklenip120 uygulandı. Erken pause DB reddi, tekil version/event, tekrar, pause/cancel farkı ve client durum gösterimi test kodu eklendi; OpenAPI üretildi. Test/typecheck/lint/build/schema-validator/rollback/browser çalıştırılmadı. Final izole DB'lere120 da uygulanmalı.
 - Yetkili public stop onayı, cancel hedef/callback terminali, resume, release ve sağlayıcı hangup ile diğer fazlar açık; goal aktif.
+
+### 2026-10-27 — Kampanya iptalinde hedeflerin kalıcı kapatılması
+
+- DB121 hedef held/canceled durumunu, DB-owned canceled_at ve stop-request FK provenansını ekler. İptal için aynı tenant/kampanyanın cancel isteği gerekir; iptal edilmiş hedefin state/snapshot/provenansı değiştirilemez. Cancel isteği olan kampanyaya yeni hedef INSERT reddedilir. Deneme sayaçları ve geç sağlayıcı kabul/bitiş işleme korunur.
+- Drain worker tenant kilidi altında kendi ortamında çağrı geçmişi bulunan cancel kampanyalarının en fazla250 held hedefini kapatır; pause hedefleri korunur. Hedef iptali aktif çağrıyı bitmiş saymaz, DNC veya başka kampanya uygunluğunu değiştirmez. has_more artık prepared işler veya iptal bekleyen hedefler içindir; hedef iptal metriği ayrı tutulur.
+- Hedef API/client durum ve UTC iptal zamanı gösterir; geçmiş/sayaçlar görünür kalır. Stop-request iç ID tenant cevabına eklenmez.
+- Yerel DB yedeklenip121 uygulandı, gerçek hedef iptal edilmedi. Fixture'a pause/cancel hedef farkı, zaman/provenans, sayaç koruma ve reopen DB reddi; clienta devam eden çağrı ayrımı test kodu eklendi. OpenAPI üretildi. Test/typecheck/lint/build/schema-validator/rollback/browser çalıştırılmadı; final test DB'lerine121 uygulanmalı.
+- Kampanya terminal cancel hâlâ açılmadı: geri arama iptali ve tam lifecycle/public onay akışıyla bağlanacak. Yayın, resume, gerçek sağlayıcı ve kalan fazlar açık; goal aktif.

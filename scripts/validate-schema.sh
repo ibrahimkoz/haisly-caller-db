@@ -1603,3 +1603,12 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='121_campaign_target_cancellation.sql') THEN
+  IF to_regclass('public.caller_campaign_target_pending_cancel') IS NULL
+   OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='caller_target_cancellation_guard' AND NOT tgisinternal AND tgenabled='O') THEN RAISE EXCEPTION 'Campaign target cancellation safeguards missing'; END IF;
+ END IF;
+END $$;
+SQL
