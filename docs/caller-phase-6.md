@@ -697,3 +697,12 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Writer'a açık inbox_only seçeneği eklendi; mevcut çağıranların varsayılan push davranışı korunur. Bu dilim dış push/e-posta/SMS göndermez. Eski push kanalının follow_up izin eşlemesi ve gönderim anı yetki kontrolü ayrıca ele alınmalıdır; yeni task bildirimleri bu kanala kuyruğa alınmaz.
 - Mevcut transaction fixture'a task yöneticisi alıcısı, link/projection, görevle birlikte rollback ve replay/correction sonrası tek bildirim kontrolleri eklendi. Testler çalıştırılmadı. Assigned-recipient, farklı tenant/inaktif üye/çok sayfa kapsamı ve browser gelen kutusu doğrulaması final kabulde açık.
 - DB migration veya client UI değişikliği yok; mevcut gelen kutusu ve follow_up linki kullanılır. Review onayı, görev yeniden atama deneyimi, düzeltme bildirimleri ve kanal gönderim güvenliği kalan işlerdir.
+
+
+### 2026-10-27 — Kampanya görevi manuel atama API temeli
+
+- Migration140 follow_up_tasks.version alanı ve her UPDATE'te DB tarafından artan sürüm ekler. Liste/detail DTO ve OpenAPI sürümü döndürür; client modeli güncellendi. Status, snooze ve survey correction gibi diğer yazımlar da sürümü artırır; atama eski ekran sürümüne karşı korunur. Eski status/snooze endpointleri henüz If-Match zorunlu kılmıyor.
+- POST /api/v1/follow-up-tasks/:public_id/assign caller.tasks.assign, Idempotency-Key, If-Match ve strict public assignee UUID gerektirir. Tenant kilidi + task row lock altında terminal görevler reddedilir; survey action ledger'ın orijinal takımında aktif/müsait üyelik ve assigned-task rol yetkisi kilitlenerek doğrulanır. Metadata üzerinden takım seçilmez. Bu dilim survey tasklarını kapsar; marketing/manual task atama bağlamları henüz yoktur.
+- Atama, yeni çalışanın inbox bildirimi, audit ve mutation receipt tek transaction'dadır. Aynı key replay ikinci bildirim oluşturmaz; aynı kullanıcıya yeni istek task sürümünü değiştirmez. Manuel atama round-robin cursorunu değiştirmez. 1 KiB request sınırı ve no-store uygulanır.
+- Yerel DB kimliği doğrulanıp yedek alındıktan sonra140 uygulandı; rollback ilerlemiş sürümleri silmeyi reddeder. OpenAPI yeniden üretildi. Strict assignment schema ve survey correction sürüm artışı test kodu eklendi; testler çalıştırılmadı.
+- Kalan: uygun çalışanları seçme endpointi/UI, pozitif HTTP atama/replay/stale/concurrency ve yetki izolasyonu testleri, görev oluşturma/status/snooze tam mutation sözleşmesi. Bu dilim uçtan uca atama deneyimi tamamlandı anlamına gelmez.
