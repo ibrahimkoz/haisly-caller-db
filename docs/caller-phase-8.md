@@ -195,3 +195,11 @@
 - Tarih hesabı ortak saf policy üzerinden temporal policy ve tenant scoped geçmiş görünümünde kullanılır. Geçmiş API/client tarih bekleme/eksik/geçersiz/bitmiş durumunu ve UTC başlangıcı gösterir. within_dates yalnız mutlak tarih aralığıdır; günlük saat/ülke kuralları veya yayın izni değildir.
 - Sınır milisaniyeleri, UTC offset, opsiyonel bitiş, eksik/geçersiz tarih unit kodu; rollback fixture ile missing/future/expired snapshot'ta rezervasyon+intent yokluğu integration kodu ve client izin/bitiş ayrımı test kodu yazıldı. OpenAPI üretildi. Test/typecheck/lint/build/browser çalıştırılmadı; migration yok.
 - Geçmiş başlangıç onayı, gerçek yayın sertifikası, günlük/ülke saatleri, unified history/capacity ve gönderim anında yeniden doğrulama hâlâ açık. Bu tarih kapısı expired hedef finalizasyonu veya scheduler tamamlanması anlamına gelmez. Gerçek sağlayıcı çağrısı yapılmadı; goal aktif.
+
+### 2026-10-27 — Alıcı saat dilimi doğrulaması
+
+- Günlük pencere entegrasyonunun önkoşulu olarak mevcut contact_timezone/verified_at alanlarına tenant scoped PATCH /caller-contacts/:public_id/timezone eklendi. contacts.manage, sürüm ve idempotency zorunlu; tenant advisory lock + kişi row lock altında kanıtlı IANA seçimi canonicalize edilir, doğrulama zamanı DB saatinden yazılır. Null seçim doğrulamayı temizler. Arşiv/çözülmemiş kimlik/owner_changed kaydında işlem reddedilir.
+- Mevcut updated contact event ve audit kayıtları before/after timezone+verified_at taşır; yeni migration yok. Kimlik değişimi mevcut mekanizmayla doğrulamayı zaten sıfırlar. Bu işlem consent/DNC/attempt sayaçlarını değiştirmez ve çağrı başlatmaz.
+- Kişi tercihlerinde doğrula/kaldır aksiyonları, IANA+kanıt girişi, inceleme/onay ve geçmişte yeni seçim görünümü eklendi. Mevcut stale/retry/version işleyişi kullanılır; telefon kodundan saat dilimi tahmini yapılmaz.
+- API auth/tenant izolasyonu/invalid timezone/kanıt/server timestamp/replay/stale/clear ve client form/request test kodu yazıldı. OpenAPI üretildi; test/typecheck/lint/build/browser çalıştırılmadı. Gerçek sağlayıcı isteği yok.
+- Günlük pencerelerin dispatcher'a bağlanması, ülke/tenant politikası ve unified history sonraki açık işlerdir. Bu dilim yalnız doğrulanmış alıcı saat dilimi verisinin kullanıcı tarafından yönetimini tamamlar; faz ve goal aktif.
