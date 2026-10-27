@@ -263,3 +263,12 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - FileReader/10 MiB kontrolü ortak readBase64File yardımcısına çıkarıldı. Kişi importu kendi CSV/XLS/XLSX allowlist'ini korur; DOCX kişi importuna açılmaz. Dosya tipi kontrolü knowledge UI'da açık CSV/XLSX/DOCX allowlist ile yapılır, içerik imzası/parse doğrulaması sunucuya aittir.
 - Client test kodu DOCX endpoint seçimi, diğer parser endpoint'lerinin çağrılmaması, aynı key/body retry ve row_count olmayan receipt'in metin boyutuyla sunulmasını kapsar. Kullanıcı talimatıyla test/typecheck/lint/build/browser çalıştırılmadı. Şema/yerel veri/dış servis çağrısı değişmedi.
 - PDF/HTTPS, pending router/reload recovery, retrieval/runtime release ve sonraki fazlar açık. Faz6/goal aktif.
+
+
+### 2026-10-27 — İzole PDF metin katmanı ayrıştırması
+
+- pdfjs-dist6.4.299 exact bağımlılığı --ignore-scripts ile eklendi. [Resmî PDF.js Node örneği](https://github.com/mozilla/pdf.js/blob/master/examples/node/getinfo.mjs) ve kurulu sürüm API tipleri incelendi. PDF data Uint8Array ile yüklenir; HTML/canvas rendering/OCR yok. Metin sayfa sırasıyla çıkarılır, ortak normalizasyonla10 MiB sınırına bağlanır. En fazla200 sayfa/200000 text item; her sayfada metin gereklidir (boş sayfalar da reddedilir). Bu v1 işleme sınırı UI/API açıklamasına taşınmalıdır.
+- Yalnız paket içindeki CMap/standard font dosyalarına sabit dizin + basename allowlist ile erişen BinaryDataFactory vardır; belge URL/path'i readFile/fetch'e aktarılmaz. Worker fetch/WASM/XFA/system fonts/image decode kapalıdır. JavaScript actions, attachments, form fields, textless pages ve parser hataları reddedilir; hatalarda belge ayrıntıları paylaşılmaz. Harici link annotation'ları çalıştırılmaz veya takip edilmez; link varlığı tek başına metin içeriğini değiştirmez.
+- parsePdfFile mevcut ortak parser süreci/pool'una bağlandı (2 process/256 MiB/15s). PDF modülü yalnız PDF isteğinde dynamic import edilir; diğer dosya türlerinde gereksiz yüklenmez. Production API henüz çağırmaz; ingest-pdf endpoint/UI sonraki dilimdir. Yeni şema/yerel veri/gerçek müşteri veya sağlayıcı çağrısı yok.
+- Minimal gerçek PDF fixture'ları text/empty/JavaScript ve doğrudan+isolated parser test kodu eklendi. Kullanıcının talimatıyla test/typecheck/lint/build/browser çalıştırılmadı. Önceki açık npm audit izniyle API production dependency audit çalıştı:0 vulnerability. Bu yalnız advisory veritabanı kapsamı, parser uyumluluk/güvenlik kabulü değildir.
+- PDF ingest/UI, HTTPS, pending recovery, runtime release/retrieval ve kalan fazlar açık. Faz6/goal aktif.
