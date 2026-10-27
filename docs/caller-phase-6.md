@@ -1199,3 +1199,12 @@ Call outcomes API now includes nullable initial_end from the tenant/call/runtime
 Outbound detail displays Initial closure record separately from Current outcomes. Missing closure is labelled, and later-attempt survey suppression is explained without presenting later survey data as an old call result. Added unrun bound-source assertions that current marketing version3/not_interested remains distinct from frozen version2/interested/no confirmation, and client cases for frozen view, absent record and superseded survey attribution. OpenAPI regenerated.
 
 Schema161 unchanged. Tests/typecheck/lint/build/browser remain deferred. This exposes initial closure provenance; it does not complete provider ingestion, quality evaluation, correction history or full F9/later-phase acceptance. Goal active; no live calls or deployment.
+
+
+### Quality rubric calculation foundation — 2026-10-28
+
+Added a pure internal quality calculator with the spec's 30/25/20/25 default weights, integer 0–100 dimension scores, strict total-100 weight validation and bounded UUID evidence references. Missing weighted evidence yields a null score rather than renormalizing available dimensions; coverage and missing dimensions are explicit. Zero-weight missing dimensions still require review. Critical do-not-call and tool-authorization checks are mandatory regardless of weights. Only verified-event violations appear in critical_violations; unknown checks and model-only claims require review. A high numerical score never clears a critical violation.
+
+This is calculation infrastructure only, not a public evidence-ingestion boundary: verified_event must be derived from authoritative tenant/call-bound records by the future orchestrator, never accepted from a model or client. No endpoint, campaign pause, persistence, rolling-window alert or user-visible quality result was enabled. Existing policy_evaluation_logs remain unchanged. Call outcomes still returns quality:null until a persisted verified evaluation exists. Schema remains161; DB/client runtime unchanged.
+
+Added unrun unit sources for weighted scores, missing evidence, zero-weight critical checks, model claims and invalid inputs. Tests/typecheck/lint/build/browser remain deferred by user instruction. Remaining F12-T04: evidence resolution/provenance, immutable evaluations and captured tenant weights, audited review/correction, verified-critical pause integration, last20 warning and UI. No live provider connection/deployment. Goal active.
