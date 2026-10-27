@@ -1440,3 +1440,12 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='105_index_ledger_source_lookup.sql')
+  AND to_regclass('public.billing_ledger_tenant_source_idx') IS NULL THEN
+  RAISE EXCEPTION 'Tenant ledger source lookup index missing';
+ END IF;
+END $$;
+SQL
