@@ -1337,3 +1337,12 @@ GET/POST /api/v1/quality-policy now read the baseline/current policy and append 
 Tenant account settings now includes an owner-only form with total percentage, integer/range/total validation and explicit new-snapshot-only wording. Query cache is scoped by tenant/actor, errors suppress cached settings, and role loss unmounts the form. Captured version and key/body are frozen after first send; explicit same-request retry survives uncertain responses while the editor remains mounted. Success refreshes campaign/policy and audit views. Refresh/reload discards the in-memory command; server If-Match and receipt checks prevent overwrites/duplicate accepted changes. Existing call assessments and snapshots remain unchanged.
 
 OpenAPI regenerated; added unrun header/body validation and client invalid-total/immutable-retry sources. Tests/typecheck/lint/build/browser remain deferred. Full HTTP owner revocation, receipt expiry/replay, transaction rollback and concurrent settings/snapshot acceptance remain for final verification. Snapshot detail presentation of captured policy, evaluator orchestration, semantic evidence, verified-critical enforcement and remaining phases remain open. Goal active; no production or live-call action.
+
+
+### Captured quality policy in campaign snapshot detail — 2026-10-28
+
+Existing authorized/repeatable-read campaign snapshot detail now explicitly projects captured policy public ID, version and weights through a tenant-safe policy join. Baseline snapshots report null public ID/version0. Comparison reads current policy in the same transaction and flags changed policy identity or weights; it never substitutes current settings for the captured values. Internal policy IDs remain omitted. API contract regenerated.
+
+Client snapshot detail displays the four captured weights, policy version/default baseline and immutable-snapshot semantics. A differing current policy prompts creation of a new snapshot; it suppresses the misleading no-differences message. Existing loading/access-error behavior still hides failed snapshot reads. Also supplied the missing survey-follow-up section label in this touched detail mapper.
+
+Added unrun snapshot projection assertions and UI coverage for real zero weights and policy drift. Schema167 unchanged. Tests/typecheck/lint/build/browser remain deferred; concurrent snapshot/policy integration and full acceptance remain final verification work. Evaluator orchestration, broader semantic evidence, verified-critical enforcement and other phase dependencies remain open. Goal active.
