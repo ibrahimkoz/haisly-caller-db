@@ -1318,3 +1318,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='095_create_campaign_snapshots.sql') THEN
+  IF to_regclass('public.caller_campaign_snapshots') IS NULL
+   OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='caller_campaign_snapshots_immutable' AND NOT tgisinternal AND tgenabled='O') THEN
+   RAISE EXCEPTION 'Campaign snapshot schema incomplete';
+  END IF;
+ END IF;
+END $$;
+SQL
