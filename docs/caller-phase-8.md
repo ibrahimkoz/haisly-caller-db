@@ -335,3 +335,13 @@
 - Public pause yayın yaşam döngüsü tamamlanana kadar kapalıdır. Gönderilmiş/belirsiz çağrı varken graceful_close gerçek sağlayıcı sonlandırma desteği bağlanana kadar reddedilir; finish açık çağrıların çözülmesini bekler. Bu dilimde provider isteği veya gerçek kampanya iptali yapılmadı.
 - Yetkisiz/başka tenant, yanlış onay/etki/sürüm, eşzamanlı replay, değişen body, tek audit, terminal düzenleme reddi ve yetki kaldırılınca replay reddi test kodu eklendi. Dispatch geçmişi olmayan hedefli kampanyanın drain/terminal fixture'ı eklendi. OpenAPI üretildi. Kullanıcı talimatıyla test/typecheck/lint/build/browser çalıştırılmadı; sonuçlar final doğrulamada kanıtlanmalı. DB migration yok.
 - Client onay ekranı, yayın/resume, gerçek graceful sonlandırma ve kalan fazlar açık; goal aktif. ElevenLabs/SIP/test hattı kullanıcı tarafından henüz hazır olmadığı doğrulandı; canlı bağlantısız geliştirmeye devam ediliyor.
+
+
+### 2026-10-27 — Client kampanya iptal inceleme ve onay akışı
+
+- Kampanya ekranı read+publish yetkisine sahip kullanıcılara ayrı iptal alanı gösterir. Güncel operasyon bilgisi sunucudan yeniden alınır; prepared/submitting/uncertain/accepted sayıları ve kampanya adı gösterilir. Gerekçe ve açık checkbox onayı zorunludur; onaylanan sürüm/sayılar API'ye gönderilir. Taslak düzenleme, kopyalama ve diğer yazılarla çakışma kilidi vardır.
+- İptal geri alınamaz bilgisi, hedef/geri arama etkisi ve mevcut görüşmelerin bitmesinin bekleneceği açıklanır. Gerçek graceful sonlandırma hazır olmadığı için client yalnız finish gönderir. Public pause bu dilimde açılmadı.
+- Ağ/5xx ve belirsiz sonuçta form/kapatma kilitlenir; retry aynı key/version/body kullanır. Kesin 4xx reddinde yeni etki incelemesi ve yeniden onay gerekir. 409 mesajı durum/sayı değişimini belirtir. İptali zaten kaydedilmiş kampanya için ikinci komut açılmaz. Başarı eski editörü kapatır, liste ve operasyon cache'ini yeniler; kapanışın tamamlandığını iddia etmez.
+- Sayfa açıkken belirsiz isteğin replay bilgisi bellekte korunur. Yenileme/sekme kapatma koruması editörün mevcut unsaved guard'ına bağlıdır; tam reload sonrası makbuzla devam altyapısı hâlâ genel recovery işidir. Yeniden açmada güncel stop kaydı incelenir, yeni iptal körlemesine gönderilmez.
+- Onay zorunluluğu, ayrı sayaçlar/sürüm, aynı içerikle belirsiz retry, conflict sonrası yeniden inceleme, zaten iptal ve kirli taslak engeli component test kodları eklendi. Kullanıcı talimatıyla test/typecheck/lint/build/browser çalıştırılmadı. UI görsel/klavye ve API contract kabulü final doğrulamada yapılmalı. DB/API davranış değişikliği yok; repo notları eşitlendi.
+- Yayın/resume, gerçek sağlayıcı sonlandırma, callback yaşam döngüsü ve kalan fazlar açık; goal aktif.
