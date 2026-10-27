@@ -777,3 +777,12 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Client merkezi API key/version gönderir; form ilk gönderimde payload/sürüm/key dondurur. Belirsiz sonuçta kontroller ve drawer değişimi kilitlenir, aynı istek için ayrı retry butonu ve kalıcı hata metni gösterilir. Background task refetch pending formu sıfırlamaz. Kesin hata sonrası güncel detay alınır.
 - Assigned-task HTTP testine completion replay zamanı/sürümü, stale version ve same-key/different-payload409 eklendi. Eski resource testleri header sözleşmesine, client fixture'ları version alanına uyarlandı. Testler çalıştırılmadı; OpenAPI yeniden üretildi.
 - Yeni DB migration yok (140 version trigger kullanılır). Eski entegrasyonlar artık header göndermeden state değiştiremez; API/client birlikte dağıtım gerektirir. Bu state formunun reload recovery'si henüz atama/review formundaki kalıcılığa taşınmadı; uçtan uca retry/assignment-revocation testleri ve manual create mutation korumaları açık.
+
+
+### 2026-10-27 — Manuel görev oluşturmanın transaction sınırı
+
+- Manuel görev oluşturma ayrı task-create servisine taşındı. Tenant identity advisory lock, yetki kontrolü, kaynak çözümleme/kilitleri, insert, minimal audit ve response projection aynı transaction içinde. Kaynak veya audit başarısızlığında görev commit edilmez.
+- Sorumlu artık users.tenant_id üzerinden değil aktif tenant_memberships üzerinden doğrulanır; aktif/silinmemiş kullanıcı ve üyelik FOR SHARE ile korunur. Owner veya caller.tasks.assigned izin tanığı commit'e kadar kilitlenir. Ekip allocator ve manuel atamanın ortak izin sorgusu ayrıca revoked_at IS NULL ister.
+- Doğrudan kişi bağlantısı arşivli kişiyi reddeder. Call/case/lead referansları tenant kapsamında kilitlenir; mevcut DB identity guard'ları ilişki tutarlılığı ve kişi revision yakalamasını sürdürür. Audit görev UUID, pending durumu ve assigned boolean tutar; başlık/açıklama/kişi içeriği kopyalamaz.
+- Mevcut assigned-task HTTP fixture'ına manuel create/audit, silinmiş üyelik reddi ve geçersiz lead bağlantısında görev oluşmaması senaryoları eklendi. Yalnız kaynak/diff incelemesi ve formatter kullanıldı; kullanıcı talimatıyla test/typecheck/lint/build çalıştırılmadı.
+- DB migration veya client sözleşme değişikliği yok. Manuel create idempotency, client belirsiz sonuç recovery, farklı bağlantılarla yarış testleri ve genel final doğrulama hâlâ açık; bu dilim mükerrer oluşturma koruması sağlamaz. Faz9/goal tamamlanmış sayılmadı.
