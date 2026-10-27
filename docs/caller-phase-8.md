@@ -18,3 +18,12 @@
 - Internal transition primitive provider evidence ref, optimistic version, aynı sonuç replay, geri durum ve çelişkili provider ref/zaman reddi ekler. HTTP/worker'a açılmadı; gerçek provider kanıtı doğrulaması bu fonksiyona bağlı değildir.
 - Yerel DB özel dump sonrasında109 uygulandı; production etkisi/çağrı yok. Schema ve transition payload senaryoları yazıldı, kullanıcı talimatıyla çalıştırılmadı.
 - Hâlâ açık: atomic claim+reserve+intent oluşturma, kabulün calls/session kaydına bağlanması, terminal durum ve maliyet/release birlikte işlenmesi, tam provider webhook kanıtı, rejected teknik retry, inbound kilidi, geçmiş sorgusu/policy bağlama ve PostgreSQL eşzamanlılık/rollback/sayaç entegrasyon senaryoları. API hazır gönderim yapamaz; Faz8/goal tamamlanmadı.
+
+### 2026-10-27 — Atomik maliyet rezervi + gönderim hazırlığı
+
+- Internal `prepareProductionIntent` eklendi. Caller-contact advisory → billing account → campaign/target kilit sırası; seçili snapshot ve güncel kişi kimliği, DNC/izin/numara durumu, açık tenant+numara niyeti, snapshot arayan numarası ve tenant provider kaydı kontrol edilir.
+- Production rezervi ve intent aynı transaction'da oluşturulur; sonradan hata/rollback ikisini geri alır. Aynı key/hash mevcut intent'i güncel durumuyla döndürür; değişen payload409. Replay yeni provider gönderimi yetkisi değildir. Bütçe blocked sonucunun pause/bildirimlerinin korunması için caller transaction'ı commit etmelidir.
+- Durum geçişleri aynı tenant/account kilit sırasına alındı. Bu dilim yeni DB migration gerektirmedi;109 kullanılır.
+- PostgreSQL test helper gerçek izole tenant/contact/list/campaign/snapshot/provider fixture'ları, bakiye/bütçe ve tarifeyle hazırlık rollback, paralel aynı-key replay, farklı-key açık numara engeli, rezervi erken bırakma reddi, uncertain→kör retry reddi, paralel acceptance tek sayım, terminal geç olay reddi ve sıfır-maliyet final/replay senaryolarını içerir. Billing integration testine bağlandı; kullanıcı talimatıyla çalıştırılmadı.
+- Hazırlık fonksiyonu HTTP veya worker'a açılmadı; `dispatch_authorized:false`. Final release/test/numara sahipliği/ülke-zaman policy ve kota gate'leri hazırlık çağrısından önce transaction içinde bağlanmalı. Telefon-provider kod eşleşmesi gerçek sahiplik/account bağlantısı kanıtı değildir. Provider ağ çağrısı yoktur.
+- Sırada güvenilir call-history sorgusu ve policy/kota/store bağlantısı, calls/session kaydı, gönderim öncesi son kontrol, provider adapter/reconciliation ve açık diğer fazlar var. F08 ve goal aktif; doğrulama tamamlandı iddiası yok.
