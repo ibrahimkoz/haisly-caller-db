@@ -180,3 +180,11 @@
 - Kaynak: https://elevenlabs.io/docs/api-reference/sip-trunk/outbound-call/ . Ham message/özel hata gövdesi çıktıdan çıkarılır. SIP referansı conversation kimliğinden ayrı tutulur.
 - Transport henüz secret resolver/dispatcher/runtime endpointine bağlı değildir. Final yayın/time/budget/consent/hat yetkinlik kapıları ve kalıcı intent claim tamamlanmadan çağrı gönderimi açılmamalı. Correlation, provider kabul kanıtı, status/hangup ve gerçek staging kabulü açık.
 - Tek istek/no retry, yanlış giriş/eksik anahtar/erken iptal, HTTP negatifleri, eksik referans, bozuk/büyük yanıt ve gönderim sonrası iptal test kodu yazıldı; test/typecheck/lint/build çalıştırılmadı. Gerçek API isteği veya müşteri araması yapılmadı. Migration/client davranış değişikliği yok; goal aktif.
+
+### 2026-10-27 — Hedef toplam deneme limiti ve görünümü
+
+- Hazırlık transaction'ı hedef kilidi altında immutable snapshot max_attempts ile platform üst sınırının küçüğünü kontrol eder. İlk provider kabulü dahil accepted attempt_count limite ulaştığında attempt_limit_reached döner; yeni intent veya maliyet rezervasyonu açılmaz. Aynı request-key replay mevcut kaydı döndürmeye devam eder, yeni gönderim yetkisi vermez.
+- Saf temporal policy ve hazırlık/read katmanı ortak attempt-limit hesabını kullanır. Mevcut ürün üst sınırı5; bozuk sayım/ayar kabul edilmez, geçmiş sayım limitin üzerindeyse kalan0 olur. Teknik ret sayacı toplam kabul edilmiş arama sayacından ayrı kalır.
+- Tenant kapsamlı hedef geçmişi hedefin kendi snapshot limitini, kalan hak ve limite ulaşılma durumunu döndürür. UI Türkçe/İngilizce gösterir ve kalan hakkın anında arama izni olmadığını belirtir. Taslak değişikliği geçmiş hedef snapshot limitini değiştirmez.
+- Unit sınır/ilk kabul/platform minimum/geçersiz giriş; integration exhausted target'ın rezervasyon/intent yaratmaması ve read sözleşmesi; client limit/izin ayrımı test kodu eklendi. OpenAPI üretildi. Test/typecheck/lint/build/browser çalıştırılmadı; yeni DB migration yok.
+- Bu kontrol tam dispatcher değildir: yayın/test sertifikası, unified history/country/time/capacity ve gönderim anı son kontrolü hâlâ gerekir. Gerçek sağlayıcı çağrısı yapılmadı; kalan fazlar ve goal aktif.
