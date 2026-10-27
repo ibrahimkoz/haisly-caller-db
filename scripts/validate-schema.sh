@@ -1403,3 +1403,15 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='102_add_billing_budget_events.sql') THEN
+  IF to_regclass('public.billing_budget_events') IS NULL
+   OR NOT EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='billing_budget_limits' AND column_name='limit_revision')
+   OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='billing_budget_event_guard' AND NOT tgisinternal AND tgenabled='O') THEN
+   RAISE EXCEPTION 'Billing budget events schema incomplete';
+  END IF;
+ END IF;
+END $$;
+SQL
