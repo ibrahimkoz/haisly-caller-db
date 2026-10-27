@@ -357,3 +357,11 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 -10MiB sınırı chunk eklenmeden uygulanır; content type/encoding/status/header-limit davranışı korunur. Redirect response body tüketilmeden kapatılır. Geç gelen stream error eventleri için sanitized listener korunur. Yeni bağımlılık veya public kontrat değişimi yok.
 - PassThrough fixture kullanan test kodu parçalı başarılı yanıt, premature close, declared-length mismatch, incomplete message, streamed/declared overflow, compressed/non-page/error status, redirect no-body ve aborted/late error durumlarını production reader üzerinden kapsar. Network açmaz; TLS/DNS/redirect orchestrator acceptance kanıtı değildir. Kullanıcı talimatıyla test/typecheck/lint/build çalıştırılmadı.
 - HTTPS gerçek transport kabul doğrulamaları ve final testler hâlâ açık. Faz6 retrieval/runtime release ve kalan fazlar aktif; goal tamamlanmadı.
+
+
+### 2026-10-27 — Runtime araç isteklerinde payload uyuşmazlığı
+
+- F06 runtime incelemesinde mevcut request_ref replay yolunun farklı input/binding ile aynı anahtarı eski işlem gibi döndürdüğü bulundu. Yeni araçlar bağlanmadan önce bu temel düzeltildi: duplicate lookup tenant+call session+request_ref scope'unu korur; orijinal run binding/definition/version/environment ve canonical input+request metadata eşitliği zorunludur. Farklı payload/binding veya eksik run409 döner; private payload hata mesajına yazılmaz.
+- Completion call_tool_executions.metadata'yı result metadata ile güncellediği için replay karşılaştırması original tool_execution_runs.metadata üzerinden yapılır. Başarılı aynı-request replay mevcut public receipt/status mapper'ını korur; internal ID veya input response'a eklenmez. Yeni şema/network/provider işlemi yok.
+- Mevcut runtime integration testine changed input/metadata409 ve completion metadata değiştikten sonra aynı request replay başarı senaryoları eklendi. OpenAPI409 ve replay sözleşmesi güncellendi/üretildi. Kullanıcı talimatıyla test/typecheck/lint/build çalıştırılmadı.
+- Bu düzeltme araç execution/confirmation/release altyapısını tamamlamaz. Terminal result transition/replay koruması, yeni tool JSON contracts/teyit tokenı, runtime snapshot/release bağlantısı, bilgi kaynaklı cevap kanıtı ve kalan fazlar halen açık. Faz6/goal aktif.
