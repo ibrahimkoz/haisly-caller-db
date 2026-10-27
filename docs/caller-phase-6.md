@@ -740,3 +740,12 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - GET /api/v1/survey-actions/:public_id/review tenant identity kilidi altında güncel outbox evidence ve frozen snapshot kuralını yeniden değerlendirir. Soru/ölçek/skor/eşik/cevap sequence, snapshot UUID, kampanya adı, ekip ve iş günü hedefi döner. Diğer cevaplar, kişi adı/telefonu/transcript dönmez. Eski veya işlenmiş inceleme404, tutarsız kanıt409 olur; POST karar sırasında uygunluk tekrar doğrulanır.
 - Her iki route success/error no-store kullanır. OpenAPI list/detail sözleşmeleri eklendi ve üretildi. Strict pagination, owner empty queue/no-store ve assigned-only/unauthenticated erişim reddi test kodu eklendi; çalıştırılmadı.
 - DB değişikliği yok. Pozitif kanıt projection/tenant/identity düzeltme, pagination ve review race HTTP testleri ile UI onay kuyruğu sonraki işlerdir. Liste canlı görünüm; sayfalama arası kayıt değişimleri snapshot garantisi taşımaz.
+
+
+### 2026-10-27 — Aksiyon inceleme kuyruğu arayüzü
+
+- /app/survey-reviews route, menü ve sayfa başlığı caller.tasks.assign yetkisiyle eklendi. Tenant/actor değişiminde sayfa state'i sıfırlanır. Cursor sayfalı kuyrukta yükleme, boş sayfa, hata ve yenileme; seçili aksiyonda kanıt yükleme/retry bulunur. Merkezi RTK Query list/detail/decision endpointleri kullanılır.
+- Kanıt paneli kampanya/soru, ölçek/skor/eşik, ekip, iş günü hedefi ve cevap sürümü/sırasını gösterir. Form ilk görüntülenen kanıtı sabit tutar; background refetch pending isteğin sürümünü değiştirmez. 10–500 karakter gerekçe ve açık etki teyidi zorunludur. Onay görev oluşturma etkisini, ret aynı sürüm için kesinlik etkisini açıklar. Arşivli ekip onayı kapalı, ret açıktır.
+- Karar isteği key/version/decision/reason ile sabitlenir; belirsiz sonuçta aynı payload tekrar gönderilir, alanlar ve kuyruk seçimi kilitlenir. Kesin hatada form eski kanıtla yeniden gönderilemez; kapatıp güncel incelemeyi açma mesajı verilir. Başarıda kuyruk yenilenir; oluşan göreve link gösterilir.
+- Form/schema testleri açık teyit, reason sınırı, archived-team onay reddi ve aynı-key retry için yazıldı. Test/browser/typecheck/build çalıştırılmadı. Responsive/accessibility kabulü ve olumlu HTTP uçtan uca senaryo final doğrulamada açık.
+- Bu formun belirsiz karar state'i henüz sayfa yenilemesi/başka route sonrası kalıcı değil; atama formundaki recovery yaklaşımının reason içeren review isteğine uygulanması sonraki iş. DB/API kontratı bu dilimde değişmedi.
