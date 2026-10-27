@@ -1307,3 +1307,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='094_create_campaign_survey_questions.sql') THEN
+  IF to_regclass('public.caller_survey_questions') IS NULL
+   OR NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conname='caller_survey_question_position' AND condeferrable AND condeferred) THEN
+   RAISE EXCEPTION 'Campaign survey definition schema incomplete';
+  END IF;
+ END IF;
+END $$;
+SQL
