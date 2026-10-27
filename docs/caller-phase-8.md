@@ -89,3 +89,10 @@
 - Terminal olayın maliyeti yoksa held rezerv uncertain olur ve tutar korunur. Aynı event daha sonra final cost ile replay edilebilir; receipt tekrar oluşmaz, finansal sonuç bir kez kapanır. Sonraki eksik maliyetli bildirim settled rezervi açmaz. Değişmiş nihai maliyet mevcut audited adjustment akışını gerektirir.
 - Entegrasyon koduna bilinmeyen ret maliyeti, geç gelen doğrulanmış sıfır maliyet, olay replay'inden bağımsız maliyet tamamlanması, maliyet hatasında event/history rollback, tekrar settlement ve aktif olayla maliyet kapatma reddi eklendi. Testler kullanıcı talimatıyla çalıştırılmadı.
 - Mevcut worker yalnız lease-fenced API adımları çalıştırıyor. Güvenilir provider status/cost adapterı ve lease-fenced reconciliation endpoint/handler henüz yok; sahte sonuçla job başarıya çekilmedi. Kalıcı kuyruk/crash recovery bağlantısı, tam dispatch ve diğer fazlar açık. Yeni migration/client sözleşmesi yok; goal aktif.
+
+### 2026-10-27 — Gönderim geçmişinde ayrı maliyet durumu
+
+- Target dispatch history, aynı tenant/rezerv ilişkisi üzerinden `cost_state` (held/uncertain/settled/released) döndürür. Çağrı terminal durumu ile maliyetin kesinleşmesi ayrıdır. Mevcut yetkiler, repeatable-read, no-store ve cursor kapsamı korunur; parasal tutar, rezerv ID veya özel kanıt eklenmedi.
+- Client gönderim kartında ayrılmış tutar, maliyet mutabakatı bekleme, nihai kullanım kaydı ve gönderim öncesi iptal sonrası release için ayrı açıklamalar gösterir. Settled, ödeme tahsil edildi veya pozitif ücret oluştu anlamında etiketlenmez; doğrulanmış sıfır kullanım da bu durumdadır.
+- OpenAPI üretildi. API integration'a uncertain terminal görünümü, settled/released ve parasal alanların yokluğu; client'a maliyet durum açıklamaları senaryoları eklendi. Test/typecheck/lint/build/browser kullanıcı talimatıyla çalıştırılmadı.
+- Migration gerekmedi. Dağıtımda cost_state sağlayan API client'tan önce yayınlanmalıdır. Gerçek reconciliation worker, sağlayıcı doğrulaması ve kalan fazlar açık; bu görünüm tamamlanmış gerçek çağrı kabulü değildir. Goal aktif.
