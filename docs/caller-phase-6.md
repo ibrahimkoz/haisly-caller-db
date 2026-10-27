@@ -706,3 +706,11 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Atama, yeni çalışanın inbox bildirimi, audit ve mutation receipt tek transaction'dadır. Aynı key replay ikinci bildirim oluşturmaz; aynı kullanıcıya yeni istek task sürümünü değiştirmez. Manuel atama round-robin cursorunu değiştirmez. 1 KiB request sınırı ve no-store uygulanır.
 - Yerel DB kimliği doğrulanıp yedek alındıktan sonra140 uygulandı; rollback ilerlemiş sürümleri silmeyi reddeder. OpenAPI yeniden üretildi. Strict assignment schema ve survey correction sürüm artışı test kodu eklendi; testler çalıştırılmadı.
 - Kalan: uygun çalışanları seçme endpointi/UI, pozitif HTTP atama/replay/stale/concurrency ve yetki izolasyonu testleri, görev oluşturma/status/snooze tam mutation sözleşmesi. Bu dilim uçtan uca atama deneyimi tamamlandı anlamına gelmez.
+
+
+### 2026-10-27 — Görev detayından uygun çalışana atama
+
+- GET /api/v1/follow-up-tasks/:public_id/assignees caller.tasks.assign yetkisiyle yalnız görev aksiyonunun takımındaki aktif/müsait/assigned-task yetkili çalışanları listeler. Sadece UUID/ad döner; cursor sayfalama (varsayılan50/max100), görev sürümü ve assignable alanı vardır. Terminal/henüz desteklenmeyen legacy görevler assignable=false döndürür. Liste canlıdır; POST atama uygunluğu yeniden kilit altında doğrular.
+- Görev detayına yöneticiye özel atama formu bağlandı. Merkezi RTK API, mevcut form/button stilleri, TR/EN, yükleme/boş/hata/başarı, sayfalama ve yenileme kullanılır. İstek sürümü/key/assignee ilk gönderimde dondurulur; belirsiz sonuçta aynı payload yeniden gönderilir ve form seçimi kilitlenir. Kesin409 vb. hata listeyi yeniler.
+- Görev drawer'ının kapatma ve başka görev açma işlemleri pending/uncertain süresince engellenir. Tam sayfa yenileme/sidebar navigasyonu sonrası pending request kalıcılığı henüz sağlanmadı; kullanıcıya formu açık tutması söylenir. Bu sınır final UX kabulünde açık kalır.
+- Client testleri aynı-key retry/donmuş sürüm ve definitive-conflict refresh için yazıldı. HTTP fixture'a assigned-only kullanıcının seçenek okumasının reddi ve unauthenticated kontrolü eklendi. Çalıştırılmadı; pozitif görev/ekip HTTP testi, pagination/race ve browser/accessibility final doğrulaması açık. OpenAPI üretildi. DB şema değişmedi.
