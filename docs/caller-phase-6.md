@@ -688,3 +688,12 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Kampanya takip kuralı editörü yeni uç noktayı kullanır. Ekip/üye yönetimi uç noktaları users.manage gerektirmeye devam eder. Seçim anından sonra arşivlenen ekip, mevcut campaign save doğrulamasıyla reddedilir. Ekip bulunamayan sayfa için boş durum mesajı eklendi; mevcut kurallar korunur.
 - HTTP testine minimal projection, yetkisiz erişim, başka tenant, arşivli ekip, limit sınırı, yalnız campaign-edit rolüyle seçenek okuma/üye yönetiminin reddi ve yetki kaldırma senaryoları eklendi. Client dar ekip projection gösterimi testi eklendi. Test/typecheck/build çalıştırılmadı; final toplu doğrulama bekleniyor.
 - DB şema değişikliği yok. Önceki notlarda açık kalan kampanya editörü ekip seçimi yetki bağımlılığı kaynak kod düzeyinde kapatıldı; canlı bağlantı ve tüm faz kabulü tamamlandı sayılmadı.
+
+
+### 2026-10-27 — Otomatik anket görevlerinin uygulama içi bildirimi
+
+- Yeni survey task oluşturma dalı mevcut NotificationInboxWriter üzerinden follow_up bildirimi yazar. Görev atandıysa ilgili aktif kullanıcıya; ekip kuyruğuna düştüyse aktif tenant üyeliği olan owner veya caller.tasks.assign yetkili yöneticilere gider. Rol adı üzerinden admin varsayımı yapılmaz. Alıcılar 500'lük cursor sayfalarıyla okunur.
+- Görev, aksiyon bağlantısı, bildirim ve audit aynı transaction'dadır; görev replay'i yeni bildirim üretmez. Audit inbox_notification_count içerir; sıfır alıcı gözlenebilir. Müşteri adı/telefonu, cevap veya skor bildirimde yoktur; yalnız görev public ID ve görev ekranı bağlantısı bulunur. Dil alıcının locale'ine göre TR/EN seçilir.
+- Writer'a açık inbox_only seçeneği eklendi; mevcut çağıranların varsayılan push davranışı korunur. Bu dilim dış push/e-posta/SMS göndermez. Eski push kanalının follow_up izin eşlemesi ve gönderim anı yetki kontrolü ayrıca ele alınmalıdır; yeni task bildirimleri bu kanala kuyruğa alınmaz.
+- Mevcut transaction fixture'a task yöneticisi alıcısı, link/projection, görevle birlikte rollback ve replay/correction sonrası tek bildirim kontrolleri eklendi. Testler çalıştırılmadı. Assigned-recipient, farklı tenant/inaktif üye/çok sayfa kapsamı ve browser gelen kutusu doğrulaması final kabulde açık.
+- DB migration veya client UI değişikliği yok; mevcut gelen kutusu ve follow_up linki kullanılır. Review onayı, görev yeniden atama deneyimi, düzeltme bildirimleri ve kanal gönderim güvenliği kalan işlerdir.
