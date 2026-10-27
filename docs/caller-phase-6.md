@@ -605,3 +605,10 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - OpenAPI üretildi. Şema sınırları ve mass-assignment reddi için test kodu eklendi; kullanıcı talimatıyla hiçbir test/typecheck/lint/build çalıştırılmadı. HTTP yetki/tenant ayrımı, replay/version yarışları ve arşivleme entegrasyon doğrulamaları hâlâ açık; mevcut unit testleri bunların kanıtı değildir.
 - Yeni DB migration/dependency yok. Üye yönetimi, görev rol uygunluğu, client ekranı, kampanya yayın kuralları, görev oluşturma ve boş ekip bildirimi henüz açık. Tenant/public_id sayfalama sorgusu için final EXPLAIN/index değerlendirmesi yapılacak.
 - ElevenLabs/SIP/test hattı henüz hazır değil; kullanıcının açık yanıtıyla canlı bağlantı olmadan geliştirme sürdürülüyor. Gerçek sağlayıcı kabulü tamamlanmış sayılmaz.
+
+### 2026-10-27 — Ekip üyelik API ve HTTP regresyon senaryoları
+
+- Ekip üyeleri cursor ile listelenebilir; PUT mevcut tenantın aktif kullanıcısını ekler/geri alır/müsaitliğini değiştirir, DELETE üyeliği geçmişi koruyarak kaldırır. Tüm işlemler `users.manage` ister; mutasyonlar ekip If-Match sürümü, actor-scoped idempotency, audit ve tenant kilidiyle korunur.
+- Üye çıkarma arşivli ekipte ve pasif kullanıcıda da yapılabilir. Geri ekleme aynı üyelik ID'sini korur, atama sırasını sıfırlamaz. Mevcut görevler yeniden atanmaz. Listede aktif tenant kullanıcısı bilgisi görev rol uygunluğu anlamına gelmez; bu kontrol hâlâ görev atama entegrasyonunda tamamlanacak.
+- OpenAPI güncellendi/üretildi; üyelik alanlarının strict validation testleri ve HTTP oluşturma/eşzamanlı replay/stale sürüm/tenant ayrımı/arşivleme/çıkarma/geri alma entegrasyon senaryosu yazıldı. Testler çalıştırılmadı; test DB 136 dahil migrasyonlarla finalde hazırlanmalı. HTTP rol reddi ve inactive-user senaryoları ayrıca genişletilecek.
+- Client ekip ekranı, rol uygunluğu, kampanya kuralları, task reservation ve bildirimler açık. Yeni migration veya paket yok.
