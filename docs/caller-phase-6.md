@@ -1478,3 +1478,12 @@ Client campaign operations now exposes the versioned review command for dead-let
 Successful writes invalidate Campaign/AuditLog; failures retain the frozen command and do not silently refresh it away. Errors offer same-command retry or refreshing current state. Tenant/actor-scoped panel remount and job/attempt/review-version editor keys prevent reuse across identities or changed records. In-memory command persistence ends on unmount/reload; server optimistic checks remain authoritative. Added unrun UI tests for eligibility, required reason, immutable retry payload, double-submit prevention, initial version0 and escaped review reason. Runbook updated to reflect implemented commands and remaining prepared-result reconciliation.
 
 No API/schema migration or provider call in this slice. Tests/typecheck/lint/build/browser remain deferred. Full review history browsing, signed mutation concurrency/revocation/idempotency acceptance, provider usage receipts/ambiguous result reconciliation, retention and remaining phases remain open. Goal active.
+
+
+### Quality job decision history — 2026-10-28
+
+Added GET /api/v1/quality-jobs/:public_id/reviews requiring campaign read and active tenant owner on every request. Repeatable-read pagination is scoped to tenant and exact quality job/type, ordered by immutable review version descending, default25/max100. A cursor from another job is rejected. History remains available after a job leaves dead_letter; response projects only public review IDs, versions, attempt numbers, decisions, reasons and dates. No-store applies on success/error. Existing immutable review indexes/records are reused; no migration.
+
+The campaign quality panel now has an on-demand decision-history section per job, tenant/actor-partitioned cache, previous/older/latest pages and explicit refresh. Loading/empty/error states are present and errors suppress cached reasons. Review text is escaped. Successful review commands already invalidate Campaign data, refreshing open history. Added unrun UI tests for lazy identity-scoped reads, pagination/refresh, access-error data hiding, escaped reasons and empty state; OpenAPI regenerated and worker runbook updated.
+
+Tests/typecheck/lint/build/browser remain deferred. Signed owner-revocation/cross-tenant/cross-job-cursor/concurrent-append acceptance and query-plan verification still need final batch coverage. Provider request/usage receipts, prepared ambiguous-result reconciliation, retention and remaining phases stay open. No provider/production call or worker activation; goal active.
