@@ -179,3 +179,14 @@ Yalnız seçilmiş yeni hedefler ve onların mevcut kaynak ilişkileri aynı tra
 Test koduna açık seçim sınırları, eksik izin reddi, izin güncellemesi sonrasında eski versiyonun reddi, transaction abort'ta hedef sayısının korunması, geçerli seçimle tek ekleme, aynı kişinin tekrar reddi ve başka/bilinmeyen kişinin bulunamaması eklendi. Initial capture testleri ortak context'i de kapsar. Kullanıcı talimatıyla test/typecheck/lint/build/browser paketleri çalıştırılmadı; bu dilim doğrulanmış kabul sayılmaz.
 
 DB096 yeterli; yeni migration, yerel DB yazımı, gerçek hedef oluşturma veya üretim müdahalesi yapılmadı. Client/DB repolarında yalnız ilerleme notları güncellendi. F04-T03 açık kalır: yayınlanabilir release ve komut/audit/idempotency katmanı, kullanıcı seçim/onay ekranı ve nihai yarış/performans kabulü tamamlanmalıdır. Goal aktif kalır; sonraki fazlar kapsamdan çıkarılmadı.
+
+
+## 2026-10-27 — Saklanan sürümden bağımsız kampanya kopyalama (F04-T06, kısmi)
+
+POST /campaigns/:public_id/snapshots/:snapshot_public_id/clone aynı tenant içindeki değişmez konfigürasyon kopyasından yeni draft oluşturur. Kampanya read+edit yetkileri, ortak transaction/audit/idempotency katmanı kullanılır. Kaynak UUID ve kopyalama tercihleri receipt hash'ine dahildir; aynı istek tekrarında aynı kampanya döner, değişen tercih409 üretir. Audit yeni kampanyayı ve kaynak kampanya/snapshot kimliklerini içerir, içerik veya özel agent verisi içermez.
+
+Kampanya içeriği, tipi, arama penceresi/limitleri ve anket tanımı korunur; soru sunucu UUID'leri yeniden oluşturulur. Başlangıç/bitiş tarihleri her durumda temizlenir. Agent referansı ve liste bağlantıları varsayılan olarak taşınmaz; açık seçim halinde güncel aktif/yayınlı agent ve arşivsiz tenant listeleri yeniden denetlenir. Liste taşıma liste yönetim yetkisine bağlıdır. Hedefler, deneme/cevap geçmişi ve yayın/test onayı kopyalanmaz.
+
+Client saklanan sürüm detayından yeni ad ve opt-in seçenekleriyle taslak oluşturur. Kaydedilmemiş değişiklik varken kopyalama kapalıdır. Belirsiz ağ sonucunda form kilitlenir ve aynı anahtar/gövdeyle tekrar denenir; üst editör de yazma ve gezinme korumasına alınır. Başarılı kopya yeni kampanya editöründe açılır. OpenAPI güncellendi ve üretildi.
+
+Integration test kodu yeni kampanya/soru kimlikleri, tarih sıfırlama, kaynak snapshot içeriğinin korunması, aynı anahtarın tekrarı, değişen tercihin çatışması, başka tenant erişiminin reddi ve hedef aktarılmamasını kapsar. Kullanıcı talimatıyla test/typecheck/lint/build/browser paketleri çalıştırılmadı. Client ağ/hata durumlarının final browser kabulü hâlâ gereklidir. Yeni migration veya yerel/üretim DB yazımı yoktur; DB reposu yalnız bu ilerleme notunu içerir. F04-T06 tamamlandı sayılmadı: release bağlama, başlamamış hedeflerin sürüm değişimi ve yayın/test kapıları sonraki işlerdir. Goal Faz13 ve final doğrulamalar dahil aktif kalır.
