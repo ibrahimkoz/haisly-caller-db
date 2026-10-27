@@ -597,3 +597,11 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Primitive internaldır: çağıran önce tekil aksiyon kaydını ayırmalı, cursor ve task aynı transactionda commit olmalı; replay cursor ilerletmemelidir. Ekip API/UI, üyelik/rol yetkileri, campaign rule binding, atama audit/notification ve boş ekip yönetici bildirimi henüz bağlanmadı. DB aktif üyelik kontrolü tek başına task yetkisi veya kampanya yayın izni değildir.
 - İzole integration test kodu üç üyede round-robin/wrap, cursor rollback, müsaitlik/tenant membership/user durumu, boş kuyruk, tenant dışı erişim, archived ekip ve disabled üyeyi tekrar etkinleştirme reddi için eklendi. Test/typecheck/lint/build/rollback kullanıcı talimatıyla çalıştırılmadı; paralel task atama kabulü halen açık.
 - Migration136 loopback haisly_caller kimliği kontrol edilip pg_dump yedeği alındıktan sonra transaction içinde uygulandı; test DB'lerine uygulanmadı. Dolu ekiplerde rollback reddedilir. Rollout DB136→API; üretim etkisi yok. Faz4/Faz9 ve goal aktif.
+
+### 2026-10-27 — Tenant ekip yönetimi API ilk dilimi
+
+- `GET/POST /api/v1/caller-teams` ve `GET/PATCH /api/v1/caller-teams/:public_id` eklendi. Mevcut `users.manage` yetkisi, sunucudan tenant kapsamı, public UUID ve en fazla 100 kayıtlık cursor sayfalama kullanılır.
+- Oluşturma/ad değiştirme/arşivleme/geri açma aynı transaction içinde audit ve idempotency receipt üretir; güncellemede If-Match gerekir. Arşivleme geçmişi silmez; mevcut allocator arşivli ekipleri reddeder. Atama cursoru dışarı verilmez veya istemciden kabul edilmez.
+- OpenAPI üretildi. Şema sınırları ve mass-assignment reddi için test kodu eklendi; kullanıcı talimatıyla hiçbir test/typecheck/lint/build çalıştırılmadı. HTTP yetki/tenant ayrımı, replay/version yarışları ve arşivleme entegrasyon doğrulamaları hâlâ açık; mevcut unit testleri bunların kanıtı değildir.
+- Yeni DB migration/dependency yok. Üye yönetimi, görev rol uygunluğu, client ekranı, kampanya yayın kuralları, görev oluşturma ve boş ekip bildirimi henüz açık. Tenant/public_id sayfalama sorgusu için final EXPLAIN/index değerlendirmesi yapılacak.
+- ElevenLabs/SIP/test hattı henüz hazır değil; kullanıcının açık yanıtıyla canlı bağlantı olmadan geliştirme sürdürülüyor. Gerçek sağlayıcı kabulü tamamlanmış sayılmaz.
