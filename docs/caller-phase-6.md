@@ -245,3 +245,12 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Yeni bağımlılık kontrolünde npm audit mevcut Zod için GHSA-mrhx-c7xc-m3w5 yüksek önem dereceli bellek tüketimi açığını bildirdi (<4.6.6). API ve client exact Zod4.6.7'ye güncellendi; lockfile'lar kaydedildi. Kullanıcının önceki açık npm audit izniyle iki repoda npm audit --omit=dev --ignore-scripts --json tekrarlandı: ikisi de0 vulnerability bildirdi. Bu sonuç yalnız audit veritabanının üretim bağımlılığı kapsamıdır; uygulama güvenliği/uyumluluk kanıtı değildir.
 - Test fixture'ları plain/external relationship/DOCTYPE/metinsiz DOCX ve bunlara ait metin çıkarım/ret test kodu eklendi. Kullanıcı talimatıyla test/typecheck/lint/build/browser çalıştırılmadı. Zod uyumluluk doğrulaması final pakette yapılmalı. Şema/yerel veri/dış çağrı değişmedi.
 - DOCX isolated worker→ingest API→UI bağlantısı sonraki iş; PDF/HTTPS ve kalan fazlar açık. Faz6/goal aktif.
+
+
+### 2026-10-27 — İzole DOCX ingest API bağlantısı
+
+- DOCX extractDocxText artık mevcut parser-process worker'ından çağrılır. Parent parseDocxFile dosya imzası/10 MiB kontrolünden sonra aynı admission sayacını kullanır: DOCX/XLSX/contact parsing toplam en fazla2 process,256 MiB child heap,15s timeout; DB/env sırları aktarılmaz. Build'deki mevcut parser-process çıktısı kullanılır; ayrı limitsiz worker havuzu eklenmez.
+- POST knowledge-sources/:public_id/ingest-docx agents.manage, canonical base64, zorunlu key ve expected_version_no ile aktif document kaynağına yazar. Parse transaction dışında; ardından ortak knowledge version store formatdocx/caller-document-docx-v1 ile sürüm/chunk/seal/completed job/receipt/audit'i atomik kaydeder. Yanıt text seal receipt biçimindedir, katalog row/column iddiası yoktur. No-store, body14 MiB, sensitive rate limit ve OpenAPI eklendi.
+- Parser busy/timeout/crash503 aynı key retry ister; geçersiz/boş/unsupported/aktif içerikli belge400 olarak döner. Ham metin veya belge parser hatası client/audit'e aktarılmaz. Kaynak tenant/yetki ve optimistic version işlemleri mevcut mutate/write transaction'ında yeniden kontrol edilir. Yeni kaynak otomatik kampanyaya bağlanmaz.
+- Test kodu gerçek child parser kullanan API success/seal/stored text/replay, unauth/foreign tenant/yetki iptali, external relationship/DOCTYPE/metinsiz belge reddini kapsar. Kullanıcı talimatıyla test/typecheck/lint/build/browser çalıştırılmadı; OpenAPI üretildi. Şema/yerel veri/gerçek sağlayıcı çağrısı yok.
+- DOCX yükleme UI'si sonraki dilim. PDF/HTTPS, runtime/release ve diğer fazlar açık; Faz6/goal aktif.
