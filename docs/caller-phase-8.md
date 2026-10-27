@@ -59,3 +59,11 @@
 - Atomik prepare yeni rezervden önce bu kapıyı kontrol eder; bekleyen veya tükenmiş teknik tekrar yeni maliyet rezervi/intent oluşturmaz. Aynı mevcut key replay mevcut intent'i döndürür, provider'a yeniden gönderim değildir. Belirsiz/açık numara koruması önce uygulanır.
 - Sınır süreleri ve limit için unit senaryoları; DB geçiş zamanına bağlı bekleme, pre-accept sayaç koruması ve rezerv yaratmama için integration senaryosu eklendi. Kullanıcı talimatıyla çalıştırılmadı; DB migration gerekmedi.
 - Operatör inceleme görevi/bildirimi ve manuel yetkili retry kararı henüz bağlı değil. Zaman/ülke/iş sonucu, kapasite, final release ve gerçek provider gate'leri ayrıca açık; Faz8/goal aktif.
+
+### 2026-10-27 — Teknik tekrar durumunun API ve operasyon görünümü
+
+- Hedef dispatch history yanıtına checked_at ve technical_retry özeti eklendi. Durum tüm hedef geçmişinden hesaplanır; eski gönderim sayfasına geçmek bekleme/inceleme kararını değiştirmez. technical_retries_used bu ret serisinde kesin retle sonuçlanmış tekrar sayısıdır; hazırlanmış veya devam eden tekrar bu sayıya dahil değildir.
+- UI için repeatable-read observational teknik karar okuyucusu ayrıldı; tenant yazma kilidi tutmaz. Mutasyon/prepare tarafı aynı kilitli okuyucuyu kullanmaya devam eder. UI snapshot'ı işlem yetkisi değildir.
+- Client en erken UTC tekrar zamanını, retle sonuçlanan tekrar sayısını ve inceleme nedenini gösterir. Açılmış geçmiş uygulama odaktayken10sn aralıkla yenilenir; arka plan yenilemede mevcut görünüm silinmez. ready yalnız teknik beklemenin kalkmasıdır; diğer gate'lerin yerine geçmez.
+- API pagination'dan bağımsız özet senaryosu ve client bekleme/inceleme açıklaması testleri yazıldı; kullanıcı talimatıyla çalıştırılmadı. OpenAPI üretildi. DB migration gerekmedi.
+- Operatör görev/bildirim ve yetkili inceleme çözüm komutu, provider doğrulaması, tam dispatch/yayın ve diğer faz işleri açık; goal aktif.
