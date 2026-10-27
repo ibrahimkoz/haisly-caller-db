@@ -391,3 +391,11 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Bu katman yürütme yetkisi veya teyit tokenı tüketimi sağlamaz. Yazma sonrasında validation hatası dış işlemin yapılmadığı anlamına gelmez; belirsiz sonuç/mutabakat olarak ele alınmalı ve yeni key ile kör retry edilmemelidir. CRM contact→external record ownership tenant-scoped adapter'da ayrıca doğrulanmalıdır; mevcut wire schema bunu tek başına kanıtlamaz.
 - Unit test kodu matching evidence/no invented price, wrong product/source, expired/future/overlong TTL, yanlış service/window ve unknown write operation correlation için eklendi. Kullanıcı talimatıyla test/typecheck/lint/build çalıştırılmadı. Production runtime/adapter call-site henüz bağlanmadı; yeni bağımlılık/şema/dış çağrı yok.
 - Teyit token lifecycle, gerçek adapter, request/contact/session ownership, runtime release ve bilgi cevap kanıtları sonraki işler. Faz6/goal aktif.
+
+
+### 2026-10-27 — Araç teyidi için işlem içeriği ve kapsam bağı
+
+- Randevu oluşturma/iptal ve CRM güncelleme şemaları artık token gerektirmeyen strict intent ve authorization zorunlu execution input olarak ayrıdır. Mevcut execution sözleşmesi değişmedi; hazırlanan intent tek başına yürütülemez.
+- Internal CallerToolConfirmationService.prepare normalize edilmiş içeriği tenant, session, release, binding, binding version ve contact public UUID bağları ile domain-separated SHA256 digest'e bağlar. Kişi uyumsuzluğu, token/confirmed gibi ek alanlar ve geçersiz kapsam reddedilir; hata cevabına payload/secret yazılmaz. Onayda kullanıcıya sunulacak içerik, dönen normalize intent olmalıdır.
+- Bu primitive ownership veya gerçek sözlü onay kanıtı değildir. Scope server tarafından yetkili DB kayıtlarından çözülmelidir; digest yalnız bütünlük bağıdır, yetki veya secret değildir. Kalıcı challenge/token hash, doğrulanmış teyit olayı, süre sonu, atomik execution reservation/tüketim ve runtime entegrasyonu halen yapılacak. Public endpoint veya canlı provider bağlantısı açılmadı.
+- Unit test kodu scope alanı/kişi/randevu saati/CRM içerik değişiklikleri, secret ve model-confirmed alanı reddi, normalize içerik ve token olmadan execution reddi için eklendi. Kullanıcı talimatıyla test/typecheck/lint/build çalıştırılmadı. Bağımlılık/DB şeması değişmedi; Faz6/goal aktif.
