@@ -1592,3 +1592,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='120_campaign_stop_states.sql') THEN
+  IF to_regclass('public.caller_campaign_state_events') IS NULL
+   OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='caller_campaign_stop_state_guard' AND NOT tgisinternal AND tgenabled='O')
+   OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='caller_campaign_state_event_guard' AND NOT tgisinternal AND tgenabled='O')
+   OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='caller_campaign_stop_request_apply' AND NOT tgisinternal AND tgenabled='O') THEN RAISE EXCEPTION 'Campaign stop state safeguards missing'; END IF;
+ END IF;
+END $$;
+SQL

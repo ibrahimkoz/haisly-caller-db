@@ -285,3 +285,12 @@
 - Worker normalde10 saniye, backlog/busy varsa1 saniye arayla tarar. Başarı/iptal/busy/hata metrikleri ve30 saniyelik readiness eşiği eklendi; busy veya hata başarılı drain zamanı sayılmaz. Worker bu dilimde başlatılmadı.
 - İzole fixture'a yanlış ortamın işi atlaması, gerçek kapsamda reserve release ve tekrarın0 iş döndürmesi eklendi. Runtime auth/body/no-store ve monitor shutdown/busy/yanıt kaybı test kodları eklendi. OpenAPI üretildi; test/typecheck/lint/build/browser çalıştırılmadı. DB şema değişikliği yok.
 - Public yetkili stop onayı, lifecycle state/resume, gönderilmiş çağrı mutabakatı ve nazik hangup worker'ı ile diğer fazlar açık. Goal aktif.
+
+### 2026-10-27 — Kalıcı pausing/paused durumu ve geçiş geçmişi
+
+- DB120 kampanya durumuna pausing/paused ekler; stop isteği AFTER INSERT kampanyayı pausing yapıp versionı bir kez artırır. Durum değişiklikleri trigger-owned immutable caller_campaign_state_events geçmişine kaydedilir. Mevcut stop kayıtları varsa migration pausing durumuna taşır; eski replay cevabı önceki isteği temsil etmeyi sürdürür. Yerel uygulamada backfill0 kayıt değiştirdi.
+- DB ve finishCampaignPause iç servisi pausing→paused için pause isteği ve tüm ortamlarda sıfır prepared/submitting/uncertain/accepted koşulunu zorunlu kılar. Hedefler/sayaçlar korunur; kesin bitmiş çağrıdaki maliyet mutabakatı bu geçişi engellemez. Doğrudan uygunsuz state güncelleme veya yeniden açma reddedilir.
+- Drain worker kendi ortamında gönderim kaydı olan ve açık çağrısı kalmamış en fazla25 pause kampanyasını kesinleştirir. Açık çağrılı eski kampanyalar adaylardan dışlanır ve sonraki hazır kampanyaları aç bırakmaz. Gönderim geçmişi olmayan kampanyanın kesinleştirilmesi gelecekteki public komut tarafından tenant kapsamında çağrılmalıdır. Cancel istekleri burada terminal olmaz; hedef/callback iptal kanıtı hâlâ gerekli.
+- API/client durum sözleşmeleri genişletildi; kampanya listesi ve10 saniyelik operasyon görünümü gerçek durumu gösterir. İlerideki publish/resume hâlâ kapalıdır.
+- Yerel DB yedeklenip120 uygulandı. Erken pause DB reddi, tekil version/event, tekrar, pause/cancel farkı ve client durum gösterimi test kodu eklendi; OpenAPI üretildi. Test/typecheck/lint/build/schema-validator/rollback/browser çalıştırılmadı. Final izole DB'lere120 da uygulanmalı.
+- Yetkili public stop onayı, cancel hedef/callback terminali, resume, release ve sağlayıcı hangup ile diğer fazlar açık; goal aktif.
