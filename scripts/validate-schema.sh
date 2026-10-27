@@ -1582,3 +1582,13 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='119_campaign_stop_requests.sql') THEN
+  IF to_regclass('public.caller_campaign_stop_requests') IS NULL
+   OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='caller_campaign_stop_request_guard' AND NOT tgisinternal AND tgenabled='O')
+   OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='caller_dispatch_campaign_stop_guard' AND NOT tgisinternal AND tgenabled='O') THEN RAISE EXCEPTION 'Campaign stop guards missing'; END IF;
+ END IF;
+END $$;
+SQL

@@ -268,3 +268,12 @@
 - Operasyon API/client özeti gönderim öncesi iptal edilebilecek işler, belirsiz gönderimler ve bitişi beklenen çağrıları ayrı gösterir. Bu okuma komut çalıştırmaz; yetki/no-store/tenant kapsamı korunur.
 - Zaman sınırı, belirsiz çağrı, finish/graceful ayrımı, pending-work ve operasyon sözleşmesi/client test kodları eklendi. OpenAPI üretildi. Kullanıcı talimatıyla test/typecheck/lint/build/browser çalıştırılmadı; DB şeması değişmedi.
 - Bu dilim karar mantığı ve etki görünümüdür. Kalıcı onaylı stop komutu, lifecycle migration/event/worker, gerçek hangup, yayın kapıları ve diğer fazlar hâlâ açık; goal aktif.
+
+### 2026-10-27 — Kalıcı kampanya durdurma isteği ve gönderim engeli
+
+- DB119 caller_campaign_stop_requests immutable kayıtları ekler: tenant+kampanya ve actor tenant FK, actor/key/hash replay, beklenen kampanya sürümü, açık onaylanan prepared/submitting/uncertain/accepted sayıları, pause/cancel, finish/graceful_close, gerekçe ve DB zamanı. Tenant kilidi altında sürüm/etki yeniden karşılaştırılır; kayıt kampanya versionını bir kez artırır.
+- requestCampaignStop iç transaction primitive'i aynıkey/input replay'i sürüm kontrolünden önce döndürür; farklı içerik reddedilir. HTTP komutu henüz açılmadı; yetkili state/etki onay akışı sonraki lifecycle işidir. Mevcut kayıt değiştirilmez veya silinmez; kontrollü resume henüz yok, yeni migration/komutla bağlanmalı.
+- Hazırlık ve prepared→submitting geçişi stop kaydında durur. DB triggerı da yeni intent INSERT ve prepared→submitting UPDATE'i engeller; gönderilmiş çağrıların kabul/bitiş/mutabakat olayları devam eder. Hazırlanmış işin iptal+rezerv release yolu korunur. Ağ isteği çalıştırılmaz.
+- Operasyon cevabı kampanya sürümü ve sanitize stop isteğini döndürür; client kalıcı gönderim engelini gösterir, çağrıların kapandığını iddia etmez. Aktör/gerekçe/hash dışarı verilmez.
+- Yerel DB yedeklenip119 uygulandı. Gerçek durdurma kaydı oluşturulmadı. İzole fixture için replay/stale impact/immutable/API+DB submission block/cancel-reserve test kodu ve client stop bildirimi eklendi. OpenAPI üretildi; test/typecheck/lint/build/schema-validator/rollback/browser çalıştırılmadı. Final test DB'lerine119 da uygulanmalı.
+- Kalıcı lifecycle state, public onay komutu, drain worker, hedef/callback iptali, kontrollü resume, sağlayıcı hangup ve yayın kapıları açık. Fazlar tamamlanmış sayılmadı; goal aktif.
