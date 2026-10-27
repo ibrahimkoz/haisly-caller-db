@@ -254,3 +254,12 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Parser busy/timeout/crash503 aynı key retry ister; geçersiz/boş/unsupported/aktif içerikli belge400 olarak döner. Ham metin veya belge parser hatası client/audit'e aktarılmaz. Kaynak tenant/yetki ve optimistic version işlemleri mevcut mutate/write transaction'ında yeniden kontrol edilir. Yeni kaynak otomatik kampanyaya bağlanmaz.
 - Test kodu gerçek child parser kullanan API success/seal/stored text/replay, unauth/foreign tenant/yetki iptali, external relationship/DOCTYPE/metinsiz belge reddini kapsar. Kullanıcı talimatıyla test/typecheck/lint/build/browser çalıştırılmadı; OpenAPI üretildi. Şema/yerel veri/gerçek sağlayıcı çağrısı yok.
 - DOCX yükleme UI'si sonraki dilim. PDF/HTTPS, runtime/release ve diğer fazlar açık; Faz6/goal aktif.
+
+
+### 2026-10-27 — DOCX dosya yükleme arayüzü
+
+- Bilgi kaynağı oluşturma türü Dosya(CSV/XLSX/DOCX) olarak genişletildi. Ortak dosya ekranı.docx kabul eder, ayırıcıyı gizler ve ingest-docx'e gönderir. DOCX koşulları/metinsiz belge ve dış bağlantı retleri açıklanır. Başarıda katalog satır/sütun sayıları yerine API'nin verified version/normalized_bytes sonucu gösterilir.
+- Pending format+request ayrımı DOCX için de korunur; unknown outcome aynı DOCX endpoint/base64/key/expected_version_no ile tekrar edilir. Yeni hook yalnız başarıda Knowledge invalidation yapar. Eski.doc veya PDF desteği varmış gibi gösterilmez.
+- FileReader/10 MiB kontrolü ortak readBase64File yardımcısına çıkarıldı. Kişi importu kendi CSV/XLS/XLSX allowlist'ini korur; DOCX kişi importuna açılmaz. Dosya tipi kontrolü knowledge UI'da açık CSV/XLSX/DOCX allowlist ile yapılır, içerik imzası/parse doğrulaması sunucuya aittir.
+- Client test kodu DOCX endpoint seçimi, diğer parser endpoint'lerinin çağrılmaması, aynı key/body retry ve row_count olmayan receipt'in metin boyutuyla sunulmasını kapsar. Kullanıcı talimatıyla test/typecheck/lint/build/browser çalıştırılmadı. Şema/yerel veri/dış servis çağrısı değişmedi.
+- PDF/HTTPS, pending router/reload recovery, retrieval/runtime release ve sonraki fazlar açık. Faz6/goal aktif.
