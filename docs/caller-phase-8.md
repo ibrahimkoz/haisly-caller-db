@@ -51,3 +51,11 @@
 - Client hedef kartına gönderim geçmişi aç/yenile ve eski kayıt sayfalaması eklendi. Kabul edilmiş deneme sayısı, teknik gönderim kayıtlarından ayrı; durumlar, UTC zamanları, bağlantı sonucu ve eksik geçmiş baseline açıklaması görünür.
 - Entegrasyon senaryolarına rollback geçmişi, cancellation/acceptance replay tekilliği, tüm geçiş sırası, kanıtın korunması, doğrudan insert/update/delete reddi ve API auth/cursor/alan gizleme eklendi. OpenAPI üretildi; test/typecheck/lint/build/DB/browser kontrolleri kullanıcı talimatıyla final aşamasında.
 - Bu teknik durum geçmişi provider olayının gerçekliğini doğrulamaz; webhook imzası/event dedup, actor audit bağlantısı ve gerçek sağlayıcı davranışı açık. Worker, tam yayın ve kalan Faz4–13 işleri devam ediyor; goal tamamlanmadı.
+
+### 2026-10-27 — Kalıcı teknik tekrar kapısı
+
+- `readTechnicalRetryDecision` tenant kilidi altında son provider acceptance'tan sonraki en fazla4 kesin pre-accept rejected intent'i ve trigger-owned geçiş zamanlarını okur. Canceled hazırlıklar ret serisini sıfırlamaz; accepted deneme yeni seri sınırıdır.
+- İlk ret sonrası1dk, ikinci sonrası5dk, üçüncü sonrası15dk; dördüncü ret üç teknik tekrarın tüketildiğini gösterir ve review döner. Retler iş deneme sayacını artırmaz. Baseline/eksik/future kanıt zamanı güvenli tekrar zamanı sayılmaz, review gerektirir.
+- Atomik prepare yeni rezervden önce bu kapıyı kontrol eder; bekleyen veya tükenmiş teknik tekrar yeni maliyet rezervi/intent oluşturmaz. Aynı mevcut key replay mevcut intent'i döndürür, provider'a yeniden gönderim değildir. Belirsiz/açık numara koruması önce uygulanır.
+- Sınır süreleri ve limit için unit senaryoları; DB geçiş zamanına bağlı bekleme, pre-accept sayaç koruması ve rezerv yaratmama için integration senaryosu eklendi. Kullanıcı talimatıyla çalıştırılmadı; DB migration gerekmedi.
+- Operatör inceleme görevi/bildirimi ve manuel yetkili retry kararı henüz bağlı değil. Zaman/ülke/iş sonucu, kapasite, final release ve gerçek provider gate'leri ayrıca açık; Faz8/goal aktif.
