@@ -302,3 +302,11 @@
 - Hedef API/client durum ve UTC iptal zamanı gösterir; geçmiş/sayaçlar görünür kalır. Stop-request iç ID tenant cevabına eklenmez.
 - Yerel DB yedeklenip121 uygulandı, gerçek hedef iptal edilmedi. Fixture'a pause/cancel hedef farkı, zaman/provenans, sayaç koruma ve reopen DB reddi; clienta devam eden çağrı ayrımı test kodu eklendi. OpenAPI üretildi. Test/typecheck/lint/build/schema-validator/rollback/browser çalıştırılmadı; final test DB'lerine121 uygulanmalı.
 - Kampanya terminal cancel hâlâ açılmadı: geri arama iptali ve tam lifecycle/public onay akışıyla bağlanacak. Yayın, resume, gerçek sağlayıcı ve kalan fazlar açık; goal aktif.
+
+### 2026-10-27 — Teyitli geri arama veri temeli ve kampanya iptal bağı
+
+- DB122 caller_callback_plans tablosu ekler: tenant/hedef/kaynak dispatch FK, requestkey/hash, teyit zamanı, kesin due_at, saat dilimi, kanıt referansı ve DB-owned30 dakikalık pencere. Bir hedefte yalnız bir pending plan vardır; zaman/kanıt/provenans değiştirilemez, geçmiş silinemez. Yeni plan accepted kaynak görüşme, aynı hedef/snapshot, güncel kişi kimliği ve DNC/arşiv engelinin olmamasını gerektirir. Teyit görüşme zamanının dışında veya pencere zaten geçmişse reddedilir.
+- Bu sadece doğrulanmış outbound görüşmeden plan saklama temelidir; provider kabulü tek başına kişinin teyidini kanıtlamaz. Yetkili runtime aracı, tam saat/izin/limit politikası, idempotent oluşturma/yeniden planlama servisi ve inbound bağlama ayrıca tamamlanmalı. Bu dilimde plan oluşturma endpointi veya gerçek plan oluşturulmadı; kayıt dispatch izni vermez.
+- Cancel kampanyasında pending geri aramalar worker tarafından250'lik batch ile kapatılır, pause planları korur. Aynı transaction/tenant kilidi ve source provider environment sınırı kullanılır; iptal nedeni/zamanı saklanır. Worker has_more ve callbacks_canceled metriği genişletildi.
+- Yerel DB yedeklenip122 uygulandı. İzole fixture'a tek pending plan, immutable zaman,30dk pencere, yanlış ortam, pause/cancel farkı, accepted kaynak çağrısına dokunmama ve tekrar testi eklendi. OpenAPI üretildi; test/typecheck/lint/build/schema-validator/rollback/browser çalıştırılmadı. Final test DB'lerine122 uygulanmalı.
+- Plan missed/dispatch/accepted yaşam döngüsü, insan görev/bildirim bağı, API/client takvim, kampanya terminal cancel ve kalan fazlar açık; goal aktif.

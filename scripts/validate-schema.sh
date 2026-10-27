@@ -1612,3 +1612,12 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='122_confirmed_callback_plans.sql') THEN
+  IF to_regclass('public.caller_callback_plans') IS NULL OR to_regclass('public.caller_callback_one_pending_target') IS NULL
+   OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='caller_callback_plan_guard' AND NOT tgisinternal AND tgenabled='O') THEN RAISE EXCEPTION 'Callback plan safeguards missing'; END IF;
+ END IF;
+END $$;
+SQL
