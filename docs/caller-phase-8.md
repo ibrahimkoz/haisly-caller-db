@@ -318,3 +318,11 @@
 - API taslak düzenlemede canceled kampanyayı reddeder. Client terminal durumu gösterir, formu kilitler; içerik değiştirmeyen snapshot alma ve yeni ID ile clone akışı korunur. Clone yeni kampanyadır, numara tercihlerini veya geçmiş sayaçlarını sıfırlamaz.
 - Yerel DB yedeklenip123 uygulandı. Erken terminal iptalde bekleyen hedef DB reddi, cancel event/version, tekrarda ek geçiş olmaması ve yeniden açma reddi test kodları; client canceled durum testi eklendi. OpenAPI üretildi. Test/typecheck/lint/build/schema-validator/rollback/browser çalıştırılmadı; final test DB'lerine123 uygulanmalı.
 - Public stop onay/yetki akışı, gerçek çağrı sonlandırma/mutabakat, resume/yayın ve callback dispatch/missed yaşam döngüsü ile diğer fazlar açık. Goal aktif.
+
+### 2026-10-27 — Duraklatmadan iptale geçiş ve etkin stop bağı
+
+- DB124 kampanyaya current_stop_request_id, stop kaydına supersedes_request_id ve tenant/kampanya kapsamlı FK'lar ekler. Tek stop/kampanya kısıtı geçmiş zincirine dönüştürüldü. Mevcut bağlar tablo exclusive lock altında yeni kolona taşınır; migration transaction'ında yalnız state guard geçici kapatılıp tekrar etkinleştirilir, sonrasında korumalar yürürlüktedir. Yerelde backfill0 kayıt değiştirdi.
+- Yeni istek yalnız etkin pause→cancel yönünde önceki isteğin yerini alabilir; pausing ve paused desteklenir. Eski kayıtlar immutable kalır; yeni version/etki onayı zorunludur. Cancel→pause veya terminal reopen reddedilir. Durum aynı pausing kalsa da aktif istek değişimi state-event geçmişine yeni stop referansıyla kaydolur.
+- Worker, hedef/callback iptali, terminal kararı ve operasyon okuması etkin stop bağını kullanır; eski pause yeni cancel'ı gölgelemez ve aynı intent çift işlenmez. Eski idempotency replay kendi eski makbuzunu döndürür, etkin isteği değiştirmez. Resume hâlâ kapalıdır; gelecekte yetkili resume ile dispatch bariyerleri birlikte ele alınmalı.
+- Yerel DB yedeklenip124 uygulandı. İzole fixture'a hem pausing hem paused iken cancel, kaynak istek zinciri, eski replay, downgrade reddi, tek cancellation/release ve event referansı test kodları eklendi. Test/typecheck/lint/build/schema-validator/rollback/browser çalıştırılmadı; final test DB'lerine124 uygulanmalı. Public HTTP sözleşmesi değişmedi.
+- Public stop onayı/yetki ve graceful sağlayıcı işlemi, resume/yayın, callback tamamlanması ve kalan fazlar açık; goal aktif.

@@ -1629,3 +1629,13 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='124_active_campaign_stop.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='public.caller_campaigns'::regclass AND conname='caller_campaign_active_stop_scope')
+   OR NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='public.caller_campaign_stop_requests'::regclass AND conname='caller_stop_supersedes_scope')
+   OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='caller_campaign_stop_state_guard' AND NOT tgisinternal AND tgenabled='O') THEN RAISE EXCEPTION 'Active stop safeguards missing'; END IF;
+ END IF;
+END $$;
+SQL
