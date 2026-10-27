@@ -1429,3 +1429,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='104_add_tariff_publication_receipt.sql') THEN
+  IF to_regclass('public.tariff_publication_receipt_key') IS NULL
+   OR NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conname='tariff_publication_receipt_pair' AND conrelid='public.billing_tariff_versions'::regclass) THEN
+   RAISE EXCEPTION 'Tariff publication receipt schema incomplete';
+  END IF;
+ END IF;
+END $$;
+SQL
