@@ -1482,3 +1482,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='109_create_caller_dispatch_intents.sql') THEN
+  IF to_regclass('public.caller_dispatch_intents') IS NULL OR to_regclass('public.caller_dispatch_open_phone') IS NULL
+   OR (SELECT count(*) FROM pg_trigger WHERE tgname IN ('caller_dispatch_guard','caller_dispatch_count','caller_target_claim_guard','caller_dispatch_reservation_guard') AND NOT tgisinternal AND tgenabled='O')<>4 THEN
+   RAISE EXCEPTION 'Caller dispatch safeguard schema incomplete';
+  END IF;
+ END IF;
+END $$;
+SQL
