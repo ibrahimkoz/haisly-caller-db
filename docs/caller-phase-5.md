@@ -194,3 +194,11 @@ Ledger ekranı güncel toplamı gösterir; billing.manage yetkilisi orijinal har
 Düzeltme açıkken tenant/ledger filtre/sayfa/finans sekmesi/logout kilitleri, route blocker/beforeunload vardır. Başarı ledger'ı yeniler. Yetki kaybında form kapanır; kullanıcının yalnız okuma yetkisi varsa düzeltme kontrolü görünmez. Schema test kodu sıfıra düzeltme, negatif tutar, eksik onay/gerekçe reddini; API entegrasyon kodu değişmez orijinal delta ile düzeltilmiş efektif toplamın ayrı okunmasını kapsar. Test/typecheck/lint/build/browser/contract paketleri çalıştırılmadı.
 
 DB yalnız ilerleme notudur; migration/gerçek düzeltme yapılmadı. Tam browser reload belirsiz işlem recovery, sıfır maliyet rezervin sonradan ücretlenmesi, tarife planı oluşturma ve önceki bütçe/kota/dispatch bağımlılıkları açık kalır. Faz5 ve tüm goal tamamlandı sayılmaz.
+
+### 2026-10-27 — Platform plan oluşturma API dilimi
+
+- Platform `POST /api/management/v1/pricing-plans`: aktif `management.billing.manage`, platform CSRF ve idempotency anahtarı gerektirir. Aktif USD plan oluşturur; tarife, abonelik veya bakiye oluşturmaz.
+- Plan, immutable actor/key/payload receipt ve audit tek transaction'dadır. Aynı istek public ID'yi tekrar döndürür; değişen payload veya mükerrer kod 409 döner.
+- DB 107 özel yerel dump alındıktan sonra `haisly_caller` veritabanına uygulandı. Schema doğrulama senaryosu eklendi; rollback veri varsa durur.
+- OpenAPI üretildi. Entegrasyon senaryoları tenant yetkisi, CSRF, eşzamanlı tekrar ve kod/anahtar çakışmalarını kapsayacak şekilde yazıldı; kullanıcı talimatıyla çalıştırılmadı. Typecheck/lint/build ve final doğrulamaları da bekliyor.
+- Plan oluşturma client ekranı henüz yok; Faz 5 ve genel goal tamamlanmadı. Restore/rollback kanıtı final aşamasında alınacak.
