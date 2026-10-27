@@ -252,3 +252,11 @@
 - Client planlı sürümde gerekçeli inceleme/onay/iptal sunar; iptal edilen sürüm ayrı etiketlenir. Belirsiz iptalde aynıkey/body retry, actor-scoped RAM recovery ve form/sekme/route/unload kilidi vardır. İptal, mevcut etkin politika veya devam eden çağrıyı sonlandırmaz. Tam reload recovery önceki açık tasktır.
 - Yerel DB yedeklenip118 uygulandı, gerçek politika veya iptal kaydı oluşturulmadı. API concurrency/replay/stale/active rejection/immutable/audit/cancel-then-immediate ve client canceled görünüm/inceleme/retry test kodu eklendi. OpenAPI üretildi; test/typecheck/lint/build/schema-validator/rollback/browser çalıştırılmadı.
 - Country/tenant politika yönetimi bu dilimde iptal yolunu kazandı; kalan unified history/capacity/release/provider ve final kabul işleri açık. Goal aktif.
+
+### 2026-10-27 — Tenant hedefinde etkin politika görünümü
+
+- Hedef arama geçmişi ülke/tenant politika kontrolünü ve kampanya+ülke+tenant minimumundan gelen etkin maksimum/kalan denemeyi gösterir. Kapalı gün/saat/tatil, kapalı aramalar, eksik ülke politikası ve doğrulanmamış saat dilimi ayrı açıklanır. Bu kontrol tek başına arama yetkisi değildir; bakiye, izin, release, kapasite ve diğer kapılar devam eder.
+- Okuma mevcut tenant yetkileri ve repeatable-read içinde yapılır; kişi tenant bağıyla okunur. Hedef kimlik revizyonu güncel kişiyle uyuşmazsa politika uygunluğu yerine kimlik değişikliği döner. Eksik politika/kimlikte limit null; yönetici gerekçesi, kanıtı, aktör ve politika kimlikleri tenant cevabına aktarılmaz.
+- API sözleşmesi üretildi; etkin limit/eksik politika/gizli alanlar ve client açıklama test kodu eklendi. Kullanıcı talimatıyla test/typecheck/lint/build/browser çalıştırılmadı. DB şema değişikliği yok.
+- Kullanıcı ElevenLabs staging hesabı/SIP/test hattının henüz hazır olmadığını doğruladı; canlı bağlantı olmadan geliştirmeye devam edilecek. Gerçek sağlayıcı kabulü bu girdiler gelene kadar açık, mock ile tamamlanmış sayılmayacak.
+- Kalan release/lifecycle, unified history, kapasite, dispatcher/provider ve diğer fazlar açık; goal aktif.
