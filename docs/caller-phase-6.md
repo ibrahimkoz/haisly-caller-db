@@ -227,3 +227,12 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Tek worksheet ve literal scalar hücreler kabul edilir. Gerçek formüller/cached sonuçlar, hyperlink ve unsupported hücreler tüm katalog için reddedilir. Negatif sayılar ve text hücrelerindeki ifade benzeri içerik literal kalır. Excel display formatting/currency/date yorumu yapılmaz; baştaki sıfırlar için hücre text olmalıdır. CSV ortak header/row/JSON-lines normalizasyonu yeniden kullanılır; normalize katalog10 MiB sınırındadır. Parser busy/timeout/unavailable503 ile aynı key retry ister, içerik hataları400'dür.
 - Test kodu catalog negatif değer/leading-zero korunması, contact expression politikasının korunması, gerçek formula cached değerinin kullanılmaması, multi-sheet/base64 reddi, gerçek isolated parser üzerinden API seal/replay ve formula/yetki iptali içindir. Kullanıcı talimatıyla hiçbir test/typecheck/lint/build/browser çalıştırılmadı; OpenAPI üretildi. Yeni bağımlılık/şema/yerel veri/dış bağlantı yok.
 - XLSX dosya seçme UI'si sonraki dilim. PDF/DOCX/HTTPS, runtime release/retrieval ve diğer fazlar açık. Faz6/goal aktif.
+
+
+### 2026-10-27 — XLSX katalog yükleme arayüzü
+
+- Kaynak türü seçimi CSV / XLSX ürün kataloğu olarak genişletildi; her ikisi mevcut document kaynağına gider. Ortak yükleme ekranı .csv ve.xlsx kabul eder. XLSX dosyası mevcut bounded readImportFile/FileReader yardımcısıyla base64'e çevrilip ingest-xlsx'e gönderilir; CSV strict UTF-8/ayırıcı yolu korunur. Legacy.xls kabul edilmez.
+- XLSX seçiliyken ayırıcı gizlenir; tek worksheet, formül/link/makro reddi ve display formatting yerine stored value okunması anlatılır. Baştaki sıfırların korunması için hücreyi text kaydetme yönlendirmesi vardır. Başarı yalnız verified server receipt'e dayanır.
+- Pending kayıt format+tam request içerir; unknown outcome retry aynı endpoint, base64/body ve key'i kullanır. Dosya/değişiklik kilidi ve source page busy durumu korunur. Başarı Knowledge cache'ini invalidate eder; parser503 sonucu başarı gibi gösterilmez. Tam reload/router recovery ayrı açık iştir.
+- Client test kodu XLSX transport/base64, CSV endpoint'inin çağrılmaması, ayırıcı gizleme, kullanım açıklaması ve unknown outcome'da aynı workbook request retry için genişletildi. Kullanıcı talimatıyla test/typecheck/lint/build/browser çalıştırılmadı. Şema/yerel veri/dış servis çağrısı yok.
+- PDF/DOCX/HTTPS, retrieval/runtime release bağları ve diğer fazlar açık. Faz6/goal aktif.
