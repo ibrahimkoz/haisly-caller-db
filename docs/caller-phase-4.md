@@ -205,3 +205,11 @@ ensureSurveySession/applySurveySessionCommand iç transaction yardımcıları te
 Unit/integration test kodu sıra/validasyon/sürüm çakışması, transitive invalidation, bağımsız cevap koruma, aynı değer düzeltmesi, zorunlu atlama, tek clarification, onaylı devam, terminal ret, transaction abort, tenant sınırı ve geçmişin değişmezliğini kapsar. Kullanıcı talimatıyla test/typecheck/lint/build/browser/schema/rollback paketleri çalıştırılmadı. Test DB'lerine094–097 uygulanması ve final toplu doğrulama hâlâ gereklidir.
 
 Yerel haisly_caller için backups/haisly-caller-pre-survey-sessions-2026-10-27/haisly_caller.dump yedeği özel izinlerle alındı;097 transaction içinde uygulandı. Yedek restore provası yapılmadı. Gerçek oturum/cevap/arama oluşturulmadı, üretim etkilenmedi. Rollout DB097 → API; client bu dilimde yalnız dokümantasyon değişikliği içerir. Goal kalan tüm fazlar ve final kabul dahil aktif kalır.
+
+### 2026-10-27 — Başlamamış hedeflere sürüm uygulama altyapısı
+
+- F04-T06 için transaction içi `rebindUnstartedCampaignTargets` eklendi. En fazla 100 açık hedef seçimi; tenant/kampanya kapsamı, beklenen kampanya sürümü ve her hedefin beklenen önceki snapshot'ı kontrol edilir. Hedefler deterministik sırada kilitlenir.
+- Araması başlamış veya başka snapshot'a geçmiş tek hedef tüm seçimi reddeder. Aynı snapshot'a uygulama değişiklik üretmez; kaynak üyeliklerin sonradan silinmesi mevcut hedefi etkilemez. Hedef kimliği, kaynak ilişkileri ve deneme geçmişi korunur.
+- İlk capture ve sonradan inclusion mevcut aktif kaynak liste denetimini korur; rebind yalnız campaign/snapshot kilidi kullanır. Çağrı başlatma yetkisi üretmez.
+- Karışık started/unstarted seçim, rollback, eksik hedef, stale snapshot, başarılı değişim ve no-op senaryoları mevcut entegrasyon desteğine eklendi. Kullanıcı talimatıyla çalıştırılmadı.
+- Bu internal primitive henüz public komut değildir. Yetki/idempotency/audit/campaign version artırma, final release ve test kapıları sonraki yayın komutunda aynı transaction içinde bağlanacak. F04-T06 ve Faz 4 açık; canlı yayın/dispatch kapalıdır.
