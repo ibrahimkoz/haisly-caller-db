@@ -1502,3 +1502,12 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='111_guard_submitted_dispatch_release.sql')
+  AND NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='caller_dispatch_release_guard' AND NOT tgisinternal AND tgenabled='O' AND tgdeferrable AND tginitdeferred) THEN
+  RAISE EXCEPTION 'Submitted dispatch release protection missing';
+ END IF;
+END $$;
+SQL

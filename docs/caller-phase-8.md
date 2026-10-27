@@ -35,3 +35,11 @@
 - DB110 telefon ve telefon+kampanya ended_at indeksleri özel yerel dump sonrası uygulandı. Schema kontrolü yazıldı; execution plan/performans ve restore/rollback kabulü henüz yapılmadı.
 - Prepared/accepted/ended history, no-answer dahil bitiş, tekilleştirme ve başka numara ayrımı senaryoları mevcut dispatch integration helper'a eklendi; kullanıcı talimatıyla çalıştırılmadı.
 - Dönen kaynak açıkça production_dispatch_intents ve requires_additional_call_history=true. Test/legacy outbound ve inbound insan görüşmesi geçmişi, global aktif çağrı kilidi henüz birleşmedi. Bu parçanın boş sonucu tam çağrı geçmişi yok sayılmaz; dispatcher canlı kararına bağlanmadı. Policy store, kota ve kalan yayın/runtime bağımlılıkları açık; F08 ve goal aktif.
+
+### 2026-10-27 — Gönderilmiş çağrı rezerv koruması ve atomik hazırlık iptali
+
+- İncelemede109 açık-intent guard'ının ended/rejected gönderim için `releaseUnsubmittedCallCost` yolunu tek başına kapatmadığı görüldü. Servis artık bağlı intent varsa yalnız canceled durumuna izin verir; gönderilmiş/bitmiş çağrı doğrulanmış nihai maliyet ile settle edilmelidir.
+- DB111 deferred constraint trigger aynı sınırı doğrudan reservation update'inde de uygular. Önceden çelişkili released kayıt varsa migration durur; yerel özel dump sonrası111 başarıyla uygulandı. Rollback dispatch geçmişi varsa korumayı kaldırmaz.
+- Internal `cancelPreparedIntent` prepared→canceled geçişi ve reserve release'i aynı transaction'da yapar. Aynı kanıt replay olur; uncertain/accepted/ended için iptal/hangup varsayımı üretmez.
+- Entegrasyon senaryolarına cancellation rollback, tekrar iptal/release, ended çağrıyı API ve doğrudan DB ile yanlış release etme reddi ve terminal cancel reddi eklendi. Schema kontrolü yazıldı; kullanıcı talimatıyla test/typecheck/lint/build/DB doğrulaması çalıştırılmadı.
+- Provider final maliyet kanıtı, reconciliation UI/işçisi ve gerçek hangup işlemleri hâlâ açık. Bunlar local hazırlık iptalinden ayrıdır. Faz8/goal aktif; final kabul yapılmadı.
