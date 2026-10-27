@@ -349,3 +349,11 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Unknown outcome aynı body/key ile retry olur; source içi gezinme busy olarak kilitlenir. Kesin4xx source versions ve policy refetch eder, success Knowledge cache'ini invalid eder. Policy load/error/empty ve retry durumları vardır. Full router/reload recovery halen ortak açık iş olarak korunur.
 - Client test kodu URL source oluşturma body/onCreated ve HTTPS ingest unknown outcome'da aynı kaynak/policy sürümleriyle replay, request'te URL bulunmaması ve verified receipt içindir. Kullanıcı talimatıyla test/typecheck/lint/build/browser çalıştırılmadı. API/DB kontratı veya şema değişmedi; gerçek URL/provider çağrısı yok.
 - HTTPS ingest uçtan uca kaynak kodu bağlandı fakat gerçek transport/TLS/timeout/body-limit testleri ve final kabul doğrulaması henüz tamamlanmadı. Faz6 retrieval/runtime release ve kalan fazlar açık; goal aktif.
+
+
+### 2026-10-27 — HTTPS yanıt bütünlüğü ve bounded stream davranışı
+
+- Production transport response reader ayrı modüle ayrıldı. Yalnız HTTP complete=true ve varsa Content-Length ile birebir byte eşleşmesi sonrası içerik döner. Premature close/aborted/error başarısızdır; kısmi belge ingest'e geçmez. Fail/settled guard tekrar eventlerle buffer büyümesini veya ikinci sonuç üretimini engeller; hatada chunk referansları temizlenir ve stream/socket kapatılır.
+-10MiB sınırı chunk eklenmeden uygulanır; content type/encoding/status/header-limit davranışı korunur. Redirect response body tüketilmeden kapatılır. Geç gelen stream error eventleri için sanitized listener korunur. Yeni bağımlılık veya public kontrat değişimi yok.
+- PassThrough fixture kullanan test kodu parçalı başarılı yanıt, premature close, declared-length mismatch, incomplete message, streamed/declared overflow, compressed/non-page/error status, redirect no-body ve aborted/late error durumlarını production reader üzerinden kapsar. Network açmaz; TLS/DNS/redirect orchestrator acceptance kanıtı değildir. Kullanıcı talimatıyla test/typecheck/lint/build çalıştırılmadı.
+- HTTPS gerçek transport kabul doğrulamaları ve final testler hâlâ açık. Faz6 retrieval/runtime release ve kalan fazlar aktif; goal tamamlanmadı.
