@@ -840,3 +840,12 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Yanıt callback/kampanya public kimliği ve kampanya adı, teyit/due/pencere saatleri, alıcı saat dilimi, kayıt durumu ve iptal nedeni içerir. Kişi alanları, transcript, evidence_reference ve internal ID dönmez. Pending için window_expired statement_timestamp ile türetilir; bu kalıcı missed veya takip görevi oluşturulduğu anlamına gelmez.
 - Sorgu şeması kaynak testleri31 gün sınırı, eksik/uygunsuz cursor, geçersiz durum ve fazladan tenant alanını kapsar. HTTP fixture owner boş liste/no-store, unauth401 ve assigned-only403 için genişletildi. OpenAPI üretildi. Test/typecheck/lint/build/browser çalıştırılmadı.
 - DB migration yok. Calendar client, pozitif veri/tenant izolasyonu/mikro saniyeli pagination testleri, teyit runtime yazımı, callback dispatch/missed yaşam döngüsü ve takip görevi işleri açık. Bu read API çağrı planlamaz veya göndermez; Faz9 ve goal aktif.
+
+
+### 2026-10-27 — Geri arama takvimi arayüzü
+
+- /app/callbacks route, TR/EN başlık/menü ve caller.campaigns.read koruması eklendi. Tenant+actor değişiminde sayfa yeniden oluşturulur. Merkezi callbackCalendar RTK Query istemcisi tam cursor timestamp'ını dönüştürmeden taşır; filtre değişiminde cursor sıfırlanır.
+- UTC olarak açık etiketlenmiş ilk/son gün filtresi, dahil son günün API exclusive end'e çevrilmesi,1–31 günlük doğrulama, durum filtresi,7 gün geri/ileri ve kampanya satırından daraltma bulunur. Varsayılan bugün dahil7 gün. Gruplar UTC gününe göre; her planın due/pencere saati recipient_timezone ile gösterilir. Tarayıcının desteklemediği timezone'da açık UTC fallback vardır.
+- Sayfalı görünüm pending/canceled, pencere geçmiş gözlemi, teyit saati ve iptal nedenini gösterir. Pencere geçmiş pending kayıt “sonuç bekleniyor” olarak etiketlenir; missed lifecycle veya görev üretimi olmuş gibi gösterilmez. Call mutation kontrolü yoktur. Loading/error/empty/retry, ilk/sonraki sayfa ve odak dışını atlayan10 saniyelik polling eklendi.
+- Test kaynakları UTC dahil/exclusive sınırı, artık gün/yıl geçişi, geçersiz ve uzun aralık, mikro saniyeli cursor korunması, kampanya değişiminde cursor sıfırlanması ve expired gözlemi/read error UI için eklendi. Test/typecheck/lint/build/browser çalıştırılmadı; formatter ve kaynak/diff incelemesi yapıldı.
+- API/DB değişmedi. Gerçek browser/a11y, pozitif API pagination/tenant kabulü ve callback teyit/dispatch/missed/görev yaşam döngüsü açık; Faz9 ve goal devam ediyor.
