@@ -213,3 +213,12 @@ Yerel haisly_caller için backups/haisly-caller-pre-survey-sessions-2026-10-27/h
 - İlk capture ve sonradan inclusion mevcut aktif kaynak liste denetimini korur; rebind yalnız campaign/snapshot kilidi kullanır. Çağrı başlatma yetkisi üretmez.
 - Karışık started/unstarted seçim, rollback, eksik hedef, stale snapshot, başarılı değişim ve no-op senaryoları mevcut entegrasyon desteğine eklendi. Kullanıcı talimatıyla çalıştırılmadı.
 - Bu internal primitive henüz public komut değildir. Yetki/idempotency/audit/campaign version artırma, final release ve test kapıları sonraki yayın komutunda aynı transaction içinde bağlanacak. F04-T06 ve Faz 4 açık; canlı yayın/dispatch kapalıdır.
+
+### 2026-10-27 — Kampanyaya alınmış hedeflerin API/client görünümü
+
+- `GET /api/v1/campaigns/:public_id/targets` eklendi: campaign read + contact/list manage, tenant kapsamı, repeatable-read, no-store, en fazla100 kayıt ve UUID sayfalama. All/unstarted/started filtresi; sayaçlar tüm kampanya hedeflerini gösterir.
+- Kaynak önizlemesinden ayrı kalıcı hedef geçmişi; hedefteki isim, bağlı snapshot public ID/numarası, deneme sayısı/tarihi ve tarihsel kaynak ilişkileri döner. Kaynak isim/arşiv durumu günceldir. Üyelik silinmesi hedefi ve kaynak izini gizlemez.
+- Kimlik revizyonu değişmiş hedefte güncel telefon tamamen gizlenir, değişiklik işaretlenir; diğerlerinde yalnız maskeli telefon vardır. Internal ID, raw telefon, izin kanıtı veya özel agent içeriği dönmez.
+- Client kayıtlı kampanya paneline filtreli, sayfalı hedef görünümü eklendi. Veri başka kampanya/sürüm/filtreye aitse gösterilmez; yükleme/hata/boş durumları ve yenileme vardır.
+- Backend senaryoları auth/404/query sınırı, no-store, geçmiş kaynaklar, kimlik gizleme, filtreli sayaçlar ve cursor sayfalama için genişletildi. OpenAPI üretildi. Kullanıcı talimatıyla test/typecheck/lint/build/browser çalıştırılmadı.
+- DB migration gerekmedi; 096 hedef tabloları kullanılır. Public yayın/inclusion/rebind komutları, canlı yayın kapıları ve final doğrulama hâlâ açık; Faz4 ve goal tamamlanmadı.
