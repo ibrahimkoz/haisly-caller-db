@@ -629,3 +629,11 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Kurallar draft read, immutable snapshot, definition hash ve clone içine bağlandı. Önceki snapshotlarda alan yoksa boş kural kabul edilir. Kurallar boşken önceki definition hash şekli korunur. Preflight arşivlenmiş/eksik ekipleri engeller. Kurallar snapshot içinde donduğu için sonraki taslak değişikliği geçmiş görüşmenin kuralını değiştirmez.
 - OpenAPI üretildi. Transaction tabanlı preserve/clear, soru/eşik/geçersiz ekip/type/archived davranışı testi yazıldı; çalıştırılmadı. Yerel haisly_caller yedeklenip 137 uygulandı; üretime dokunulmadı. Test DB migrasyonları ve test/typecheck/lint/build finalde.
 - Bu dilim görev üretmez. Marketing ilgi/belirsiz sonuç kuralları, client kural editörü, çalışan role uygunluğu, action reservation/consumer/task dedupe, hedef iş günü hesabı ve yönetici bildirimi açık.
+
+### 2026-10-27 — Client kampanya düşük memnuniyet kural editörü
+
+- Kampanya formuna scale sorusu + aktif ekip seçimi, varsayılan/özel eşik, automatic/review modu, 1–30 iş günü ve kural kaldırma eklendi. Ekipler cursor sayfalanır; mevcut users.manage yetkisi olmadan ekip listesi çağrılmaz. Bu izin olmadan yeni ekip seçilemez, mevcut kurallar korunarak diğer alanlar düzenlenebilir.
+- Formdan API'ye kurallar açıkça taşınır; mevcut kampanyayı açarken kurallar kaybolmaz. Soru silme/tip/ölçek değişiminde ve marketing'e geçişte geçersiz kurallar client şemasında reddedilir. Kurallar sessizce temizlenmez. Backend aynı kontrolleri ayrıca uygular.
+- Eşik varsayılanları açıklanır; rule başına soru uyarısı, arşivli ekip etiketi, API preflight ekip hatası TR/EN karşılığı ve form-level hata vardır. Rule paneli kampanya kilidine uyar. Otomatik task işleme henüz olmadığı ekran metninde belirtilir.
+- Model validasyon ve kural bileşeni invalid/remove/read-only testleri yazıldı; kullanıcı talimatıyla çalıştırılmadı. Browser/görsel/erişilebilirlik ve gerçek API entegrasyon kontrolleri finalde açık.
+- Ekip seçeneklerini kampanya editörlerine özel dar bir read yetkisiyle sunma, marketing kuralları ve görev üretimi entegrasyonu sonraki dilimlerde açık. DB/API bu dilimde değişmedi.
