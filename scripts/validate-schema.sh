@@ -1542,3 +1542,15 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='115_provider_circuit_state.sql') THEN
+  IF to_regclass('public.caller_provider_circuits') IS NULL OR to_regclass('public.caller_provider_circuit_receipts') IS NULL
+   OR to_regclass('public.caller_provider_circuits_due_idx') IS NULL
+   OR (SELECT count(*) FROM pg_trigger WHERE tgname IN ('caller_provider_circuit_guard','caller_provider_circuit_receipt_guard') AND NOT tgisinternal AND tgenabled='O')<>2 THEN
+   RAISE EXCEPTION 'Provider circuit persistence safeguards missing';
+  END IF;
+ END IF;
+END $$;
+SQL
