@@ -1356,3 +1356,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='098_create_billing_tariff_versions.sql') THEN
+  IF to_regclass('public.billing_tariff_versions') IS NULL
+   OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='billing_tariff_version_guard' AND NOT tgisinternal AND tgenabled='O') THEN
+   RAISE EXCEPTION 'Billing tariff schema incomplete';
+  END IF;
+ END IF;
+END $$;
+SQL
