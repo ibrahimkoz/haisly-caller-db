@@ -1367,3 +1367,16 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='099_create_billing_ledger.sql') THEN
+  IF to_regclass('public.billing_accounts') IS NULL OR to_regclass('public.billing_ledger_entries') IS NULL
+   OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='billing_ledger_apply' AND NOT tgisinternal AND tgenabled='O')
+   OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='billing_ledger_post' AND NOT tgisinternal AND tgenabled='O')
+   OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='billing_account_guard' AND NOT tgisinternal AND tgenabled='O') THEN
+   RAISE EXCEPTION 'Prepaid ledger schema incomplete';
+  END IF;
+ END IF;
+END $$;
+SQL
