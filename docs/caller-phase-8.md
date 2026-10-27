@@ -165,3 +165,10 @@
 - Worker bağımsız10sn probe monitor döngüsü ekler;1dk circuit beklemesi korunur. Checks/failures/recovered/unverified/son başarılı API turu metrikleri ayrı;30sn başarılı probe-check yoksa readiness başarısızdır. idle sağlıklı monitor turudur; stale/unverified recovery sayılmaz. Dispatch bayrağı kapalı ve müşteri araması yoktur.
 - Runtime auth/strict body/boş allowlist/scope iptali, selector üzerinden bound stub recovery ve monitor kapanış/stale/error senaryoları yazıldı. OpenAPI üretildi. Test/typecheck/lint/build/browser çalıştırılmadı; worker başlatılmadı, gerçek sağlayıcıya istek yapılmadı.
 - Dağıtımda API→worker sırası gerekir. Gerçek staging hesabı ve SIP/test hattı hâlâ sağlanmadı; agent GET yalnız ElevenLabs API erişimini gösterir. SIP yetkinlik/numara sahipliği, çağrı dispatcher ve diğer fazlar açık; goal aktif.
+
+### 2026-10-27 — Tenant sağlayıcı devre kesici görünümü
+
+- `GET /telephony-provider-accounts/:public_id/circuit`, agents.read ve tenant kapsamıyla salt-okunur repeatable-read/no-store gözlem verir. Circuit yoksa null döner ve kayıt oluşturmaz. Probe süresi dolmuşsa etkin bekleme durumu saf policy ile hesaplanır; DB versiyonu değiştirilmez. Secret/ref/token/epoch/kanıt dışarı verilmez.
+- Provider detay drawer'ına10sn odaklı polling paneli eklendi: devre durumu, ardışık hata, kesinti başlangıcı, en erken probe zamanı/probe hakkı bitişi, bekleyen/kuyruklanmış bildirim ve son kontrol. Queued teslimat sayılmaz; closed hat sahipliği/SIP uygunluğu/arama izni değildir. Reset/retry/arama butonu eklenmedi.
+- API null state'in yazmaması, auth/tenant izolasyonu, açık/devam eden/expired görünüm ve özel alanların yokluğu; client bilinmeyen bağlantı, bekleyen bildirim ve teslimat ayrımı test kodu eklendi. OpenAPI üretildi; test/typecheck/lint/build/browser çalıştırılmadı. Yeni migration yok.
+- Gerçek provider/STAGING/SIP girdileri, tam outbound gönderim ve reconciliation/campaign lifecycle ile kalan fazlar açık. Bu görünüm canlı entegrasyon kabulü değildir; goal aktif.
