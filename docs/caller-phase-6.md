@@ -571,3 +571,12 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Genel runtime outbox/inbox publishing validator ve servisinde bu exact topic server-owned olarak ayrıldı; runtime.jobs.write ile sahte correction event/receipt oluşturulamaz. OpenAPI bu kısıtı açıklar ve yeniden üretildi. Existing topic'ler etkilenmez.
 - Test kodu start/answer/revise olay sırası, iptal edilmiş transactionda event olmaması, replay'lerde beş survey geçişi için beş olay, payload privacy ve generic signed event yayınında reserved topic reddi için genişletildi. Kullanıcı talimatıyla test/typecheck/lint/build çalıştırılmadı.
 - Domain event üretimi bağlandı; correction tüketicisinin CRM sonucu güncellemesi, dedupe lead/task davranışı, retry/dead-letter/retention ve tam uçtan uca kabulü halen açık. Yeni migration/dış çağrı yok; Faz6/goal aktif.
+
+
+### 2026-10-27 — Olay sürümüne göre anket sonucu okuma (migration135)
+
+- readSurveyChange internal consumer/report primitive'i tenant/topic/public event ID ile kayıtlı olayı okur; event key, survey/target/snapshot ve sürüm bağını kontrol eder. Güncel answer disposition yerine olay sürümünde geçerli revision'lar seçilir; sonradan superseded olmuş cevap eski olayda kaybolmaz. Koşullu akış aynı sabit soru tanımı üzerinden yeniden hesaplanır.
+- Çıktı event/current version, stale ve identity_current bayraklarıyla yapılandırılmış geçmiş sonucu taşır. Stale olay yeni CRM sonucunu ezmemeli; identity_current aksiyon yetkisi değildir. Servis public runtime endpointi değildir; çağıran cevap okuma yetkisini sağlamalı, içerik log/cache/audit/outbox'a kopyalanmamalıdır. Transaction içinde dış çağrı yapılmaz.
+- Tek SQL lateral sorgusu en fazla100 sabit soru için son recorded_version<=event.version revision'ını alır, geçersizleşme sınırını kontrol eder. Migration135 tenant/session/question/recorded_version DESC indeksini ekler. Sınırsız cevap geçmişini uygulamaya yüklemez; nihai EXPLAIN/load doğrulaması henüz yapılmadı.
+- Integration test kodu correction sonrası önceki olayın eski cevabı/completed durumunu, yeni olayın skipped/partial sonucunu, start olayında boş cevapları ve yanlış tenant/eksik event reddini kapsar. Kullanıcı talimatıyla test/typecheck/lint/build çalıştırılmadı. Consumer dispatch/dedupe ve CRM görev düzeltme bağlantısı halen açık.
+- Migration135 yalnız loopback haisly_caller kimliği doğrulanıp pg_dump yedeği alındıktan sonra atomik uygulandı. Test DB'lerine henüz uygulanmadı. Rollback yalnız yardımcı indeksi kaldırır; üretim uygulanmadı. Faz6/goal aktif.
