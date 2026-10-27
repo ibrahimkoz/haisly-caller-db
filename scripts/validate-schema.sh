@@ -1574,3 +1574,11 @@ DO $$ BEGIN
  AND to_regclass('public.caller_calling_policy_publication_key') IS NULL THEN RAISE EXCEPTION 'Calling policy publication receipt index missing'; END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='118_calling_policy_cancellations.sql') THEN
+  IF to_regclass('public.caller_calling_policy_cancellations') IS NULL OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='caller_calling_policy_cancellation_guard' AND NOT tgisinternal AND tgenabled='O') THEN RAISE EXCEPTION 'Calling policy cancellation safeguards missing'; END IF;
+ END IF;
+END $$;
+SQL
