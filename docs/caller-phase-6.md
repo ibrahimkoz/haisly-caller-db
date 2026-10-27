@@ -804,3 +804,12 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Depolama okuma/yazma/şema hatasında yeni create gönderimi durur. Recovery varken yeni create formu kilitlenir. Tenant/actor keyed page sınırı korunur. Aynı sekmede reload/route dönüşü kapsamda; sekme kapatma veya sessionStorage'ın kullanıcı tarafından temizlenmesi kapsam dışında.
 - Helper test kaynakları exact payload, tenant/actor izolasyonu, farklı istek üzerine yazma reddi, yanlış key ile silmeme ve bozuk kaydı korumayı kapsar. Recovery component test kaynağı otomatik gönderim olmaması, belirsiz sonuçta koruma, exact retry ve başarıda temizlemeyi kapsar. Test/typecheck/browser çalıştırılmadı; yalnız kaynak/diff incelemesi ve formatter kullanıldı.
 - API/DB kontrat ve migration değişmedi. Görev durum/erteleme reload recovery'si, gerçek browser kabulü ve diğer Faz9 işleri açık; goal tamamlanmış değildir.
+
+
+### 2026-10-27 — Görev durum ve erteleme reload kurtarması
+
+- Durum/erteleme POST öncesinde tenant+actor kapsamında tek pending istek sessionStorage'a kaydedilir: işlem türü, görev UUID, ilk sürüm, key ve minimal body. Strict şema yanlış tür/body/sürümü reddeder. Yeni işlem eski pending üzerine yazamaz; başka tenant veya kullanıcı kaydı okunmaz.
+- Sayfa mount'unda recovery okunur; liste veya edit drawer'ında ayrı panel kullanıcı isteğiyle aynı POST'u gönderir. Yeni state formu pending/depolama hatası sırasında kilitlidir. Başarı eşleşen key'i temizler ve güncel göreve gider; kesin hata sonrası durum kontrolü mesajı, belirsiz hatada korunan kayıt ve retry sunulur. Arşivlenmiş/değişmiş erişimde mevcut API yetki/receipt sırası uygulanır.
+- Önceden gönderilmiş snooze'un tarihi geçmiş olabilir; storage şeması yalnız ISO datetime doğrular ve future şartı koymaz. Böylece API'nin receipt öncelikli replay davranışı korunur. Yeni snooze için API gelecek tarih kuralı değişmedi.
+- Kaynak testleri özgün sürüm/key korunması, actor/tenant izolasyonu, overwrite/yanlış-key clear reddi, bozuk kayıt, geçmiş tarihli snooze replay, otomatik gönderim olmaması ve definitive403 temizliği için eklendi. Test/typecheck/lint/build/browser çalıştırılmadı. Formatter ve kaynak/diff incelemesi yapıldı.
+- API/DB değişmedi. Aynı sekme reload/route dönüşü kapsanır; sekme kapatma/storage temizliği kapsamında değil. Gerçek browser ve iki bağlantılı API kabul kanıtları final doğrulamada açık; Faz9 ve sonraki fazlar devam ediyor.
