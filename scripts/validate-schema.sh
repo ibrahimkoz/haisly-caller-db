@@ -1415,3 +1415,17 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='103_fix_billing_tariff_platform_actor.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conname='billing_tariff_platform_actor_fkey'
+    AND conrelid='public.billing_tariff_versions'::regclass
+    AND confrelid='public.platform_admin_users'::regclass)
+   OR EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='public'
+     AND table_name='billing_tariff_versions' AND column_name='published_by_user_id') THEN
+   RAISE EXCEPTION 'Billing tariff platform actor schema incomplete';
+  END IF;
+ END IF;
+END $$;
+SQL
