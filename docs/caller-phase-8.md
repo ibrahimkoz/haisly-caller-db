@@ -67,3 +67,10 @@
 - Client en erken UTC tekrar zamanını, retle sonuçlanan tekrar sayısını ve inceleme nedenini gösterir. Açılmış geçmiş uygulama odaktayken10sn aralıkla yenilenir; arka plan yenilemede mevcut görünüm silinmez. ready yalnız teknik beklemenin kalkmasıdır; diğer gate'lerin yerine geçmez.
 - API pagination'dan bağımsız özet senaryosu ve client bekleme/inceleme açıklaması testleri yazıldı; kullanıcı talimatıyla çalıştırılmadı. OpenAPI üretildi. DB migration gerekmedi.
 - Operatör görev/bildirim ve yetkili inceleme çözüm komutu, provider doğrulaması, tam dispatch/yayın ve diğer faz işleri açık; goal aktif.
+
+### 2026-10-27 — Belirsiz gönderim ve rezervin atomik güncellenmesi
+
+- Internal `markDispatchUncertain`, submitting→uncertain geçişini ve bağlı maliyet rezervinin held→uncertain güncellemesini aynı transaction içinde yapar. Mevcut tenant/account kilit sırasını korur; timeout ret olarak yorumlanmaz ve para serbest bırakılmaz.
+- Aynı kanıt replay rezerv versiyonunu veya geçiş geçmişini tekrar artırmaz; farklı kanıt mevcut sonucu değiştiremez. Transaction rollback her iki durumu ve geçmişi geri alır.
+- Entegrasyon senaryolarına rollback, aynı/farklı kanıt replay ve bakiye/rezerv korunması eklendi. Belirsiz rezervi doğrudan release etmenin mevcut DB100 guard'ında reddedilmesi beklentisi güncellendi. Testler kullanıcı talimatıyla çalıştırılmadı.
+- DB migration ve client sözleşme değişikliği gerekmedi. Bu servis henüz gerçek sağlayıcı timeout akışına bağlı değil; provider reconciliation/worker, tam yayın ve Faz4–13 kalan işleri açık. Goal aktif.
