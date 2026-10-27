@@ -104,3 +104,10 @@
 - DB114 tenant+campaign+state INCLUDE(reservation_id) indeksi özel yerel dump sonrası uygulandı. Büyük üretim tablosu için concurrent indeks oluşturma dağıtım notu eklendi; üretim değişmedi. Sorgu planı/ölçek ve restore/rollback kabulü finalde yapılacak.
 - API boş durum, auth/tenant izolasyonu, aynı kişinin farklı gönderimleri, settled/released/pending sayımı; client sayaç açıklamaları test kodu eklendi. OpenAPI üretildi. Test/typecheck/lint/build/schema/browser çalıştırılmadı.
 - Bu ilk operasyon özeti yayın/dispatch açmaz (`dispatch_available:false`). Ayrıntılı uygunluk/bekleme nedenleri, tenantlar arası kapasite, provider/worker arıza ve görev başarısızlıkları, lifecycle kontrol komutları hâlâ açık. Faz8 ve goal aktif.
+
+### 2026-10-27 — Sağlayıcı devre kesici karar modülü
+
+- Saf provider circuit policy üç ardışık bağlantı hatasında açılır; doğrulanmış erişilebilirlik kapalı durumdaki hata serisini sıfırlar. Açıkken yeni çağrı izni verilmez;1dk sonra tek probe claim edilebilir. Probe yalnız authenticated salt-okunur health/status sorgusudur, müşteri araması değildir.
+- Probe30sn lease ile sınırlıdır. Süre aşımı/başarısızlık devreyi açık tutar; orijinal kesinti başlangıcı korunur, sonraki probe1dk bekler. Epoch ve probe token eski/geç başarı veya hatanın yeni devre durumunu değiştirmesini engeller.15dk sürekli kesintide alert_due oluşur; acknowledged işareti yalnız notification outbox ile aynı transaction'da saklanmalıdır.
+- Invalid persisted state ve geriye giden saat reddedilir. Eşik, reset, tek probe, yanlış token/epoch, süresi dolan worker, başarısız probe ve15dk bildirim sınırı unit senaryoları yazıldı; kullanıcı talimatıyla çalıştırılmadı.
+- Henüz kalıcı provider row/observation dedup, atomik claim, gerçek read-only adapter, worker ve notification outbox bağlantısı yok. Saf modül kendi başına eşzamanlı worker kilidi veya canlı arama koruması değildir; dönen state provider kilidi altında saklanmalıdır. API/client/migration değişmedi. F08-T04 ve goal aktif.
