@@ -849,3 +849,13 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Sayfalı görünüm pending/canceled, pencere geçmiş gözlemi, teyit saati ve iptal nedenini gösterir. Pencere geçmiş pending kayıt “sonuç bekleniyor” olarak etiketlenir; missed lifecycle veya görev üretimi olmuş gibi gösterilmez. Call mutation kontrolü yoktur. Loading/error/empty/retry, ilk/sonraki sayfa ve odak dışını atlayan10 saniyelik polling eklendi.
 - Test kaynakları UTC dahil/exclusive sınırı, artık gün/yıl geçişi, geçersiz ve uzun aralık, mikro saniyeli cursor korunması, kampanya değişiminde cursor sıfırlanması ve expired gözlemi/read error UI için eklendi. Test/typecheck/lint/build/browser çalıştırılmadı; formatter ve kaynak/diff incelemesi yapıldı.
 - API/DB değişmedi. Gerçek browser/a11y, pozitif API pagination/tenant kabulü ve callback teyit/dispatch/missed/görev yaşam döngüsü açık; Faz9 ve goal devam ediyor.
+
+
+### 2026-10-27 — Missed geri arama terminal durumu ve görev bağı
+
+- DB143 caller_callback_plans'a missed terminal durumu, DB-owned missed_at ve tenant-scope follow_up_task_id FK ekler. pending/canceled/missed alan şekilleri ayrı kısıtlanır; missed geçişi yalnız pending kaydın30dk penceresi geçmişse ve pencere sonrası oluşturulmuş, aynı tenant/kişi/identity_revision görevi varsa kabul edilir. Bir görev iki callback'e bağlanamaz. Missed/canceled terminal kayıt tekrar değiştirilemez; kanıt/timing geçmişi silinmez.
+- Kampanya stop trigger'ı ve API finish/drain aday sorguları canceled+missed durumlarını çözümlenmiş sayar; diğer bilinmeyen durumlarda kapalı kalır. Pause/cancel callback işleyicisi sadece pending kayıtları işlemeye devam eder; missed geçmişi iptal adına değiştirilmez.
+- Calendar API state filtresi/DTO/OpenAPI missed ve missed_at ile genişledi. Client filtrede ve etikette kalıcı missed durumunu, sadece window_expired olan pending gözleminden ayırır. Missed etiketi DB'nin zorunlu görev bağını yansıtır.
+- Yerel DB adı/loopback adresi kontrol edildi; pg_dump yedeği700 dizin/600 dosya izinleriyle alındıktan sonra143 transaction içinde uygulandı. Rollback missed/görev bağlı geçmiş varsa reddeder. Bu migration uygulaması davranış testi yerine sayılmaz. Final test DB'lerine143 de uygulanmalı.
+- Callback stop fixture'ına premature missed reddi, pending/canceled null alanları ve canceled→missed reddi kaynak testleri; client missed filter testi eklendi. OpenAPI üretildi. Test/typecheck/lint/build/schema-validator/rollback/browser çalıştırılmadı.
+- Bu dilim DB geçiş sözleşmesidir: süre aşımını tarayan worker, görevi aynı transaction'da üreten servis ve bildirim teslim bağlantısı henüz eklenmedi. Pozitif missed/tenant/kimlik/race kabulü ve callback dispatch bağlama açık. Faz9/goal tamamlanmış sayılmadı.
