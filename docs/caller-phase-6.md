@@ -477,3 +477,11 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Yeni test kodu aynı snapshot/agent/phone/provider correlation ile release capture, outbound call/session, attach/replay, server-derived contact/release scope, boş sabit bilgi manifestinde arama, pinlenmiş appointment_cancel için issue/consume ve exact consumption replay akışını kapsar. Runtime satırları sentinel rollback ile geri alınarak mevcut billing/history/stop testlerinin verisi korunur.
 - Yanlış provider hesabı/tenant/environment/contact, aynı session için başka release, aynı dispatch için ikinci session, immutable binding rewrite, parent call provider reference değişimi ve completed call sonrasında runtime erişimi reddi eklendi. Bu senaryolar yalnızca yazıldı; kullanıcı talimatıyla hiçbir test/typecheck/lint/build çalıştırılmadı.
 - Positive HTTP knowledge response/fragment, gerçek paralel attach/consume yarışları, provider session materialization ve sözlü consent/certification kabulü halen açık. Faz6/goal aktif; bu kayıt testlerin geçtiği veya canlı entegrasyonun tamamlandığı anlamına gelmez.
+
+
+### 2026-10-27 — Görüşmeye bağlı anket başlangıcı ve sıradaki soru
+
+- Runtime resolve artık dispatch hedefini tenant/snapshot/contact/identity/campaign eşleşmesiyle kilit altında çözer. Anket başlangıcı ve okuması hedefi ve sabit anket sürümünü bu kayıttan türetir; istemcinin hedef seçimine güvenmez.
+- Internal startSurvey mevcut cevapları korur ve partial anketi otomatik devam ettirmez. readSurvey yalnız aktif ankette sıradaki sorunun gerekli alanlarını döndürür; cevap geçmişi ve koşul ifadeleri runtime çıktısına eklenmez. Partial durumda resume_required, tamamlanan/reddedilen/duraklatılan ankette null soru döner.
+- Yanlış snapshot, pause sonrası soru gizleme/cevap koruma, tamamlanmış anket ve marketing görüşmesinde anket reddi için test kodu eklendi. Kullanıcı talimatıyla test/typecheck/lint/build çalıştırılmadı. Şema veya canlı sağlayıcı değişikliği yok.
+- Bunlar internal transaction primitive'leridir. Başlatma/yeniden devam onayı, cevap komutlarının idempotency receipt ve audit bağlantısı, dış runtime endpointleri ve gerçek provider kabulü halen açık; Faz6/goal aktif. Kullanıcı ElevenLabs/SIP/test hattının henüz hazır olmadığını teyit etti; bağımsız geliştirme sürüyor.
