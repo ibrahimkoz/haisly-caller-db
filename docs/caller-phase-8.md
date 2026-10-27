@@ -203,3 +203,11 @@
 - Kişi tercihlerinde doğrula/kaldır aksiyonları, IANA+kanıt girişi, inceleme/onay ve geçmişte yeni seçim görünümü eklendi. Mevcut stale/retry/version işleyişi kullanılır; telefon kodundan saat dilimi tahmini yapılmaz.
 - API auth/tenant izolasyonu/invalid timezone/kanıt/server timestamp/replay/stale/clear ve client form/request test kodu yazıldı. OpenAPI üretildi; test/typecheck/lint/build/browser çalıştırılmadı. Gerçek sağlayıcı isteği yok.
 - Günlük pencerelerin dispatcher'a bağlanması, ülke/tenant politikası ve unified history sonraki açık işlerdir. Bu dilim yalnız doğrulanmış alıcı saat dilimi verisinin kullanıcı tarafından yönetimini tamamlar; faz ve goal aktif.
+
+### 2026-10-27 — Alıcının günlük saat penceresi hazırlık kontrolü
+
+- prepareProductionIntent güncel kilitli kişi kaydındaki doğrulanmış saat dilimini kullanır. Doğrulama yoksa yalnız tenant şirket ülkesiyle aynı ülkedeki kişi için tenant timezone fallback vardır. Farklı/bilinmeyen ülkede doğrulama yoksa veya doğrulama zamanı gelecekte/geçersizse recipient_timezone_required; telefon kodundan şehir çıkarımı yoktur.
+- Yeni rezervasyon öncesi snapshot çalışma günleri ve saat penceresi alıcının yerel saatinde uygulanır. 09:00–20:00 platform sınırı korunur; başlangıç dahil/bitiş hariç. Pencere/gün dışında blocked + null not_before döner; DST-safe sonraki çalışma zamanı henüz hesaplanmaz, bu sonuç arama yetkisi vermez.
+- Saf temporal policy ile hazırlık ortak calling-window hesabına geçirildi. Yerel tarih/hafta günü ve yaz saati IANA Intl üzerinden çözülür. Hazırlık burada baseline+kampanya kontrolüdür; ülke/tenant tatil ve daha sıkı politika deposu hâlâ açık. Final gönderim anında tüm kontroller tekrarlanmalıdır.
+- Unit saat sınırları/gün/tatil/DST/yabancı ülke/doğrulama; integration gece/future verification durumunda rezervasyon yokluğu kodu yazıldı. Diğer dispatch fixture'ları çalıştırıldığı saatte yerel öğle dilimine alınarak duvar saatine bağlı rastgele başarısızlık önlendi. Test/typecheck/lint/build çalıştırılmadı; migration/public API değişikliği yok.
+- Ülke politikası, unified history, yayın sertifikası/capacity ve dispatcher entegrasyonu kalan işlerdir. Canlı çağrı veya sağlayıcı isteği yapılmadı; goal aktif.
