@@ -188,3 +188,10 @@
 - Tenant kapsamlı hedef geçmişi hedefin kendi snapshot limitini, kalan hak ve limite ulaşılma durumunu döndürür. UI Türkçe/İngilizce gösterir ve kalan hakkın anında arama izni olmadığını belirtir. Taslak değişikliği geçmiş hedef snapshot limitini değiştirmez.
 - Unit sınır/ilk kabul/platform minimum/geçersiz giriş; integration exhausted target'ın rezervasyon/intent yaratmaması ve read sözleşmesi; client limit/izin ayrımı test kodu eklendi. OpenAPI üretildi. Test/typecheck/lint/build/browser çalıştırılmadı; yeni DB migration yok.
 - Bu kontrol tam dispatcher değildir: yayın/test sertifikası, unified history/country/time/capacity ve gönderim anı son kontrolü hâlâ gerekir. Gerçek sağlayıcı çağrısı yapılmadı; kalan fazlar ve goal aktif.
+
+### 2026-10-27 — Kampanya mutlak tarih kapısı
+
+- Çağrı hazırlığı kilitli hedefin snapshot başlangıç/bitiş tarihlerini DB clock_timestamp ile kontrol eder. Başlangıç eksik veya tarih aralığı geçersizse blocked; başlangıçtan önce campaign_not_started + not_before; bitiş anı ve sonrasında campaign_ended döner. Yeni rezervasyon/intent açılmaz. Başlangıç dahil, bitiş hariçtir; mevcut görüşme bu kontrolle kesilmez.
+- Tarih hesabı ortak saf policy üzerinden temporal policy ve tenant scoped geçmiş görünümünde kullanılır. Geçmiş API/client tarih bekleme/eksik/geçersiz/bitmiş durumunu ve UTC başlangıcı gösterir. within_dates yalnız mutlak tarih aralığıdır; günlük saat/ülke kuralları veya yayın izni değildir.
+- Sınır milisaniyeleri, UTC offset, opsiyonel bitiş, eksik/geçersiz tarih unit kodu; rollback fixture ile missing/future/expired snapshot'ta rezervasyon+intent yokluğu integration kodu ve client izin/bitiş ayrımı test kodu yazıldı. OpenAPI üretildi. Test/typecheck/lint/build/browser çalıştırılmadı; migration yok.
+- Geçmiş başlangıç onayı, gerçek yayın sertifikası, günlük/ülke saatleri, unified history/capacity ve gönderim anında yeniden doğrulama hâlâ açık. Bu tarih kapısı expired hedef finalizasyonu veya scheduler tamamlanması anlamına gelmez. Gerçek sağlayıcı çağrısı yapılmadı; goal aktif.
