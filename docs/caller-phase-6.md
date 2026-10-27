@@ -645,3 +645,11 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Entegrasyon testine yetkisiz üyelerin boş ekip kuyruğuna düşmesi, role-permission kaldırma ve user-role revoke sonrası aday eleme senaryoları eklendi; testler çalıştırılmadı. Gerçek iki bağlantılı revoke yarışı ve lock-order doğrulaması finalde açık.
 - İnceleme mevcut FollowUpTaskService'in hâlâ legacy tenant.read/tenant.manage kullandığını gösterdi. Atanmış görev görünürlüğü ve çalışan status/snooze yetkisi bir sonraki güvenlik diliminde uyarlanmalı; bu iş tamamlanmadan otomatik görev consumer canlı akışa bağlanmış sayılmaz. Görev üretimi/aksiyon dedupe ve bildirimler hâlâ açık.
 - Yeni DB migration/dependency yok; client ekranındaki müsaitlik göstergesi görev rol uygunluğu garantisi değildir.
+
+### 2026-10-27 — Atanmış görev API erişimi ve client izinleri
+
+- FollowUpTaskService list/detail/status/snooze artık tenant.read/tenant.manage yerine caller.tasks.assign (tenant geneli) veya caller.tasks.assigned (yalnız auth.userId'ye atanmış) kullanır. Görev oluşturma caller.tasks.assign ister. Atanmamış/başkasının görevi çalışan detay ve mutation isteklerinde 404 verir; liste sorgusu aynı filtreyi SQL'de uygular.
+- Status/snooze transaction'a alındı: tenant identity kilidi, scope filtreli row lock, güncelleme ve audit birlikte. Aynı durum/snooze zamanının tekrarı completion timestamp'ini değiştirmez veya ikinci audit üretmez. Bu tam If-Match/idempotency geçmiş sözleşmesinin yerine geçmez; eşzamanlı farklı komut politikası ayrıca geliştirilecek.
+- Client görev menü/route korumaları yeni caller izinleriyle eşlendi; create route ve düğme çalışanlara kapalı. Legacy büyük görev sayfasında yalnız ilgili izin entegrasyonu değiştirildi; modülerleştirme ve scoped lead/call özet erişimi açık.
+- HTTP entegrasyon senaryosu assigned-only liste, own detail/status, unassigned detail/status reddi ve permission revoke reddi için yazıldı; testler çalıştırılmadı. Gerçek tenant/rol/yeniden atama yarışları, create/snooze negatifleri ve UI izin regresyonları final doğrulamada genişletilecek.
+- OpenAPI üretildi. Yeni migration yok. Otomatik action/task consumer, manuel create transaction/audit/idempotency ve atanacak kişi yetkisi kontrolleri henüz açık; otomatik görev üretimi tamamlanmış sayılmaz.
