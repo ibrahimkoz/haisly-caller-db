@@ -260,3 +260,11 @@
 - API sözleşmesi üretildi; etkin limit/eksik politika/gizli alanlar ve client açıklama test kodu eklendi. Kullanıcı talimatıyla test/typecheck/lint/build/browser çalıştırılmadı. DB şema değişikliği yok.
 - Kullanıcı ElevenLabs staging hesabı/SIP/test hattının henüz hazır olmadığını doğruladı; canlı bağlantı olmadan geliştirmeye devam edilecek. Gerçek sağlayıcı kabulü bu girdiler gelene kadar açık, mock ile tamamlanmış sayılmayacak.
 - Kalan release/lifecycle, unified history, kapasite, dispatcher/provider ve diğer fazlar açık; goal aktif.
+
+### 2026-10-27 — Kampanya duraklatma/iptal kapanış politikası
+
+- Ortak stop-policy hazırlanmış, gönderiliyor, belirsiz ve kabul edilmiş çağrıları ayırır. Onaylanmış duraklatma/iptal isteği değerlendirilirken yeni gönderim engeli korunur; hazırlanmış işler iptal, belirsiz gönderimler mutabakat bekler. Finish seçeneği sonlandırma istemez; graceful_close isteğin zamanından30 saniye sonra sağlayıcı sonlandırma talebi üretir, zamanın dolması çağrıyı bitmiş saymaz.
+- İptalin terminal olabilmesi için tüm gönderimler kesinleşmiş ve bekleyen hedef/geri aramalar iptal edilmiş olmalıdır. Duraklatma bunları iptal etmez. Terminal çağrıdaki maliyet mutabakatı bu kapanış hesabından ayrıdır. Gelecekteki request timestamp/geçersiz sayaçlar reddedilir.
+- Operasyon API/client özeti gönderim öncesi iptal edilebilecek işler, belirsiz gönderimler ve bitişi beklenen çağrıları ayrı gösterir. Bu okuma komut çalıştırmaz; yetki/no-store/tenant kapsamı korunur.
+- Zaman sınırı, belirsiz çağrı, finish/graceful ayrımı, pending-work ve operasyon sözleşmesi/client test kodları eklendi. OpenAPI üretildi. Kullanıcı talimatıyla test/typecheck/lint/build/browser çalıştırılmadı; DB şeması değişmedi.
+- Bu dilim karar mantığı ve etki görünümüdür. Kalıcı onaylı stop komutu, lifecycle migration/event/worker, gerçek hangup, yayın kapıları ve diğer fazlar hâlâ açık; goal aktif.
