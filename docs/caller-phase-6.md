@@ -879,3 +879,9 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - CALLER_CALLBACKS_ENABLED varsayılan false; mevcut CALLER_WORKER_ENABLED ile birlikte gerekir. Monitor idle10s, processed/review1s; aggregate scans/failures/created/dead_letters/needs_review ve30s readiness eklendi. Worker DB'ye doğrudan bağlanmaz; signed API kullanır. Hiçbir flag etkinleştirilmedi, dış çağrı gönderilmez.
 - Kaynak testleri wrong-env/future idle, review/dead-letter DB constraint, unauth401/no-store, default-off ve monitor status/abort davranışları için eklendi. OpenAPI üretildi. Test/typecheck/lint/build/schema-validator/rollback/browser çalıştırılmadı.
 - Kalan: pozitif expiry/replay/rollback/race ve signed-scope/env HTTP kabulü; callback pending-scan index/query plan, needs_review/dead-letter operasyon görünümü ve kontrollü çözüm; callback teyit/dispatch binding/ekip atama. Bu worker kaynak kodda bağlı ama çalıştırılmadı; Faz9 ve goal devam ediyor.
+
+### Callback expiration recovery API — 2026-10-27
+
+Migration 145 adds a monotonically increasing processing receipt version and a pending expiration scan index. Calendar responses now include nullable processing status/version/attempt count/sanitized error code. POST /api/v1/callbacks/:public_id/processing/retry requires campaigns.edit + tasks.assign, Idempotency-Key, If-Match and an audited reason. Only a pending plan with dead_letter processing can be requeued; needs_review cannot be overridden. Replays reuse the receipt without resetting attempts again. No calls are placed and worker flags remain unchanged.
+
+Local haisly_caller was backed up and migrated through 145. OpenAPI regenerated. No tests, typecheck, lint or build run per user instruction. Validation source added; positive retry/replay/concurrency integration coverage and client processing labels/retry interaction remain pending. F9 is not complete.
