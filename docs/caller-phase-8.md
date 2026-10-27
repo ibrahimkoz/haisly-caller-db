@@ -326,3 +326,12 @@
 - Worker, hedef/callback iptali, terminal kararı ve operasyon okuması etkin stop bağını kullanır; eski pause yeni cancel'ı gölgelemez ve aynı intent çift işlenmez. Eski idempotency replay kendi eski makbuzunu döndürür, etkin isteği değiştirmez. Resume hâlâ kapalıdır; gelecekte yetkili resume ile dispatch bariyerleri birlikte ele alınmalı.
 - Yerel DB yedeklenip124 uygulandı. İzole fixture'a hem pausing hem paused iken cancel, kaynak istek zinciri, eski replay, downgrade reddi, tek cancellation/release ve event referansı test kodları eklendi. Test/typecheck/lint/build/schema-validator/rollback/browser çalıştırılmadı; final test DB'lerine124 uygulanmalı. Public HTTP sözleşmesi değişmedi.
 - Public stop onayı/yetki ve graceful sağlayıcı işlemi, resume/yayın, callback tamamlanması ve kalan fazlar açık; goal aktif.
+
+
+### 2026-10-27 — Yetkili kampanya iptal komutu
+
+- POST /api/v1/campaigns/:public_id/stop tenant kimliği ve caller.campaigns.read/publish izinlerini doğrular; If-Match, idempotency key, gerekçe, açık onay ve görülen dört açık çağrı sayısını zorunlu tutar. Tenant kilidi altında sürüm/etki yeniden kontrol edilir; stop kaydı, audit ve makbuz aynı transaction içinde yazılır. Replay eski cevabı döndürür; güncel durum operasyon okumasından alınmalıdır.
+- İşi olmayan taslak aynı transaction içinde canceled olur. Kalan hedef/çağrı/geri arama varsa pausing kalır ve worker tamamlar. Hiç dispatch geçmişi olmayan taslakların hedef temizliği ve terminal geçişi tenant kapsamında yapılabilir; dispatch geçmişi varsa worker provider environment sınırını korur. Bu istisna çağrı gönderme yetkisi vermez.
+- Public pause yayın yaşam döngüsü tamamlanana kadar kapalıdır. Gönderilmiş/belirsiz çağrı varken graceful_close gerçek sağlayıcı sonlandırma desteği bağlanana kadar reddedilir; finish açık çağrıların çözülmesini bekler. Bu dilimde provider isteği veya gerçek kampanya iptali yapılmadı.
+- Yetkisiz/başka tenant, yanlış onay/etki/sürüm, eşzamanlı replay, değişen body, tek audit, terminal düzenleme reddi ve yetki kaldırılınca replay reddi test kodu eklendi. Dispatch geçmişi olmayan hedefli kampanyanın drain/terminal fixture'ı eklendi. OpenAPI üretildi. Kullanıcı talimatıyla test/typecheck/lint/build/browser çalıştırılmadı; sonuçlar final doğrulamada kanıtlanmalı. DB migration yok.
+- Client onay ekranı, yayın/resume, gerçek graceful sonlandırma ve kalan fazlar açık; goal aktif. ElevenLabs/SIP/test hattı kullanıcı tarafından henüz hazır olmadığı doğrulandı; canlı bağlantısız geliştirmeye devam ediliyor.
