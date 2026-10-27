@@ -714,3 +714,12 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Görev detayına yöneticiye özel atama formu bağlandı. Merkezi RTK API, mevcut form/button stilleri, TR/EN, yükleme/boş/hata/başarı, sayfalama ve yenileme kullanılır. İstek sürümü/key/assignee ilk gönderimde dondurulur; belirsiz sonuçta aynı payload yeniden gönderilir ve form seçimi kilitlenir. Kesin409 vb. hata listeyi yeniler.
 - Görev drawer'ının kapatma ve başka görev açma işlemleri pending/uncertain süresince engellenir. Tam sayfa yenileme/sidebar navigasyonu sonrası pending request kalıcılığı henüz sağlanmadı; kullanıcıya formu açık tutması söylenir. Bu sınır final UX kabulünde açık kalır.
 - Client testleri aynı-key retry/donmuş sürüm ve definitive-conflict refresh için yazıldı. HTTP fixture'a assigned-only kullanıcının seçenek okumasının reddi ve unauthenticated kontrolü eklendi. Çalıştırılmadı; pozitif görev/ekip HTTP testi, pagination/race ve browser/accessibility final doğrulaması açık. OpenAPI üretildi. DB şema değişmedi.
+
+
+### 2026-10-27 — Bekleyen görev atamasını sayfa yenilemede koruma
+
+- Client pending assignment kaydı sessionStorage'da tenant UUID + actor UUID + task UUID ile ayrılır. Gönderimden önce public task/assignee UUID, reviewed version ve idempotency key strict Zod doğrulamasıyla saklanır; token, isim, telefon veya anket cevabı tutulmaz.
+- Aynı sekmede sayfa yenileme/sidebar dönüşü formu yeniden açınca kaydı geri yükler; otomatik replay yapmaz. Kullanıcı aynı isteği tekrar deneyerek receipt sonucunu alır. Başarı veya kesin HTTP hatasında eşleşen key silinir; bekleyen farklı istek üzerine yazılmaz. Scope değişiminde React component key tenant/actor/task içerdiği için önceki kullanıcı isteği taşınmaz.
+- Depolama erişimi/yazımı veya kayıt doğrulaması başarısızsa yeni atama gönderilmez. Bozuk kayıt sessizce silinmez; tarayıcı depolama sorununu giderip yeniden açma uyarısı verilir. Sekme kapatma veya tarayıcının sessionStorage'ı temizlemesi kalıcılık kapsamı dışındadır; görev sürümü server'da ayrıca korunur.
+- Exact replay/remount, actor/tenant/task izolasyonu, farklı payload üzerine yazma reddi, yanlış key ile silmeme ve bozuk veri koruma test kodu eklendi. Çalıştırılmadı. Önceki nottaki aynı-sekme reload/sidebar pending state eksikliği kaynak kodda kapandı; gerçek browser ve toplu test doğrulaması hâlâ açık.
+- API/DB kontratı değişmedi; mevcut mutation receipt mekanizması kullanılır.
