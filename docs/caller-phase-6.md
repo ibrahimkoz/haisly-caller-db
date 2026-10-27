@@ -723,3 +723,12 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Depolama erişimi/yazımı veya kayıt doğrulaması başarısızsa yeni atama gönderilmez. Bozuk kayıt sessizce silinmez; tarayıcı depolama sorununu giderip yeniden açma uyarısı verilir. Sekme kapatma veya tarayıcının sessionStorage'ı temizlemesi kalıcılık kapsamı dışındadır; görev sürümü server'da ayrıca korunur.
 - Exact replay/remount, actor/tenant/task izolasyonu, farklı payload üzerine yazma reddi, yanlış key ile silmeme ve bozuk veri koruma test kodu eklendi. Çalıştırılmadı. Önceki nottaki aynı-sekme reload/sidebar pending state eksikliği kaynak kodda kapandı; gerçek browser ve toplu test doğrulaması hâlâ açık.
 - API/DB kontratı değişmedi; mevcut mutation receipt mekanizması kullanılır.
+
+
+### 2026-10-27 — Anket aksiyonu onay/ret API ve geçmişi
+
+- Migration141 caller_survey_action_reviews tablosu action+survey_version başına tek approved/rejected karar, reviewer üyelik FK, 10–500 karakter gerekçe ve tarih tutar. UPDATE yasaktır; INSERT güncel review aksiyonu, aynı survey sürümü ve henüz görev oluşmamış olmasını kilit altında doğrular. Ret aynı sürümde sonradan onaya çevrilmez; yeni cevap sürümü yeni değerlendirme gerektirir. Gerekçe audit metadatasına kopyalanmaz.
+- POST /api/v1/survey-actions/:public_id/review caller.tasks.assign, Idempotency-Key, If-Match (survey version), strict decision/reason ister. Tenant/action/survey/current identity kontrolü yapılır; arşivli veya kimliği değişmiş kişi ve eski cevap reddedilir. Approved kararı + yeniden değerlendirilen frozen kural + görev/atama/bildirim/audit/receipt aynı transaction'da oluşur. Task oluşturulamıyorsa onay da kaydedilmez. Rejected karar görev oluşturmaz.
+- Materializer review modunda sadece aynı sürüme ait kalıcı approved kaydı varsa görev açar. Otomatik mod korunur; worker replay veya manuel tekrar ikinci görev üretmez. Mevcut göreve düzeltme politikası değişmedi.
+-141 yerel DB kimliği doğrulanıp pg_dump yedeğinden sonra uygulandı; dolu review geçmişi rollback ile silinmez. OpenAPI üretildi. Test fixture otomatik/onaylı varyantlara genişletildi; onaysız/retli görev açılmaması, onaylı görev ve mevcut rollback/replay/correction testleri yazıldı. Strict reason/decision testleri eklendi; çalıştırılmadı.
+- Kalan: kanıt içeren review list/detail API, onay kuyruğu UI ve gerekçe formu, HTTP approval replay/tenant/role/stale/concurrency testleri. Faz9 kabulü henüz tamamlanmadı. Bildirim tesliminde yeniden deneme ve isteğe bağlı kanal tercihlerinin tam entegrasyonu ayrıca açık.
