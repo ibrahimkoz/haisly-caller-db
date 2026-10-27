@@ -469,3 +469,11 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - OpenAPI iki endpoint/request/result/error sözleşmesiyle güncellendi ve generate-openapi çalıştırıldı. Bu doküman üretimidir, test/build sonucu değildir. Client management arayüzüne runtime token veya bu endpointler açılmadı.
 - Integration test kodu signed runtime'da scope403, scope verilse de unbound session409, snapshot/release/tenant override400, body413, no-store ve scope revoke403 senaryolarını kapsar. Test rate limit kapalı fixture kullanır; gerçek rate limiter/positive accepted-dispatch retrieval ve kapsamlar arası izolasyonun tam uçtan uca kabulü henüz doğrulanmadı. Kullanıcı talimatıyla test/typecheck/lint/build çalıştırılmadı.
 - Provider/session materialization, verified release certification ve positive dispatch fixture bağlantısı halen açık. Bağlanmamış session bu endpointleri kullanamaz. Şema/sağlayıcı çağrısı değişmedi; Faz6/goal aktif.
+
+
+### 2026-10-27 — Accepted-dispatch runtime bütünleşik test senaryosu
+
+- Mevcut dispatch fixture'ına published agent config ve derlenebilir kampanya talimatları eklendi. Provider accepted event mevcut production transition/receipt yolu ile kaydedildikten sonra verifyBoundRuntime çağrılır; doğrudan dispatch state zorlanmaz. Bu fixture gerçek provider kanıtı değildir.
+- Yeni test kodu aynı snapshot/agent/phone/provider correlation ile release capture, outbound call/session, attach/replay, server-derived contact/release scope, boş sabit bilgi manifestinde arama, pinlenmiş appointment_cancel için issue/consume ve exact consumption replay akışını kapsar. Runtime satırları sentinel rollback ile geri alınarak mevcut billing/history/stop testlerinin verisi korunur.
+- Yanlış provider hesabı/tenant/environment/contact, aynı session için başka release, aynı dispatch için ikinci session, immutable binding rewrite, parent call provider reference değişimi ve completed call sonrasında runtime erişimi reddi eklendi. Bu senaryolar yalnızca yazıldı; kullanıcı talimatıyla hiçbir test/typecheck/lint/build çalıştırılmadı.
+- Positive HTTP knowledge response/fragment, gerçek paralel attach/consume yarışları, provider session materialization ve sözlü consent/certification kabulü halen açık. Faz6/goal aktif; bu kayıt testlerin geçtiği veya canlı entegrasyonun tamamlandığı anlamına gelmez.
