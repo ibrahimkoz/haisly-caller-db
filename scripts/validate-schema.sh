@@ -1567,3 +1567,10 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='117_calling_policy_publication_receipt.sql')
+ AND to_regclass('public.caller_calling_policy_publication_key') IS NULL THEN RAISE EXCEPTION 'Calling policy publication receipt index missing'; END IF;
+END $$;
+SQL
