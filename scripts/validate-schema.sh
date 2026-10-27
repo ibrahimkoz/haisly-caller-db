@@ -1493,3 +1493,12 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='110_index_dispatch_cooldown_history.sql')
+  AND (to_regclass('public.caller_dispatch_phone_end_history') IS NULL OR to_regclass('public.caller_dispatch_campaign_end_history') IS NULL) THEN
+  RAISE EXCEPTION 'Dispatch cooldown history indexes missing';
+ END IF;
+END $$;
+SQL
