@@ -1342,3 +1342,17 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='097_create_survey_sessions.sql') THEN
+  IF to_regclass('public.caller_survey_sessions') IS NULL
+   OR to_regclass('public.caller_survey_answer_revisions') IS NULL
+   OR to_regclass('public.caller_survey_answer_active_idx') IS NULL
+   OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='caller_survey_session_guard' AND NOT tgisinternal AND tgenabled='O')
+   OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='caller_survey_answer_guard' AND NOT tgisinternal AND tgenabled='O') THEN
+   RAISE EXCEPTION 'Survey session schema incomplete';
+  END IF;
+ END IF;
+END $$;
+SQL
