@@ -1392,3 +1392,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='101_create_billing_budget_limits.sql') THEN
+  IF to_regclass('public.billing_budget_limits') IS NULL
+   OR NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgname='billing_budget_limit_guard' AND NOT tgisinternal AND tgenabled='O') THEN
+   RAISE EXCEPTION 'Billing budget schema incomplete';
+  END IF;
+ END IF;
+END $$;
+SQL
