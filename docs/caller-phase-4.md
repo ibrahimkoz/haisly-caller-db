@@ -222,3 +222,12 @@ Yerel haisly_caller için backups/haisly-caller-pre-survey-sessions-2026-10-27/h
 - Client kayıtlı kampanya paneline filtreli, sayfalı hedef görünümü eklendi. Veri başka kampanya/sürüm/filtreye aitse gösterilmez; yükleme/hata/boş durumları ve yenileme vardır.
 - Backend senaryoları auth/404/query sınırı, no-store, geçmiş kaynaklar, kimlik gizleme, filtreli sayaçlar ve cursor sayfalama için genişletildi. OpenAPI üretildi. Kullanıcı talimatıyla test/typecheck/lint/build/browser çalıştırılmadı.
 - DB migration gerekmedi; 096 hedef tabloları kullanılır. Public yayın/inclusion/rebind komutları, canlı yayın kapıları ve final doğrulama hâlâ açık; Faz4 ve goal tamamlanmadı.
+
+### 2026-10-27 — Kampanya arayan numara seçimi (F04/F07 kısmi)
+
+- DB108 ile draft sürümüne nullable outbound_phone_number_id ve tenant birleşik FK/index eklendi. Yerel haisly_caller özel dump sonrasında migration uygulandı; rollback seçim mevcutsa durur. Schema kontrolü yazıldı, çalıştırılmadı.
+- API settings.outbound_phone_public_id opsiyonel: eski istemcinin eksik alanı seçimi korur, null temizler; yeni seçim yalnız aynı tenantın aktif kaydından yapılır. Numara kaydının aktif olması doğrulama sayılmaz. Snapshot/definition hash yeni seçim içeriğini kapsar; eski immutable snapshot'lar yeniden yazılmaz. Clone numarayı sıfırlar.
+- Sayfalı /campaign-phone-options tenant numaralarını secret/provider ref/metadata olmadan sunar. Client formunda seçim, sayfalama, boş/hata/yüklenme ve sayfa dışındaki kayıtlı seçim görünümü eklendi.
+- Preflight eksik/kullanılamayan numarayı ayrı bildirir; aktif numarada da outbound_phone_verification_pending kalır. Sahiplik, global aktif atama tekilliği, numara/provider konfigürasyon revizyonunu sabitleme, adapter yetenekleri, ülke allowlist ve gerçek test kanıtı henüz bağlanmadı. Canlı yayın açılmaz.
+- Entegrasyon senaryoları foreign/inactive reddi, DB tenant FK, geriye uyumlu eksik alan, null ile temizleme, seçenek izolasyonu ve doğrulama engeli için eklendi. OpenAPI üretildi; kullanıcı talimatıyla test/typecheck/lint/build/browser çalıştırılmadı.
+- Faz4/Faz7 ve genel goal tamamlanmadı. Provider aktivasyon komutları, kayıt/onay davranışı ve gerçek hesap kabulü sonraki bağımlılıklardır.

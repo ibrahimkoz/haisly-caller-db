@@ -1471,3 +1471,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='108_add_campaign_outbound_phone.sql') THEN
+  IF to_regclass('public.caller_campaign_outbound_phone_idx') IS NULL
+   OR NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conname='caller_campaign_outbound_phone_fk' AND conrelid='public.caller_campaign_versions'::regclass) THEN
+   RAISE EXCEPTION 'Campaign outbound phone schema incomplete';
+  END IF;
+ END IF;
+END $$;
+SQL
