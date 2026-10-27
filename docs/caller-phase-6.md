@@ -732,3 +732,11 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Materializer review modunda sadece aynı sürüme ait kalıcı approved kaydı varsa görev açar. Otomatik mod korunur; worker replay veya manuel tekrar ikinci görev üretmez. Mevcut göreve düzeltme politikası değişmedi.
 -141 yerel DB kimliği doğrulanıp pg_dump yedeğinden sonra uygulandı; dolu review geçmişi rollback ile silinmez. OpenAPI üretildi. Test fixture otomatik/onaylı varyantlara genişletildi; onaysız/retli görev açılmaması, onaylı görev ve mevcut rollback/replay/correction testleri yazıldı. Strict reason/decision testleri eklendi; çalıştırılmadı.
 - Kalan: kanıt içeren review list/detail API, onay kuyruğu UI ve gerekçe formu, HTTP approval replay/tenant/role/stale/concurrency testleri. Faz9 kabulü henüz tamamlanmadı. Bildirim tesliminde yeniden deneme ve isteğe bağlı kanal tercihlerinin tam entegrasyonu ayrıca açık.
+
+
+### 2026-10-27 — Güncel anket inceleme kuyruğu ve kanıt API'si
+
+- GET /api/v1/survey-actions/reviews caller.tasks.assign kapsamında cursor sayfalı pending kuyruğu döndürür. Sadece review kararlı, görev bağlantısı olmayan, aynı sürümde kararı bulunmayan, güncel survey ve kişi kimliğine bağlı aksiyonlar görünür. Tenant tüm ilişkilerde sınırlandırılır; 50 varsayılan/100 üst limit. Arşivli ekipler ret kararı verilebilsin diye işaretli olarak görünür.
+- GET /api/v1/survey-actions/:public_id/review tenant identity kilidi altında güncel outbox evidence ve frozen snapshot kuralını yeniden değerlendirir. Soru/ölçek/skor/eşik/cevap sequence, snapshot UUID, kampanya adı, ekip ve iş günü hedefi döner. Diğer cevaplar, kişi adı/telefonu/transcript dönmez. Eski veya işlenmiş inceleme404, tutarsız kanıt409 olur; POST karar sırasında uygunluk tekrar doğrulanır.
+- Her iki route success/error no-store kullanır. OpenAPI list/detail sözleşmeleri eklendi ve üretildi. Strict pagination, owner empty queue/no-store ve assigned-only/unauthenticated erişim reddi test kodu eklendi; çalıştırılmadı.
+- DB değişikliği yok. Pozitif kanıt projection/tenant/identity düzeltme, pagination ve review race HTTP testleri ile UI onay kuyruğu sonraki işlerdir. Liste canlı görünüm; sayfalama arası kayıt değişimleri snapshot garantisi taşımaz.
