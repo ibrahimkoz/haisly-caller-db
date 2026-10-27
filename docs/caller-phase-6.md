@@ -1159,3 +1159,11 @@ Added GET /api/v1/calls/:call_public_id/outcomes under calls.read with tenant is
 The response contains no transcript, answer values, evidence references, customer content or internal IDs. Missing marketing/survey data stays null. Quality remains null pending the evaluation projection; no success/evaluation is inferred from call completion. This endpoint is a current persisted-state read, not a finalization certificate or provider observation writer.
 
 OpenAPI generated; added unrun bound-result source assertions for completed-call/noninterested separation, revision3/no inherited consent, source context and wrong tenant, plus HTTP authentication/permission/missing-call/no-store scenarios. Tests/typecheck/lint/build/browser remain deferred. DB160 unchanged; client integration, final result snapshot/quality, provider observation wiring and all later open tasks remain pending. Goal active; no live calls or deployment.
+
+### Call outcome client summary — 2026-10-28
+
+Outbound call detail summary now reads the separated outcomes endpoint through the central RTK Query API. It shows connection status/classification independently of marketing interest, request, revision-specific confirmation and observation stage. Missing results are explicitly not recorded; quality remains unavailable, not scored. Survey progress is clearly described as current target/campaign-version state that may include later call continuation. Legacy unbound calls are labelled without campaign results.
+
+Dedicated component uses only matching current-response data, hides cached outcomes on error, supports loading and explicit refresh, and is mounted only for the current outbound detail. Added unrun component source cases for completed/noninterested separation, absent confirmation, survey scope, absent observation, access error and stale other-call response. No transcript/answer content or evidence references are fetched by this component.
+
+API/DB progress-only commits; schema160 unchanged. Tests/typecheck/lint/build/browser remain deferred, including responsive and accessibility verification. Provider observation/finalization wiring, immutable final result/quality projection and remaining phases still open. Goal active; no live calls/deployment.
