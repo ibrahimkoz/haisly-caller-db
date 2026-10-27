@@ -235,3 +235,11 @@
 - DB117 actor+idempotency key unique makbuz/hash çifti ekler. Replay stale/tarih kontrolünden önce aynı public sonucu verir; farklı içerik409. Politika+makbuz+management audit tek transaction'dadır. Shared/exclusive policy kilidi korunur. Aktif permission kilidi ortak management helper'a çıkarıldı; mevcut billing davranışı aynı permission wrapper'ı kullanır.
 - Yerel DB pg_dump sonrası117 uygulandı; gerçek politika yayınlanmadı. API sözleşmesi üretildi. Integration auth/CSRF/geçersiz sınırlar/paralel replay/stale/future/current/sayfalama/tek audit kodu eklendi; test/typecheck/lint/build/schema-validator/rollback çalıştırılmadı. Final izole DB'lere116–117 uygulanmalı.
 - Client yönetim ekranı, planlı sürüm iptal/öne alma, etkin kısıt görünümü ile kalan scheduler/release/provider işleri açık. Goal aktif.
+
+### 2026-10-27 — Platform arama politikası ekranı
+
+- /management Arama politikaları bölümü management.operations.read ile açılır; yayınlama operations.manage ister. Ülke ISO seçimi ve tenants.read varsa ad/slug aramasıyla tenant seçimi mevcut platform cookie/CSRF transportunu kullanır. Etkin/son sürüm, UTC kontrol zamanı, geçmiş/planlanmış ayrımı,50 sürüm sayfalaması ve gerekçe/kanıt/tatil ayrıntıları görünür.
+- Yeni sürüm formu alıcı yerel gün/saat,1–5 deneme, kapalı tarihler, kanıt/gerekçe ve explicit ISO+offset yürürlük zamanını toplar; boş tarih server-now. Yeni kapsam varsayılan kapalıdır. Yayın öncesi payload incelemesi ve açık onay vardır; read-only kullanıcı yayınlayamaz. Tenant katmanının ülkeyi gevşetmediği ve mevcut görüşmeyi sonlandırmadığı anlatılır.
+- Form açıkken kapsam/sekmeler/logout kilitli, kirli veya belirsiz formda route/unload koruması vardır. Belirsiz istek aynı body/key ile tekrar edilir; geçici oturum unmount'unda actor-scoped RAM kaydı aynı kapsama döner. 401/403 belirsiz işi silmez. Tam reload sonrası kalıcı kurtarma henüz yok; mevcut diğer platform yazmalarıyla birlikte final recovery taskında ele alınmalı.
+- Form sınırları/offset/tarih, yayın öncesi inceleme, belirsiz sonuç aynıkey retry ve etkin/planlanmış gösterim test kodu eklendi. Test/typecheck/lint/build/browser çalıştırılmadı. API/DB davranış değişikliği yok; politika gerçekten yayınlanmadı.
+- Planlı sürüm iptal/öne alma, etkin kısıtların tenant görünümü ve kalan dispatcher/release/provider işleri açık. Goal aktif.
