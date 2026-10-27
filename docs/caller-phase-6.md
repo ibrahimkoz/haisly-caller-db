@@ -612,3 +612,12 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Üye çıkarma arşivli ekipte ve pasif kullanıcıda da yapılabilir. Geri ekleme aynı üyelik ID'sini korur, atama sırasını sıfırlamaz. Mevcut görevler yeniden atanmaz. Listede aktif tenant kullanıcısı bilgisi görev rol uygunluğu anlamına gelmez; bu kontrol hâlâ görev atama entegrasyonunda tamamlanacak.
 - OpenAPI güncellendi/üretildi; üyelik alanlarının strict validation testleri ve HTTP oluşturma/eşzamanlı replay/stale sürüm/tenant ayrımı/arşivleme/çıkarma/geri alma entegrasyon senaryosu yazıldı. Testler çalıştırılmadı; test DB 136 dahil migrasyonlarla finalde hazırlanmalı. HTTP rol reddi ve inactive-user senaryoları ayrıca genişletilecek.
 - Client ekip ekranı, rol uygunluğu, kampanya kuralları, task reservation ve bildirimler açık. Yeni migration veya paket yok.
+
+### 2026-10-27 — Client ekip yönetimi ekranı
+
+- `/app/teams` lazy route, sayfa başlığı ve TR/EN menü eklendi; rota ve ekran `users.manage` ile korunur. Tenant değişiminde çalışma alanı yeniden mount olur.
+- Merkezi RTK Query sözleşmeleri ekip oluşturma/listeleme/güncelleme ve üye listeleme/PUT/DELETE API'lerine bağlandı. Mutation sonrası ekip ve audit cache invalidation yapılır. Üyelik listesi kullanıcı değişikliklerinde UserRole tag üzerinden yenilenir.
+- Ekip adı ve arşiv durumu RHF/Zod formuyla yönetilir; aktif tenant kullanıcı seçimi mevcut kullanıcı API'sini kullanır. Üye çıkarma ve müsaitlik işlemleri ekip sürümüyle gönderilir. İç ID/cursor atama bilgisi gösterilmez.
+- Belirsiz mutation sonucu aynı anahtar ve payload ile tekrar edilir; form değerleri ve ekran içi ekip geçişleri kilitlenir. Üye paneli ana liste refetch hatasında kaybolmaz. Sayfadan tamamen ayrılma/reload sonrası pending isteğin geri yüklenmesi sağlanmıyor; kullanıcıya ekranı açık tutma metni gösterilir.
+- Loading/empty/error/permission durumları, cursor ileri/ilk sayfa kontrolleri ve üyelik başarı geri bildirimi eklendi. Editör için belirsiz sonuç/replay ve arşivleme sürümü test kodu yazıldı.
+- Kullanıcı talimatıyla test/typecheck/lint/build/browser çalıştırılmadı. Görsel, erişilebilirlik, route smoke, gerçek API uçtan uca ve üyelik bileşeni senaryoları final doğrulamada açık. Kampanya rule/task entegrasyonu ve görev rol uygunluğu henüz tamamlanmadı.
