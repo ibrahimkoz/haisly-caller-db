@@ -277,3 +277,11 @@
 - Operasyon cevabı kampanya sürümü ve sanitize stop isteğini döndürür; client kalıcı gönderim engelini gösterir, çağrıların kapandığını iddia etmez. Aktör/gerekçe/hash dışarı verilmez.
 - Yerel DB yedeklenip119 uygulandı. Gerçek durdurma kaydı oluşturulmadı. İzole fixture için replay/stale impact/immutable/API+DB submission block/cancel-reserve test kodu ve client stop bildirimi eklendi. OpenAPI üretildi; test/typecheck/lint/build/schema-validator/rollback/browser çalıştırılmadı. Final test DB'lerine119 da uygulanmalı.
 - Kalıcı lifecycle state, public onay komutu, drain worker, hedef/callback iptali, kontrollü resume, sağlayıcı hangup ve yayın kapıları açık. Fazlar tamamlanmış sayılmadı; goal aktif.
+
+### 2026-10-27 — Durdurulan kampanyaların hazırlanmış işlerini temizleyen worker
+
+- Signed runtime.jobs.execute POST /api/internal/v1/campaign-stops/drain kimlikten tenant/environment alır; body üzerinden kapsam değiştirilemez. Nonblocking tenant kilidiyle en fazla25 prepared intent seçer; provider ortam bağı transaction boyunca share lock ile sabitlenir. Aktif olmayan sağlayıcıdaki gönderilmemiş iş de güvenle iptal edilebilir.
+- Her batch içindeki intent cancellation, immutable geçiş kaydı ve rezerv release aynı transaction'dadır; hata bütün batch'i geri alır. Tekrar çağrı canceled işleri seçmez. submitting/uncertain/accepted çağrılar, hedef/callback state ve kampanya terminal durumu değiştirilmez; provider ağ isteği yoktur. has_more yalnız kalan prepared işleri anlatır.
+- Worker normalde10 saniye, backlog/busy varsa1 saniye arayla tarar. Başarı/iptal/busy/hata metrikleri ve30 saniyelik readiness eşiği eklendi; busy veya hata başarılı drain zamanı sayılmaz. Worker bu dilimde başlatılmadı.
+- İzole fixture'a yanlış ortamın işi atlaması, gerçek kapsamda reserve release ve tekrarın0 iş döndürmesi eklendi. Runtime auth/body/no-store ve monitor shutdown/busy/yanıt kaybı test kodları eklendi. OpenAPI üretildi; test/typecheck/lint/build/browser çalıştırılmadı. DB şema değişikliği yok.
+- Public yetkili stop onayı, lifecycle state/resume, gönderilmiş çağrı mutabakatı ve nazik hangup worker'ı ile diğer fazlar açık. Goal aktif.
