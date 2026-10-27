@@ -272,3 +272,12 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - parsePdfFile mevcut ortak parser süreci/pool'una bağlandı (2 process/256 MiB/15s). PDF modülü yalnız PDF isteğinde dynamic import edilir; diğer dosya türlerinde gereksiz yüklenmez. Production API henüz çağırmaz; ingest-pdf endpoint/UI sonraki dilimdir. Yeni şema/yerel veri/gerçek müşteri veya sağlayıcı çağrısı yok.
 - Minimal gerçek PDF fixture'ları text/empty/JavaScript ve doğrudan+isolated parser test kodu eklendi. Kullanıcının talimatıyla test/typecheck/lint/build/browser çalıştırılmadı. Önceki açık npm audit izniyle API production dependency audit çalıştı:0 vulnerability. Bu yalnız advisory veritabanı kapsamı, parser uyumluluk/güvenlik kabulü değildir.
 - PDF ingest/UI, HTTPS, pending recovery, runtime release/retrieval ve kalan fazlar açık. Faz6/goal aktif.
+
+
+### 2026-10-27 — PDF ingest API ve yükleme arayüzü
+
+- POST knowledge-sources/:public_id/ingest-pdf canonical base64, agents.manage, active document source/collection, Idempotency-Key ve expected_version_no ile ayrı süreçte PDF text extraction'a bağlandı. DOCX/PDF ortak document command kullanır; formatpdf/caller-document-pdf-v1 ile mevcut atomic version/chunks/seal/job/audit/receipt akışı tamamlanır. No-store/body14 MiB/rate limit ve OpenAPI eklendi. İstemci public ingest formatını başka formata çeviremez.
+- API açıklaması/hata ve UI,200 sayfa/10 MiB sınırını ve her sayfada metin gerekliliğini açıklar; boş sayfalar da bu uygulamada reddedilir. OCR yok; form/attachment/JavaScript/invalid/password-required belgeler reddedilir. Parse availability503 ve içerik400 ayrımı korunur. Yeni sürüm otomatik kampanyaya bağlanmaz.
+- Dosya oluşturma/yükleme ekranı PDF'i kabul eder, ayırıcıyı gizler, PDF endpoint'ini çağırır ve verified text byte sonucunu gösterir. Pending PDF format/body/key/expected_version_no aynı endpoint'e tekrar gönderilir; alan kilidi ve yalnız başarıda Knowledge invalidation korunur.
+- API test kodu isolated parser üzerinden success/seal/text/replay/stale, unauth/foreign tenant/yetki iptali, textless ve JavaScript PDF reddini kapsar. Client test kodu PDF endpoint seçimi, diğer format endpoint'lerinin çağrılmaması ve aynı request retry için genişletildi. Kullanıcı talimatıyla test/typecheck/lint/build/browser çalıştırılmadı; OpenAPI üretildi. Şema/yerel veri/sağlayıcı çağrısı değişmedi.
+- HTTPS kaynak alma, pending recovery, retrieval/runtime release ve kalan fazlar açık. Faz6/goal aktif.
