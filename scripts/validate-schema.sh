@@ -1511,3 +1511,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='112_create_dispatch_transition_history.sql') THEN
+  IF to_regclass('public.caller_dispatch_transitions') IS NULL OR to_regclass('public.caller_dispatch_transitions_scope') IS NULL
+   OR (SELECT count(*) FROM pg_trigger WHERE tgname IN ('caller_dispatch_transition_guard','caller_dispatch_history') AND NOT tgisinternal AND tgenabled='O')<>2 THEN
+   RAISE EXCEPTION 'Dispatch transition history safeguards missing';
+  END IF;
+ END IF;
+END $$;
+SQL

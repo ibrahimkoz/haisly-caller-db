@@ -43,3 +43,11 @@
 - Internal `cancelPreparedIntent` prepared→canceled geçişi ve reserve release'i aynı transaction'da yapar. Aynı kanıt replay olur; uncertain/accepted/ended için iptal/hangup varsayımı üretmez.
 - Entegrasyon senaryolarına cancellation rollback, tekrar iptal/release, ended çağrıyı API ve doğrudan DB ile yanlış release etme reddi ve terminal cancel reddi eklendi. Schema kontrolü yazıldı; kullanıcı talimatıyla test/typecheck/lint/build/DB doğrulaması çalıştırılmadı.
 - Provider final maliyet kanıtı, reconciliation UI/işçisi ve gerçek hangup işlemleri hâlâ açık. Bunlar local hazırlık iptalinden ayrıdır. Faz8/goal aktif; final kabul yapılmadı.
+
+### 2026-10-27 — Değiştirilemez gönderim geçiş geçmişi ve hedef görünümü
+
+- DB112 trigger-owned caller_dispatch_transitions eklendi: intent/version tekil; prepared ve her gerçek durum geçişi aynı transaction'da kaydolur. Doğrudan insert/update/delete reddedilir. Migration öncesi kayıt varsa yalnız bilinen mevcut durum baseline olarak işaretlenir; sahte geçmiş üretilmez. Yerel özel dump sonrası112 uygulandı (backfill0 satır).
+- `GET /campaigns/:public_id/targets/:target_public_id/attempts` tenant/campaign/target kapsamı ve read+contact/list yetkileriyle sayfalı dispatch/geçiş geçmişi verir. Cursor yalnız aynı hedefe ait olabilir; newest-ID sırası, repeatable-read ve no-store. Provider/kanıt/numara/internal ID/rezerv bilgileri dönmez.
+- Client hedef kartına gönderim geçmişi aç/yenile ve eski kayıt sayfalaması eklendi. Kabul edilmiş deneme sayısı, teknik gönderim kayıtlarından ayrı; durumlar, UTC zamanları, bağlantı sonucu ve eksik geçmiş baseline açıklaması görünür.
+- Entegrasyon senaryolarına rollback geçmişi, cancellation/acceptance replay tekilliği, tüm geçiş sırası, kanıtın korunması, doğrudan insert/update/delete reddi ve API auth/cursor/alan gizleme eklendi. OpenAPI üretildi; test/typecheck/lint/build/DB/browser kontrolleri kullanıcı talimatıyla final aşamasında.
+- Bu teknik durum geçmişi provider olayının gerçekliğini doğrulamaz; webhook imzası/event dedup, actor audit bağlantısı ve gerçek sağlayıcı davranışı açık. Worker, tam yayın ve kalan Faz4–13 işleri devam ediyor; goal tamamlanmadı.
