@@ -119,3 +119,10 @@
 - Production prepare artık provider circuit açık/probing ise reserve/intent oluşturmadan provider_circuit_open döndürür. Bu hazırlık kontrolüdür; gerçek gönderim anındaki tekrar kontrolü ve observation bağlantısı hâlâ gereklidir. Aynı request-key mevcut intent replay'i yeni gönderim izni değildir.
 - Integration koduna transaction rollback, parallel duplicate error, üçüncü hatada açılma, reserve yaratmama, stale başarı, iki worker tek probe, iyileşme, farklı event kanıtı ve immutable receipt reddi eklendi. DB schema validator genişletildi. Test/typecheck/lint/build/schema/restore/browser çalıştırılmadı.
 - Probe adapter/worker,15dk alert outbox, operasyon ekranı ve gerçek sağlayıcı hatalarının normalizasyonu henüz bağlı değil. Caller active alanı sahiplik/doğrulama kanıtı sayılmıyor. F08-T04 ve goal aktif.
+
+### 2026-10-27 — Uzayan sağlayıcı kesintisi bildirim kaydı
+
+- `notifyProviderOutage`, aynı tenant/provider kilitleri altında DB saatinde15dk kesintiyi tekrar kontrol eder. Aktif owner/admin/operations_manager kullanıcıları tenant+aktif rol/üyelik koşullarıyla tekilleştirir; uygulama içi system/action_required/high bildirimini ve mevcut tercih/abonelik kurallı push outbox'ını aynı transaction'da yazar. Bu fonksiyon ağdan push göndermez.
+- Circuit alerted işareti yalnız en az bir alıcıya bildirim kuyruğu yazıldıysa aynı transaction'da güncellenir. Alıcı yoksa yeniden değerlendirme mümkün kalır; rollback bildirim/outbox ve acknowledgement'ı birlikte geri alır. Aktif olmayan provider için yeni bildirim hazırlanmaz.
+- Bounded `scanProviderOutages` tenant başına en eski25 (en fazla100) vadesi gelmiş kaydı seçer; her kayıt altında recovery/prior alert tekrar kontrol edilir. Bu scanner henüz worker zamanlayıcısına bağlanmadı; otomatik15dk teslimat kabulü henüz sağlanmadı.
+- Test koduna erken bildirim reddi, rollback, iki worker tek bildirim ve tekrar scan'de duplicate olmaması eklendi. Test/typecheck/lint/build çalıştırılmadı. Migration/API/client sözleşmesi değişmedi; mevcut bildirim inbox'ı kullanılır. Provider adapter/probe-worker ve kalan fazlar açık; goal aktif.
