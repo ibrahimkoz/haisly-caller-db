@@ -1533,3 +1533,12 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='114_dispatch_campaign_operations_index.sql')
+  AND to_regclass('public.caller_dispatch_campaign_operations_idx') IS NULL THEN
+  RAISE EXCEPTION 'Campaign operations dispatch index missing';
+ END IF;
+END $$;
+SQL

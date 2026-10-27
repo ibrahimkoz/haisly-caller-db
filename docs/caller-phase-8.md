@@ -96,3 +96,11 @@
 - Client gönderim kartında ayrılmış tutar, maliyet mutabakatı bekleme, nihai kullanım kaydı ve gönderim öncesi iptal sonrası release için ayrı açıklamalar gösterir. Settled, ödeme tahsil edildi veya pozitif ücret oluştu anlamında etiketlenmez; doğrulanmış sıfır kullanım da bu durumdadır.
 - OpenAPI üretildi. API integration'a uncertain terminal görünümü, settled/released ve parasal alanların yokluğu; client'a maliyet durum açıklamaları senaryoları eklendi. Test/typecheck/lint/build/browser kullanıcı talimatıyla çalıştırılmadı.
 - Migration gerekmedi. Dağıtımda cost_state sağlayan API client'tan önce yayınlanmalıdır. Gerçek reconciliation worker, sağlayıcı doğrulaması ve kalan fazlar açık; bu görünüm tamamlanmış gerçek çağrı kabulü değildir. Goal aktif.
+
+### 2026-10-27 — Kampanya operasyon özeti
+
+- `GET /campaigns/:public_id/operations`, campaign.read ile tenant kapsamındaki sabit hedef ve tüm dispatch sayaçlarını repeatable-read/no-store döndürür. Hedef toplamı/başlamamış/başlamış ve kabul edilmiş deneme toplamı ayrıdır; dispatch durumları teknik kayıt toplamını parçalar. Biten/rejected ve rezervi hâlâ held/uncertain olan kayıtlar terminal_cost_pending olarak ayrıca sayılır; toplamın üstüne eklenmez.
+- Client kayıtlı kampanyada 10sn görünür polling, yenileme, yüklenme/hata, son kontrol zamanı ve ayrı kişi/gönderim/maliyet bekleme açıklamaları gösterir. Başlamamış hedef uygun hedef, provider accepted insan yanıtı olarak etiketlenmez. Kişi/telefon/provider/finansal tutar bu endpoint'te yoktur.
+- DB114 tenant+campaign+state INCLUDE(reservation_id) indeksi özel yerel dump sonrası uygulandı. Büyük üretim tablosu için concurrent indeks oluşturma dağıtım notu eklendi; üretim değişmedi. Sorgu planı/ölçek ve restore/rollback kabulü finalde yapılacak.
+- API boş durum, auth/tenant izolasyonu, aynı kişinin farklı gönderimleri, settled/released/pending sayımı; client sayaç açıklamaları test kodu eklendi. OpenAPI üretildi. Test/typecheck/lint/build/schema/browser çalıştırılmadı.
+- Bu ilk operasyon özeti yayın/dispatch açmaz (`dispatch_available:false`). Ayrıntılı uygunluk/bekleme nedenleri, tenantlar arası kapasite, provider/worker arıza ve görev başarısızlıkları, lifecycle kontrol komutları hâlâ açık. Faz8 ve goal aktif.
