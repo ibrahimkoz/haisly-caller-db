@@ -157,3 +157,11 @@
 - Anahtar resolver private revision hash üretir; ham secret hâlâ dönmez. Inspect/claim isteğe bağlı environment kapsamını kilit altındaki provider sorgusunda korur. Aynı probe token event-key olarak kullanılır; olay tekilleştirmesi ve expiry mevcut DB115 üzerinde çalışır.
 - Integration kodu transaction dışında ağ sınırında provider row update, gerçek probe olmadan stub success/recovery, closed circuit'te no-request ve ağ sırasında secret-ref değişince recovery reddini kapsar. Test/typecheck/lint/build çalıştırılmadı; gerçek sağlayıcı isteği yapılmadı.
 - Bu orchestrator henüz runtime probe endpoint/worker periyoduna bağlanmadı. Bildirim monitor çalışmasıyla karıştırılmamalı. Staging anahtar/hat girdileri, SIP adapter ve kalan fazlar açık; goal aktif.
+
+### 2026-10-27 — Zamanı gelen provider probe için runtime ve worker
+
+- `POST /api/internal/v1/provider-circuits/probe`, signed runtime account+surface token+runtime.jobs.execute ile tenant/ortam scope'unu auth'tan alır. Boş strict body; arbitrary provider/agent/URL/secret kabul etmez. Yalnız deployment allowlist'teki doğru referanslı aktif ElevenLabs circuit adayları değerlendirilir; her çağrıda en fazla bir GET, bounded100 yapılandırılmış aday.
+- Seçim open/vadesi gelmiş veya probe lease süresi dolmuş kayıtları kapsar. Claim/result kilit ve binding kontrolünü önceki orchestrator yapar. Aynı aday için eşzamanlı worker ikinci GET hakkı kazanmaz; eski/eksik secret-ref adayları diğer uygun bağlantıları bloklamasın diye seçimde elenir.
+- Worker bağımsız10sn probe monitor döngüsü ekler;1dk circuit beklemesi korunur. Checks/failures/recovered/unverified/son başarılı API turu metrikleri ayrı;30sn başarılı probe-check yoksa readiness başarısızdır. idle sağlıklı monitor turudur; stale/unverified recovery sayılmaz. Dispatch bayrağı kapalı ve müşteri araması yoktur.
+- Runtime auth/strict body/boş allowlist/scope iptali, selector üzerinden bound stub recovery ve monitor kapanış/stale/error senaryoları yazıldı. OpenAPI üretildi. Test/typecheck/lint/build/browser çalıştırılmadı; worker başlatılmadı, gerçek sağlayıcıya istek yapılmadı.
+- Dağıtımda API→worker sırası gerekir. Gerçek staging hesabı ve SIP/test hattı hâlâ sağlanmadı; agent GET yalnız ElevenLabs API erişimini gösterir. SIP yetkinlik/numara sahipliği, çağrı dispatcher ve diğer fazlar açık; goal aktif.
