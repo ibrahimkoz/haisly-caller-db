@@ -1107,3 +1107,11 @@ Lead conversion now requires assignment-management permission and versioned muta
 Client conversion uses the shared actor-scoped pending-command recovery with original version/key/body and the correct endpoint on replay. Assignment/status/conversion cannot overwrite one unresolved command. Conversion controls are manager-only; contact selection locks for an existing association or missing contact-management permission. Added unrun source assertions for null association preservation, conversion timestamp/version preservation, replay, reassociation rejection, assigned-only denial and uncertain client conversion recovery. Tests/typecheck/lint/build/browser remain deferred.
 
 No migration (DB158), provider connection or deployment. Broader lead action visibility, note workflow, assignment notices, end-to-end concurrency/identity acceptance and remaining F9/later phases remain open. Goal active.
+
+### Opportunity UI privileges and CSV cell protection — 2026-10-28
+
+Centralized lead UI control permissions. Assigned-only employees no longer see manual-create/export controls or trigger the tenant-wide customer lookup. Create route/handler require assignment-management plus the existing tenant.manage creation privilege; contact options load only for authorized contact managers with an open create/edit drawer. Assignment/conversion share the centralized management gate, while owned status editing remains available. Export control requires explicit caller.contacts.export.
+
+The existing client-only CSV generator now neutralizes textual formula prefixes (including leading whitespace/control characters) before quoting, preserves typed numbers, and uses a .csv extension and text/csv MIME rather than labeling CSV as Excel binary. Added unrun permission-matrix and hostile-cell regression sources. This is UI/data-format hardening, not server-audited export completion: the report/export service and audit requirement remain pending for F12. No backend permission claim is inferred from hidden buttons; existing APIs remain authoritative.
+
+Tests/typecheck/lint/build/browser remain deferred. Lead note workflow, assignment notices and full UI/API acceptance are still outstanding. API/DB progress notes only; schema158. No live calls/deployment. Goal active.
