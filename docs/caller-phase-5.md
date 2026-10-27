@@ -202,3 +202,11 @@ DB yalnız ilerleme notudur; migration/gerçek düzeltme yapılmadı. Tam browse
 - DB 107 özel yerel dump alındıktan sonra `haisly_caller` veritabanına uygulandı. Schema doğrulama senaryosu eklendi; rollback veri varsa durur.
 - OpenAPI üretildi. Entegrasyon senaryoları tenant yetkisi, CSRF, eşzamanlı tekrar ve kod/anahtar çakışmalarını kapsayacak şekilde yazıldı; kullanıcı talimatıyla çalıştırılmadı. Typecheck/lint/build ve final doğrulamaları da bekliyor.
 - Plan oluşturma client ekranı henüz yok; Faz 5 ve genel goal tamamlanmadı. Restore/rollback kanıtı final aşamasında alınacak.
+
+### 2026-10-27 — Platform plan oluşturma client dilimi
+
+- Yönetim plan/tarife ekranına yetkili platform kullanıcısı için yeni USD plan formu eklendi; kod, isim ve opsiyonel açıklama API komutuna bağlandı.
+- Yeni plan mevcut UUID sayfasında bulunmasa da doğrudan detay sorgusu ile seçilir; aktif USD planına tarife yayınlama akışı açılır.
+- Yazım sırasında plan seçimi/sayfalama ve üst yönetim gezinmesi kilitlenir. Belirsiz bağlantı sonucunda payload/key bellekte korunur; aynı istek yeniden denenir. Alan ve ayrılma korumaları vardır. Yetki kaybında yazım ekranı kapanır.
+- Belirsiz isteğin aynı payload/key ile tekrarını kapsayan component senaryosu yazıldı; kullanıcı talimatıyla çalıştırılmadı. Typecheck/lint/build/browser doğrulamaları final aşamasındadır.
+- Tam sayfa yenilemesi sonrası belirsiz istek kurtarma hâlâ açık; yalnızca bellek içi koruma vardır. Faz 5 ve genel goal aktif.
