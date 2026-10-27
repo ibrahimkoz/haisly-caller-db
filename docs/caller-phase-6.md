@@ -637,3 +637,11 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Eşik varsayılanları açıklanır; rule başına soru uyarısı, arşivli ekip etiketi, API preflight ekip hatası TR/EN karşılığı ve form-level hata vardır. Rule paneli kampanya kilidine uyar. Otomatik task işleme henüz olmadığı ekran metninde belirtilir.
 - Model validasyon ve kural bileşeni invalid/remove/read-only testleri yazıldı; kullanıcı talimatıyla çalıştırılmadı. Browser/görsel/erişilebilirlik ve gerçek API entegrasyon kontrolleri finalde açık.
 - Ekip seçeneklerini kampanya editörlerine özel dar bir read yetkisiyle sunma, marketing kuralları ve görev üretimi entegrasyonu sonraki dilimlerde açık. DB/API bu dilimde değişmedi.
+
+### 2026-10-27 — Otomatik ekip atamasında görev yetkisi
+
+- Round-robin adayları artık yalnız aktif/müsait üyelikle seçilmez: aynı tenantta aktif owner rolü veya aktif rol üzerinden `caller.tasks.assigned` gerekir. `caller.tasks.assign` yönetim yetkisi tek başına çalışan atama uygunluğu sayılmaz.
+- Seçim sonrası rol/üyelik/izin kayıtları FOR SHARE ile tekrar okunup aynı transaction bitene kadar tutulur. Candidate EXISTS ile görev kaydı arasındaki yetki kaldırılması rollback/retry conflict üretir; cursor yetki kanıtı alınmadan ilerlemez. Üyelik ve kullanıcı aktiflik kilitleri korunur.
+- Entegrasyon testine yetkisiz üyelerin boş ekip kuyruğuna düşmesi, role-permission kaldırma ve user-role revoke sonrası aday eleme senaryoları eklendi; testler çalıştırılmadı. Gerçek iki bağlantılı revoke yarışı ve lock-order doğrulaması finalde açık.
+- İnceleme mevcut FollowUpTaskService'in hâlâ legacy tenant.read/tenant.manage kullandığını gösterdi. Atanmış görev görünürlüğü ve çalışan status/snooze yetkisi bir sonraki güvenlik diliminde uyarlanmalı; bu iş tamamlanmadan otomatik görev consumer canlı akışa bağlanmış sayılmaz. Görev üretimi/aksiyon dedupe ve bildirimler hâlâ açık.
+- Yeni DB migration/dependency yok; client ekranındaki müsaitlik göstergesi görev rol uygunluğu garantisi değildir.
