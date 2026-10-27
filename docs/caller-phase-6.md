@@ -758,3 +758,13 @@ Durum: Geliştirme sürüyor. Testler ve final kabul henüz yapılmadı.
 - Network/belirsiz sonuç kaydı korur; başarılı veya kesin HTTP sonuçta sadece eşleşen key temizlenir. Okuma/yazma/bozuk veri hataları yeni gönderimi durdurur. Aynı sekme reload ve route dönüşü kapsanır; sessionStorage temizlenmesi/sekme sonlandırılması kapsam dışıdır. Server If-Match ve receipt koruması devam eder.
 - Exact request replay, otomatik gönderim olmaması, kullanıcı/tenant izolasyonu, başka karar üzerine yazma reddi, yanlış key ile silmeme ve bozuk kayıt koruma testleri yazıldı. Önceki form testleri yeni storage scope'a uyarlandı. Testler çalıştırılmadı; browser/end-to-end kabulü açık.
 - API/DB değişmedi. Önceki dilimde açık kalan review reload kurtarma işi kaynak kodda tamamlandı; Faz9'un diğer işleri ve final doğrulama devam ediyor.
+
+
+### 2026-10-27 — Görevden bağımsız kalıcı inbox teslimi
+
+- Ürün spec8'deki bildirim hatasının görevi geri almaması kuralı için migration142 caller_task_notification_outbox eklendi. Task/assignment transaction'ı sadece (tenant,task,task_version) tekil bildirimi niyet olarak kaydeder; inbox satırları burada oluşturulmaz. Audit alanı notification_intent_count oldu. Önceki aynı-transaction inbox teslimi notlarının yerini bu akış alır.
+- Mevcut runtime survey drain önce action/task transaction'ını commit eder, sonra ayrı transaction'da aynı tenant/environment accepted/ended dispatch bağlamından bir notification intent işler. İkinci transaction hatası ilkini geri alamaz. Scope ve kapalı worker feature flag değişmedi. API status iki tüketicinin birleşik sonucudur; created sadece yeni task sayısıdır.
+- Teslim savepoint'i inbox satırları ve succeeded receipt'i birlikte commit eder. Başarısızlıkta inbox yazımları geri alınır; 10/20/40/80 saniye bekleme, beşinci başarısızlık dead-letter. Uygun alıcı yoksa retry olur. Ham hata/PII tutulmaz. DB bağlantı hatası pending kaydı korur; görev commit edilmiş kalır.
+- Teslim anında aktif üyelik ve owner/tasks.assign/tasks.assigned alıcı yetkisi yeniden doğrulanır. Terminal görev, değişmiş assignee veya aynı task için daha yeni notification intent varsa eski bildirim skipped olur; A→B→A durumunda eski A bildirimi gönderilmez. External push/e-posta hâlâ yok; inbox_only kullanılır.
+-142 yerel DB loopback kimliği ve pg_dump yedeği sonrası uygulandı. Rollback dolu teslim geçmişini silmeyi reddeder. OpenAPI üretildi. Mevcut transaction fixture intent idempotency/rollback ve inbox savepoint rollback sonrası task/intent korunması için güncellendi; testler çalıştırılmadı.
+- Kalan: HTTP/iki bağlantılı gerçek retry/dead-letter/environment izolasyonu testleri, operatör dead-letter replay UI, tercihli dış kanal teslimi ve final kabul. Phase9 tamamlanmış sayılmadı.
