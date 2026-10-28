@@ -1,4 +1,7 @@
 SET LOCAL lock_timeout='5s';
+CREATE UNIQUE INDEX caller_release_simulation_job_run_unique
+ ON public.background_jobs(tenant_id,(payload->>'simulation_run_public_id'))
+ WHERE queue_name='caller-release-simulation';
 CREATE TABLE public.caller_release_simulation_results (
  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
  public_id uuid NOT NULL DEFAULT gen_random_uuid() UNIQUE,

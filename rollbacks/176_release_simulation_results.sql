@@ -4,3 +4,4 @@ DO $$ BEGIN
 END $$;
 DROP TABLE public.caller_release_simulation_results;
 DROP FUNCTION public.guard_release_simulation_result();
+DROP INDEX public.caller_release_simulation_job_run_unique;
