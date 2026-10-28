@@ -1639,3 +1639,31 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$
+DECLARE content_table regclass;
+BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='174_campaign_report_export_contents.sql') THEN
+  content_table:=to_regclass('public.caller_report_export_contents');
+  IF content_table IS NULL THEN RAISE EXCEPTION 'Report export content table missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid=content_table
+    AND tgname='caller_report_export_content_guard' AND NOT tgisinternal AND tgenabled='O'
+    AND tgtype=31 AND tgfoid=to_regprocedure('public.guard_report_export_content()')) THEN
+   RAISE EXCEPTION 'Report export content write/expiry guard missing or disabled'; END IF;
+  IF (SELECT count(*) FROM pg_constraint WHERE conrelid=content_table AND contype='f' AND convalidated
+    AND array_length(conkey,1)=2 AND confrelid IN ('public.artifacts'::regclass,'public.export_jobs'::regclass,
+      'public.background_jobs'::regclass,'public.job_attempts'::regclass))<>4 THEN
+   RAISE EXCEPTION 'Report export tenant composite foreign keys missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='public.export_jobs'::regclass
+    AND conname='export_jobs_id_tenant_unique' AND contype='u' AND convalidated) THEN
+   RAISE EXCEPTION 'Report export composite identity missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_index WHERE indexrelid=to_regclass('public.caller_report_export_expiry_idx')
+    AND indrelid=content_table AND indisvalid AND indisready) THEN
+   RAISE EXCEPTION 'Report export expiry index missing or invalid'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid=content_table AND contype='c' AND convalidated
+    AND pg_get_constraintdef(oid) LIKE '%octet_length(csv_content)%10485760%') THEN
+   RAISE EXCEPTION 'Report export byte-size bound missing'; END IF;
+ END IF;
+END $$;
+SQL
