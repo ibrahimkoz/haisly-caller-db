@@ -1667,3 +1667,35 @@ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$
+DECLARE enrollment_table regclass;
+BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='175_test_number_enrollment.sql') THEN
+  enrollment_table:=to_regclass('public.caller_test_numbers');
+  IF enrollment_table IS NULL THEN RAISE EXCEPTION 'Test number enrollment table missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid=enrollment_table
+    AND tgname='caller_test_number_enrollment_guard' AND NOT tgisinternal AND tgenabled='O'
+    AND tgtype=31 AND tgfoid=to_regprocedure('public.guard_test_number_enrollment()')) THEN
+   RAISE EXCEPTION 'Test number identity/history guard missing or disabled'; END IF;
+  IF (SELECT count(*) FROM pg_constraint WHERE conrelid=enrollment_table AND contype='f' AND convalidated
+    AND array_length(conkey,1)=2 AND confrelid='public.users'::regclass)<>2 THEN
+   RAISE EXCEPTION 'Test number tenant-scoped actor foreign keys missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_index WHERE indexrelid=to_regclass('public.caller_test_number_active_unique')
+    AND indrelid=enrollment_table AND indisunique AND indisvalid AND indisready
+    AND pg_get_expr(indpred,indrelid) = '(state = ''active''::text)'
+    AND pg_get_indexdef(indexrelid,1,true)='tenant_id'
+    AND pg_get_indexdef(indexrelid,2,true)='canonical_phone'
+    AND indnkeyatts=2) THEN
+   RAISE EXCEPTION 'Test number active tenant/phone uniqueness missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_index WHERE indexrelid=to_regclass('public.caller_test_number_history_idx')
+    AND indrelid=enrollment_table AND indisvalid AND indisready) THEN
+   RAISE EXCEPTION 'Test number history index missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid=enrollment_table AND contype='c' AND convalidated
+    AND pg_get_constraintdef(oid) LIKE '%state%active%revoked_at IS NULL%revoked_by_user_id IS NULL%revocation_reason IS NULL%'
+    AND pg_get_constraintdef(oid) LIKE '%state%revoked%revoked_at IS NOT NULL%revoked_by_user_id IS NOT NULL%revocation_reason IS NOT NULL%') THEN
+   RAISE EXCEPTION 'Test number lifecycle shape constraint missing'; END IF;
+ END IF;
+END $$;
+SQL
