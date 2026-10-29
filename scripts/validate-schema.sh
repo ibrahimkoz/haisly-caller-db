@@ -2074,3 +2074,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='211_phone_suppression_events.sql') THEN
+  IF to_regclass('public.caller_phone_suppression_lookup_idx') IS NULL THEN RAISE EXCEPTION 'Phone suppression lookup missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_phone_suppression_events'::regclass
+   AND tgname='caller_phone_suppression_no_truncate' AND tgenabled='O' AND tgtype=34) THEN
+   RAISE EXCEPTION 'Phone suppression history guard missing'; END IF;
+ END IF;
+END $$;
+SQL

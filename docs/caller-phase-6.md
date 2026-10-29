@@ -2463,3 +2463,12 @@ Inspection confirmed current contact DNC gates do not implement the spec§14 min
 This is a cryptographic building block only. Durable suppression event ledger, owner-only evidenced release, dedicated key provisioning/rotation, DNC writes/backfill, import/CRM/test/production admission checks and restore replay are still outstanding; no protection after actual erasure is claimed yet. Existing owner release rules and DNC behavior remain unchanged. Authored unrun tests cover stability, scope/key separation, normalized input including trailing-newline rejection and nonleaking invalid-key errors. No keys generated outside fixtures and no production configuration changed.
 
 No tests/typecheck/lint/build/schema/browser/provider checks run per instruction. DB remains210. Goal active; F13 and full final acceptance are incomplete.
+
+
+### F13 durable minimal phone suppression event ledger — 2026-10-30
+
+Migration211 adds immutable tenant/key-version/phone-digest preference events. No raw phone, customer FK, reason or evidence body is copied. Source event numeric/public identifiers and exact preference time preserve ordering/provenance without preventing future source erasure. Unique source+key-version receipts prevent duplicate writes; lookup index orders by source_event_id, not backfill insertion order. Inserts require an existing same-tenant DNC event. Release additionally requires user-origin subsequent explicit request evidence and currently active tenant owner role/membership. Deletion/update/truncate blocked; rollback refuses history.
+
+Added internal recordPhoneSuppression: source event/customer/tenant locks, original identity revision check, server-key HMAC derivation, conflict-safe replay and sanitized public receipt. Exact source timestamp is copied within SQL to avoid microsecond truncation. This primitive is not yet wired into DNC/import/CRM/dispatch/erasure or restore. Dedicated key configuration, multi-version lookup, backfill and erased-source restore boundaries remain pending; no post-erasure protection claimed yet.
+
+Authored unrun fixture for blocked projection, replay, cross-tenant rejection, changed key under same version conflict, no raw phone and immutable history. Local211 first attempt rolled back atomically on PL/pgSQL CASE syntax error; corrected migration applied after backup /private/tmp/caller-suppression-211.zmU1mN/haisly_caller_before_211.dump. Schema assertion authored. No tests/typecheck/lint/build/schema/browser/provider checks run per instruction. Goal active.
