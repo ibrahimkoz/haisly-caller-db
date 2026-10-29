@@ -1779,3 +1779,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='182_transfer_failure_actions.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_transfer_failure_actions'::regclass AND tgname='caller_transfer_failure_action_guard' AND NOT tgisinternal AND tgenabled='O' AND tgtype=31 AND tgfoid=to_regprocedure('public.guard_transfer_failure_action()')) THEN
+   RAISE EXCEPTION 'Transfer failure action evidence guard missing'; END IF;
+  IF (SELECT count(*) FROM pg_constraint WHERE conrelid='public.caller_transfer_failure_actions'::regclass AND contype='f' AND convalidated AND array_length(conkey,1)=2)<>2 THEN
+   RAISE EXCEPTION 'Transfer failure task tenant relationships missing'; END IF;
+ END IF;
+END $$;
+SQL
