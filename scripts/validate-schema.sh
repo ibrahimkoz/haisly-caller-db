@@ -1886,3 +1886,17 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='193_call_capacity_claims.sql') THEN
+  IF to_regclass('public.caller_capacity_claim_held_idx') IS NULL THEN
+   RAISE EXCEPTION 'Held capacity claim index missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_capacity_claims'::regclass AND tgname='caller_capacity_claim_write_lock' AND tgtype=62 AND tgenabled='O') THEN
+   RAISE EXCEPTION 'Capacity claim serialization missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_dispatch_intents'::regclass AND tgname='caller_dispatch_terminal_capacity' AND tgenabled='O') OR
+     NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_inbound_completions'::regclass AND tgname='caller_inbound_terminal_capacity' AND tgenabled='O') THEN
+   RAISE EXCEPTION 'Terminal call capacity release missing'; END IF;
+ END IF;
+END $$;
+SQL
