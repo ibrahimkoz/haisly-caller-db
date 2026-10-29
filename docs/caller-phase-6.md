@@ -1913,3 +1913,10 @@ Authored isolated _test-only integration fixture covering owner policy create/re
 Added typed client queries/mutations for all seven transfer configuration routes, actor-scoped read cache with zero unused retention and idempotency/If-Match mutation headers. Team member selection now includes an on-demand transfer panel only with agents.manage in addition to users.manage. Panel displays policy hours/timezone/capacity/archive state and lazy paged phone/SIP destinations marked unverified, never callable. Access/error/loading hides stale address data; actor/team changes remount scope.
 
 Authored unrun UI tests for on-demand scoped reads and cached-address suppression on access failure. No tests/typecheck/lint/build/browser/provider calls run. This slice is read-only UI: create/edit/archive forms still pending although API mutation hooks are present. Environment selection and provider verification remain pending. Local DB178 unchanged. Goal active.
+
+
+### F10 transfer destination editor UI — 2026-10-29
+
+Connected new/edit/archive destination form to scoped mutation hooks with idempotency key and If-Match. E.164/basic SIP input checks, read-only verification notice, busy double-submit guard and frozen key/body retry on uncertain responses. Uncertain/busy forms block route/browser exit; parent transfer/teams controls stay locked while editor is open. Definitive errors permit correction/reopen; successful save refreshes destination history. Mutation caches reset on unmount. Archived policies cannot create targets; backend remains authoritative for updates/reactivation.
+
+Authored unrun UI cases for exact uncertain replay and phone rejection. No tests/typecheck/lint/build/browser/provider calls run. Team policy creation/edit and environment selection UI still pending; target verification/runtime remains disabled. DB178 unchanged. Goal active.
