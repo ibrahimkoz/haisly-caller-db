@@ -1825,3 +1825,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='187_inbound_closed_campaign_tasks.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_inbound_follow_up_actions'::regclass AND tgname='caller_inbound_follow_up_guard' AND NOT tgisinternal AND tgenabled='O' AND tgtype=31 AND tgfoid=to_regprocedure('public.guard_inbound_follow_up_action()')) THEN
+   RAISE EXCEPTION 'Inbound follow-up evidence guard missing'; END IF;
+  IF (SELECT count(*) FROM pg_constraint WHERE conrelid='public.caller_inbound_follow_up_actions'::regclass AND contype='f' AND convalidated AND array_length(conkey,1)=2)<>4 THEN
+   RAISE EXCEPTION 'Inbound follow-up tenant relationships missing'; END IF;
+ END IF;
+END $$;
+SQL
