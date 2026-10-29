@@ -1843,3 +1843,10 @@ Extended unrun lifecycle fixture with completed status projection and unknown jo
 Exposed GET /api/v1/caller-releases/:release_public_id/simulations/:job_public_id through shared controller validation/context and existing authorized status service. Strict UUID params and empty query; no-store on success/errors. Added complete OpenAPI response/error contract and regenerated openapi.json (generation only, no validation). Client has typed RTK query with viewerScope in cache identity and zero unused retention; no request/execute mutation enabled.
 
 Extended unrun integration fixture for successful HTTP projection, anonymous401, cross-tenant404, invalid query400 and cache headers. No tests/typecheck/lint/build/browser/provider calls run. Status panel and campaign navigation remain pending; provider executor unavailable and no real calls enabled. DB176 unchanged. Goal active.
+
+
+### F07 release simulation status page — 2026-10-29
+
+Added protected deep-link page /app/caller-releases/:releaseId/simulations/:jobId requiring agents.manage and caller.campaigns.read. TR/EN labels show attempt/recovery/retry status, six scenario results and explicit notice that simulation success alone does not authorize publication. Invalid UUIDs do not query; tenant/user/release/job keys remount the panel. Active work polls every5seconds only in visible tab; completion/access errors stop polling, and access errors hide stale results. Added route/path helper and page title mapping.
+
+Authored unrun UI cases for scoped query, outcome/publication wording, stale-result suppression, visible-tab polling and stopping on completion. No tests/typecheck/lint/build/browser/provider calls run. Page currently reachable via deep link; campaign test-history discovery/navigation and actual simulation request activation remain pending. No schema/API behavior changes this slice; DB176. Goal active.
