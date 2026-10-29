@@ -1857,3 +1857,10 @@ Authored unrun UI cases for scoped query, outcome/publication wording, stale-res
 Added tenant/campaign-scoped descending job-keyset history service and GET /api/v1/release-simulations, requiring agents.manage plus caller.campaigns.read, strict query and no-store. Joins dedicated jobs through pinned releases/snapshots; validates payload/hash and scopes cursors to same campaign. OpenAPI regenerated. Client history query includes actor scope; saved campaign panel opens history on demand with newest/older navigation and direct links to simulation status. Errors/loading hide stale links; no launch mutation enabled.
 
 Authored unrun HTTP history pagination/cross-tenant tests and UI link/cursor/access-loss cases. No tests/typecheck/lint/build/browser/provider calls run. DB176 unchanged. Concrete provider executor, invocation reconciliation and test initiation remain pending. Goal active.
+
+
+### F07 lease-bound pinned knowledge access for simulation executors — 2026-10-29
+
+Preparation now resolves sealed snapshot knowledge pins before evaluator execution. Worker supplies a server-bound knowledge search/fragment capability tied to tenant, job, attempt and immutable release identity. Adapter inputs cannot override snapshot/tenant; each repeatable-read operation reauthorizes active requester/context, checks release hash, reuses existing sealed-version/checksum/source-availability gates and rechecks lease after content read. Abort and a64-read suite budget prevent stale/unbounded access; existing search timeout and bounded4,000-character fragments remain enforced. No transport/credentials exposed.
+
+Extended unrun lifecycle fixture with empty pinned manifest search, foreign-version/snapshot override rejection, abort rejection and rejection after job completion. No tests/typecheck/lint/build/provider requests run. This supplies pinned access, not proof that an evaluator actually grounded all claims; concrete provider executor and independently verified knowledge evidence remain pending. DB176/client unchanged. Goal active.
