@@ -1836,3 +1836,10 @@ Before entering an executor, worker durably disables retry_safe under active lea
 Added repeatable-read polling service requiring agents.manage and caller.campaigns.read. Release and dedicated job/run are tenant-bound; payload/hash/requester identity must match. Completed status requires immutable result, current succeeded attempt and matching receipt/passed flag. Returns explicit safe projection: status, attempts, recovery-pending, retry time, timestamps and six scenario outcomes; only allowlisted infrastructure error codes, no prompt/provider body/arbitrary metadata. Always publication_authorized=false; historical status does not grant seven-day certification.
 
 Extended unrun lifecycle fixture with completed status projection and unknown job rejection. No endpoint/OpenAPI/client polling UI wired yet; reader is the service boundary for that next slice. No tests/typecheck/lint/build/provider calls run. DB176 unchanged. Goal active.
+
+
+### F07 release simulation status HTTP contract and client query — 2026-10-29
+
+Exposed GET /api/v1/caller-releases/:release_public_id/simulations/:job_public_id through shared controller validation/context and existing authorized status service. Strict UUID params and empty query; no-store on success/errors. Added complete OpenAPI response/error contract and regenerated openapi.json (generation only, no validation). Client has typed RTK query with viewerScope in cache identity and zero unused retention; no request/execute mutation enabled.
+
+Extended unrun integration fixture for successful HTTP projection, anonymous401, cross-tenant404, invalid query400 and cache headers. No tests/typecheck/lint/build/browser/provider calls run. Status panel and campaign navigation remain pending; provider executor unavailable and no real calls enabled. DB176 unchanged. Goal active.
