@@ -2000,3 +2000,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='204_test_otp_delivery_outbox.sql') THEN
+  IF to_regclass('public.caller_test_otp_delivery_pending_idx') IS NULL THEN
+   RAISE EXCEPTION 'Test OTP delivery queue index missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_test_otp_deliveries'::regclass AND tgname='caller_test_otp_delivery_no_truncate' AND tgtype=34 AND tgenabled='O') THEN
+   RAISE EXCEPTION 'Test OTP delivery truncate guard missing'; END IF;
+ END IF;
+END $$;
+SQL
