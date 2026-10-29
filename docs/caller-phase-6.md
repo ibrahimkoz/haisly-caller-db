@@ -1899,3 +1899,10 @@ Authored unrun strict-contract cases rejecting runtime authority/tenant override
 Added destination create/list/update services requiring agents.manage and users.manage, tenant mutation serialization/receipts and optimistic version checks. Targets resolve an existing same-tenant team policy and active team/environment; archived parents prevent creation/reactivation while archival remains possible. Tenant/policy-scoped keyset listing includes archived history. SIP host casing and numeric port canonicalized while preserving case-sensitive user. Strict payload excludes ownership/dispatch authority and scope changes. Audit stores only version/archive state, not target address. All responses remain verification_status=unverified and transfer_authorized=false.
 
 Shared active-team/environment lock helper reused by policy and destination services. Authored unrun normalization/authority/scope/page contracts. No tests/typecheck/lint/build/provider calls run. Management HTTP/UI, transaction integration tests and authoritative target verification remain pending. Local DB178 unchanged. Goal active.
+
+
+### F10 transfer configuration HTTP contract — 2026-10-29
+
+Registered seven policy/destination list/get/create/patch routes with strict body/query/path parsing, existing mutation headers, If-Match updates, bounded body sizes and no-store including errors. Full OpenAPI shapes document tenant permission requirements, hours, keyset cursors, unverified targets and no dispatch authority; regenerated artifact only. No delete/verify/execute endpoint introduced.
+
+Authored isolated _test-only integration fixture covering owner policy create/replay, anonymous/cross-tenant reads, normalized SIP target enrollment, versioned archival/stale409 and retained history. Fixture NOT executed; no tests/typecheck/lint/build/browser/provider calls run. Client management screen/query wiring remains pending. Local DB178 unchanged. Goal active.
