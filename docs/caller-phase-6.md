@@ -2118,3 +2118,12 @@ Existing tenant governance quota creation and management quota update now valida
 Migration191 enforces the same conditional DB constraint and one nonarchived tenant-wide policy per tenant, closing PostgreSQL nullable uniqueness allowing duplicate global policies. Migration intentionally fails rather than silently rewriting invalid/duplicate legacy policies. Added unrun validation tests and direct DB rejection of warning-only downgrade; schema assertions authored. Local DB191 applied after private backup /private/tmp/caller-inbound-191.ZBEJEc/haisly_caller_before_191.dump.
 
 No tests/typecheck/lint/build/schema/browser/provider validation run. Full quota configuration UI/permissions acceptance, shared concurrent capacity, real provider admission and final suite remain pending. No implicit quota provisioning, outbound calls or production changes. Goal active.
+
+
+### F10 tenant inbound quota visibility API and billing panel — 2026-10-30
+
+Added GET /api/v1/billing/inbound-quotas requiring billing.read and authenticated tenant scope. Repeatable-read projection shows nonarchived policies, public environment identity/name, UTC period start and exact integer limit/used/remaining strings from actual persisted greeting pins. Bounded50 cursor pagination rejects foreign/missing cursors. No raw metadata, internal IDs, configuration content or call data is exposed. Strict query validation and no-store headers apply, including errors. OpenAPI generated.
+
+Client billing summary now has a permission-gated collapsible quota panel with viewer-scoped zero-retention query cache, manual refresh, first/next pagination, loading/empty/error states and suppression of stale values on error. Displays tenant/environment scope, period, active/paused status and counts in TR/EN. Periodic quota availability is explicitly distinct from budget/connection readiness. No existing quota editor was found in this tenant client; this slice provides visibility, not a new configuration/permission grant.
+
+Authored unrun client cases for lazy scoped fetch, permission denial and stale-data hiding. API tenant/cursor/permission/count integration and browser accessibility/responsive acceptance remain pending. No tests/typecheck/lint/build/browser/schema/provider checks run. DB191 unchanged; no production effects. Full concurrency admission and remaining goal tasks remain active.
