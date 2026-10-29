@@ -1699,3 +1699,29 @@ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$
+DECLARE result_table regclass;
+BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='176_release_simulation_results.sql') THEN
+  result_table:=to_regclass('public.caller_release_simulation_results');
+  IF result_table IS NULL THEN RAISE EXCEPTION 'Release simulation results table missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid=result_table
+    AND tgname='caller_release_simulation_result_guard' AND NOT tgisinternal AND tgenabled='O'
+    AND tgtype=31 AND tgfoid=to_regprocedure('public.guard_release_simulation_result()')) THEN
+   RAISE EXCEPTION 'Release simulation result guard missing or disabled'; END IF;
+  IF (SELECT count(*) FROM pg_constraint WHERE conrelid=result_table AND contype='f' AND convalidated
+    AND array_length(conkey,1)=2 AND confrelid IN ('public.caller_release_artifacts'::regclass,
+      'public.simulation_runs'::regclass,'public.background_jobs'::regclass,'public.job_attempts'::regclass))<>4 THEN
+   RAISE EXCEPTION 'Release simulation tenant composite foreign keys missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_index WHERE indexrelid=to_regclass('public.caller_release_simulation_job_run_unique')
+    AND indrelid='public.background_jobs'::regclass AND indisunique AND indisvalid AND indisready
+    AND pg_get_expr(indpred,indrelid)='(queue_name = ''caller-release-simulation''::text)') THEN
+   RAISE EXCEPTION 'Release simulation dedicated job uniqueness missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_index WHERE indexrelid=to_regclass('public.caller_release_simulation_history_idx')
+    AND indrelid=result_table AND indisvalid AND indisready) THEN
+   RAISE EXCEPTION 'Release simulation history index missing'; END IF;
+ END IF;
+END $$;
+SQL

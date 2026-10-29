@@ -46,8 +46,16 @@ BEGIN
  IF NOT COALESCE(job.payload->>'schema_version'='1'
   AND job.payload->>'release_public_id'=release.public_id::text
   AND job.payload->>'simulation_run_public_id'=run.public_id::text
-  AND job.payload->>'suite_version'=NEW.suite_version,false) THEN
+  AND job.payload->>'suite_version'=NEW.suite_version
+  AND job.metadata->>'release_hash'=release.release_hash
+  AND run.requested_by_user_id IS NOT NULL AND run.requested_by_user_id=job.created_by_user_id,false) THEN
   RAISE EXCEPTION 'Release simulation job binding mismatch' USING ERRCODE='23514'; END IF;
+ IF NOT EXISTS(SELECT 1 FROM public.agent_config_versions v
+  JOIN public.caller_campaign_snapshots s ON s.tenant_id=v.tenant_id AND s.id=release.snapshot_id
+  WHERE v.tenant_id=NEW.tenant_id AND v.id=run.agent_config_version_id AND v.ai_agent_id=run.ai_agent_id
+   AND v.tenant_environment_id=run.tenant_environment_id
+   AND v.public_id::text=s.document->'settings'->>'agent_version_public_id') THEN
+  RAISE EXCEPTION 'Release simulation agent version mismatch' USING ERRCODE='23514'; END IF;
  IF jsonb_typeof(NEW.results)<>'array' OR jsonb_array_length(NEW.results)<>6 THEN
   RAISE EXCEPTION 'Release simulation needs six results' USING ERRCODE='23514'; END IF;
  FOR item IN SELECT value FROM jsonb_array_elements(NEW.results) LOOP
