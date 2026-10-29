@@ -1801,3 +1801,16 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='185_inbound_completion_receipts.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_inbound_completions'::regclass AND tgname='caller_inbound_completion_guard' AND NOT tgisinternal AND tgenabled='O' AND tgtype=31 AND tgfoid=to_regprocedure('public.guard_inbound_completion()')) THEN
+   RAISE EXCEPTION 'Inbound completion evidence guard missing'; END IF;
+  IF (SELECT count(*) FROM pg_constraint WHERE conrelid='public.caller_inbound_completions'::regclass AND contype='f' AND convalidated AND array_length(conkey,1)=2)<>2 THEN
+   RAISE EXCEPTION 'Inbound completion tenant relationships missing'; END IF;
+  IF to_regclass('public.caller_inbound_completed_phone_idx') IS NULL OR to_regclass('public.caller_inbound_binding_phone_idx') IS NULL THEN
+   RAISE EXCEPTION 'Inbound cooldown history indexes missing'; END IF;
+ END IF;
+END $$;
+SQL
