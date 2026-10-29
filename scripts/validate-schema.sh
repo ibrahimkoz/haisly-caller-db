@@ -1900,3 +1900,12 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='194_capacity_legacy_occupancy_indexes.sql') THEN
+  IF to_regclass('public.caller_capacity_legacy_call_idx') IS NULL OR to_regclass('public.caller_capacity_legacy_session_idx') IS NULL THEN
+   RAISE EXCEPTION 'Legacy capacity occupancy indexes missing'; END IF;
+ END IF;
+END $$;
+SQL
