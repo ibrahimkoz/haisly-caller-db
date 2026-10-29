@@ -2127,3 +2127,10 @@ Added GET /api/v1/billing/inbound-quotas requiring billing.read and authenticate
 Client billing summary now has a permission-gated collapsible quota panel with viewer-scoped zero-retention query cache, manual refresh, first/next pagination, loading/empty/error states and suppression of stale values on error. Displays tenant/environment scope, period, active/paused status and counts in TR/EN. Periodic quota availability is explicitly distinct from budget/connection readiness. No existing quota editor was found in this tenant client; this slice provides visibility, not a new configuration/permission grant.
 
 Authored unrun client cases for lazy scoped fetch, permission denial and stale-data hiding. API tenant/cursor/permission/count integration and browser accessibility/responsive acceptance remain pending. No tests/typecheck/lint/build/browser/schema/provider checks run. DB191 unchanged; no production effects. Full concurrency admission and remaining goal tasks remain active.
+
+
+### F10 inbound quota projection regression scenarios — 2026-10-30
+
+Extracted the internal transaction-scoped quota projection without changing the authenticated billing.read wrapper or its repeatable-read transaction. Existing rollback-only bound inbound fixture now covers empty usage before admission, paused policy visibility, exact integer limits, one persisted admission after replay, zero remaining capacity, UTC period bounds, last-row cursor exhaustion, missing and foreign-tenant cursor rejection, and archived-policy exclusion/cursor rejection. These scenarios are authored, not executed. They exercise real persisted greeting pins when the final integration suite runs.
+
+No tests/typecheck/lint/build/schema/browser/provider checks run. DB remains191. HTTP permission/no-store cases, multi-page boundary, environment-specific counts, rollover/concurrency and full provider admission remain pending. Shared concurrent capacity still requires atomic claims, uncertain-call retention and scheduler/provider integration; periodic greeting quotas do not satisfy that requirement. No live provider or production effects. Goal remains active.
