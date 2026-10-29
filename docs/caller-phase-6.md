@@ -2318,3 +2318,10 @@ Added bounded batch readTestNumberVerifications projection using active enrollme
 OpenAPI and client type now allow verified/unverified. Account settings renders verified status while keeping Calls unavailable, prioritizes revoked display and avoids falsely announcing pending verification on enrollment replay. call_available remains false in every response. Projection is available to final admission, but final sender integration is still pending; no provider request is authorized by this read.
 
 Authored unrun DB fixture assertions for unverified/verified projection, tenant isolation and revocation removal, plus client verified/revoked presentation case. OpenAPI generated only. No tests/typecheck/lint/build/schema/browser/provider checks run as instructed. DB202 unchanged. SMS issuance, verify endpoint/UI, throttling and real delivery remain pending. Goal active.
+
+
+### F7 test number verification HTTP boundary — 2026-10-30
+
+Added POST /api/v1/test-numbers/:public_id/verify with strict public ID, empty query and challenge/code-only body,1KiB limit and no-store responses. Uses authenticated owner verification service with persisted failure attempts and successful audit. Dedicated sensitive IP rate bucket spans enrollment IDs; per-challenge attempt limit remains durable in DB. Middleware method typing now includes existing PUT rules rather than leaving those declarations inconsistent. OpenAPI generated; client verification form stays disabled until issuance/delivery is available.
+
+Authored unrun HTTP fixture with seeded hashed OTP (no SMS):401, foreign-owner generic422, malformed/overposted input400, two concurrent wrong attempts committed at exhaustion, correct-code denial after exhaustion, successful second challenge, one-use consumption, verified list projection and one sanitized audit. Added rate-limit regression across different enrollment IDs with no-store/Retry-After and independent list reads. No tests/typecheck/lint/build/schema/browser/SMS/provider checks run as instructed. DB202 unchanged. SMS issuance/delivery/throttling and end-to-end UI remain pending. Goal active.
