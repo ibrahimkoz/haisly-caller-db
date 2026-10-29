@@ -2043,3 +2043,13 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='208_test_submission_reservations.sql')
+ AND NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_test_dispatch_intents'::regclass
+ AND tgname='caller_03_test_submission_reservations' AND tgenabled='O' AND tgtype=19) THEN
+  RAISE EXCEPTION 'Test submission reservations gate missing';
+ END IF;
+END $$;
+SQL

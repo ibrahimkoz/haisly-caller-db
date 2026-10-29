@@ -2427,3 +2427,12 @@ Test intent transition prepared→submitting now rechecks canonical tenant conta
 Migration207 enforces matching contact restrictions for direct INSERT and first submission using tenant/customer/status locks. Missing canonical contact imposes no contact-record restriction but still requires206 enrollment proof and all remaining admission gates; legacy/unbound identity/suppression coverage is not claimed. Authored unrun fixture creates a DNC contact after preparation, rejects service submission and direct SQL submission, then rolls back fixture state. Schema assertion authored.
 
 Local207 applied after backup /private/tmp/caller-otp-207.vzoISo/haisly_caller_before_207.dump. No tests/typecheck/lint/build/schema/browser/provider checks run per instruction. Rollback removes gate only; keep dispatch disabled during rollback. No real calls or worker activation. Goal active.
+
+
+### F7 first test submission reservation prerequisites — 2026-10-30
+
+prepared→submitting now requires current enrollment proof, a held test-purpose billing reservation with matching request key, and a held capacity claim bound to the same test intent/provider. Service locks matched records; migration208 enforces funding/claim predicates for direct state writes. Preparation still precedes capacity allocation. Exact replay observes prior state without reacquiring slots or authorizing another provider call; later provider outcomes remain recordable independently of current reservation state.
+
+This closes missing-reservation submission paths, not full admission: changed policy limits, all-source occupancy, history, scheduling, routing and provider readiness still require final coordinated checks. No worker/call path enabled. Authored unrun regressions for absent capacity and uncertain funding through both service and direct SQL, while preserving successful claimed submission and late outcome scenarios. Schema assertion authored.
+
+Local208 applied after backup /private/tmp/caller-otp-208.cmtkpP/haisly_caller_before_208.dump. No tests/typecheck/lint/build/schema/browser/provider checks run per instruction. Rollback only with dispatch disabled; goal active.
