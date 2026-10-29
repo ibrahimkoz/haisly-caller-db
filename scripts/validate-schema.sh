@@ -1931,3 +1931,12 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='197_shared_outbound_phone_admission.sql') THEN
+  IF (SELECT count(*) FROM pg_trigger WHERE tgrelid IN ('public.caller_dispatch_intents'::regclass,'public.caller_test_dispatch_intents'::regclass) AND tgname='caller_00_phone_admission_guard' AND tgtype=7 AND tgenabled='O') <> 2 THEN
+   RAISE EXCEPTION 'Shared outbound phone admission guards missing'; END IF;
+ END IF;
+END $$;
+SQL
