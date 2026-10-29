@@ -2053,3 +2053,13 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='209_test_submission_capacity_policy.sql')
+ AND NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_test_dispatch_intents'::regclass
+ AND tgname='caller_025_test_submission_capacity_policy' AND tgenabled='O' AND tgtype=19) THEN
+  RAISE EXCEPTION 'Test submission capacity policy gate missing';
+ END IF;
+END $$;
+SQL

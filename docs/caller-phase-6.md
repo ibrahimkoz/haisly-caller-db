@@ -2436,3 +2436,12 @@ prepared→submitting now requires current enrollment proof, a held test-purpose
 This closes missing-reservation submission paths, not full admission: changed policy limits, all-source occupancy, history, scheduling, routing and provider readiness still require final coordinated checks. No worker/call path enabled. Authored unrun regressions for absent capacity and uncertain funding through both service and direct SQL, while preserving successful claimed submission and late outcome scenarios. Schema assertion authored.
 
 Local208 applied after backup /private/tmp/caller-otp-208.cmtkpP/haisly_caller_before_208.dump. No tests/typecheck/lint/build/schema/browser/provider checks run per instruction. Rollback only with dispatch disabled; goal active.
+
+
+### F7 current capacity policy at first test submission — 2026-10-30
+
+Migration209 checks platform/tenant-requested/provider limits at prepared→submitting under the shared capacity advisory lock. Missing/zero limits and held claim counts above current limits reject submission. Own already-held slot counts once, so equality remains allowed. READ COMMITTED required; registered capacity policy/claim writers share the lock. Trigger runs before claim row-lock gate; API also acquires shared capacity lock before holding claim rows to preserve writer lock order. Existing accepted calls and definitive reconciliation are unaffected by later limit reductions.
+
+Full all-source admission is still incomplete: legacy/unclaimed occupancy requires coordinated writer serialization beyond this registered-claim check. No provider send path enabled. Authored unrun regressions temporarily close platform, tenant and provider capacity after claim allocation and expect submission rejection; DNC direct-write fixture now runs with capacity configured/claimed so it isolates contact protection. Schema assertion authored.
+
+Local209 applied after backup /private/tmp/caller-otp-209.erIqcK/haisly_caller_before_209.dump. No tests/typecheck/lint/build/schema/browser/provider checks run per instruction. Goal active.
