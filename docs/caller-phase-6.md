@@ -1850,3 +1850,10 @@ Extended unrun integration fixture for successful HTTP projection, anonymous401,
 Added protected deep-link page /app/caller-releases/:releaseId/simulations/:jobId requiring agents.manage and caller.campaigns.read. TR/EN labels show attempt/recovery/retry status, six scenario results and explicit notice that simulation success alone does not authorize publication. Invalid UUIDs do not query; tenant/user/release/job keys remount the panel. Active work polls every5seconds only in visible tab; completion/access errors stop polling, and access errors hide stale results. Added route/path helper and page title mapping.
 
 Authored unrun UI cases for scoped query, outcome/publication wording, stale-result suppression, visible-tab polling and stopping on completion. No tests/typecheck/lint/build/browser/provider calls run. Page currently reachable via deep link; campaign test-history discovery/navigation and actual simulation request activation remain pending. No schema/API behavior changes this slice; DB176. Goal active.
+
+
+### F07 campaign simulation history navigation — 2026-10-29
+
+Added tenant/campaign-scoped descending job-keyset history service and GET /api/v1/release-simulations, requiring agents.manage plus caller.campaigns.read, strict query and no-store. Joins dedicated jobs through pinned releases/snapshots; validates payload/hash and scopes cursors to same campaign. OpenAPI regenerated. Client history query includes actor scope; saved campaign panel opens history on demand with newest/older navigation and direct links to simulation status. Errors/loading hide stale links; no launch mutation enabled.
+
+Authored unrun HTTP history pagination/cross-tenant tests and UI link/cursor/access-loss cases. No tests/typecheck/lint/build/browser/provider calls run. DB176 unchanged. Concrete provider executor, invocation reconciliation and test initiation remain pending. Goal active.
