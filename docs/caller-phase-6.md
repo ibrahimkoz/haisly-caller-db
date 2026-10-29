@@ -1892,3 +1892,10 @@ Local haisly_caller migration178 applied in one transaction after private custom
 Added create/get/list/update service requiring both agents.manage and users.manage, reusing tenant mutation receipts, optimistic version checks and atomic audits. Creation resolves same-tenant team/environment and locks active scope; unique DB policy per environment/team prevents duplicates. Updates preserve scope, reject exhausted/stale versions and let operators archive policy even after team/environment deactivation. Tenant/team-scoped bounded history cursor rejects foreign cursors. Responses validate stored schedule and always transfer_authorized=false. Audit entity maps to caller_transfer_team_policy without schedule/target payload.
 
 Authored unrun strict-contract cases rejecting runtime authority/tenant overrides, scope edits, empty updates and excessive pages. No tests/typecheck/lint/build/provider calls run. HTTP contract, destination CRUD, management UI and transactional integration verification remain pending. Local DB178 unchanged. Goal active.
+
+
+### F10 allowlisted transfer destination management service — 2026-10-29
+
+Added destination create/list/update services requiring agents.manage and users.manage, tenant mutation serialization/receipts and optimistic version checks. Targets resolve an existing same-tenant team policy and active team/environment; archived parents prevent creation/reactivation while archival remains possible. Tenant/policy-scoped keyset listing includes archived history. SIP host casing and numeric port canonicalized while preserving case-sensitive user. Strict payload excludes ownership/dispatch authority and scope changes. Audit stores only version/archive state, not target address. All responses remain verification_status=unverified and transfer_authorized=false.
+
+Shared active-team/environment lock helper reused by policy and destination services. Authored unrun normalization/authority/scope/page contracts. No tests/typecheck/lint/build/provider calls run. Management HTTP/UI, transaction integration tests and authoritative target verification remain pending. Local DB178 unchanged. Goal active.
