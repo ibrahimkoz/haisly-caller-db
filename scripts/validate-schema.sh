@@ -2085,3 +2085,13 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='212_suppression_key_registry.sql')
+ AND NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='public.caller_phone_suppression_events'::regclass
+ AND conname='caller_suppression_key_fk' AND convalidated) THEN
+  RAISE EXCEPTION 'Suppression key history binding missing';
+ END IF;
+END $$;
+SQL
