@@ -1906,3 +1906,10 @@ Shared active-team/environment lock helper reused by policy and destination serv
 Registered seven policy/destination list/get/create/patch routes with strict body/query/path parsing, existing mutation headers, If-Match updates, bounded body sizes and no-store including errors. Full OpenAPI shapes document tenant permission requirements, hours, keyset cursors, unverified targets and no dispatch authority; regenerated artifact only. No delete/verify/execute endpoint introduced.
 
 Authored isolated _test-only integration fixture covering owner policy create/replay, anonymous/cross-tenant reads, normalized SIP target enrollment, versioned archival/stale409 and retained history. Fixture NOT executed; no tests/typecheck/lint/build/browser/provider calls run. Client management screen/query wiring remains pending. Local DB178 unchanged. Goal active.
+
+
+### F10 client transfer queries and team configuration view — 2026-10-29
+
+Added typed client queries/mutations for all seven transfer configuration routes, actor-scoped read cache with zero unused retention and idempotency/If-Match mutation headers. Team member selection now includes an on-demand transfer panel only with agents.manage in addition to users.manage. Panel displays policy hours/timezone/capacity/archive state and lazy paged phone/SIP destinations marked unverified, never callable. Access/error/loading hides stale address data; actor/team changes remount scope.
+
+Authored unrun UI tests for on-demand scoped reads and cached-address suppression on access failure. No tests/typecheck/lint/build/browser/provider calls run. This slice is read-only UI: create/edit/archive forms still pending although API mutation hooks are present. Environment selection and provider verification remain pending. Local DB178 unchanged. Goal active.
