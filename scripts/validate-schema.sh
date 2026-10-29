@@ -1980,3 +1980,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='202_test_number_challenge_bindings.sql') THEN
+  IF to_regclass('public.caller_test_number_challenge_history') IS NULL THEN
+   RAISE EXCEPTION 'Test ownership challenge history index missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.otp_challenges'::regclass AND tgname='caller_test_bound_otp_guard' AND tgenabled='O') THEN
+   RAISE EXCEPTION 'Bound test OTP reset guard missing'; END IF;
+ END IF;
+END $$;
+SQL

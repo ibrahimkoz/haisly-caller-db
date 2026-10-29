@@ -2291,3 +2291,12 @@ Extracted shared contactRestrictionBlockers from existing production eligibility
 Purpose-specific production consent remains required by mapContactEligibility; verified test-number ownership/consent remains a separate unfinished gate. Existing intent replay preserves idempotency and does not grant dispatch; final sender must recheck current restrictions. Legacy phone matching and direct SQL enforcement remain separate final-admission work. No external API or schema change; DB201 unchanged.
 
 Authored unrun shared-policy unit cases and rollback fixture for DNC on the production contact plus no-contact test number. No tests/typecheck/lint/build/schema/browser/provider checks run as instructed. No real calls or ownership claims. Goal active.
+
+
+### F7 test number OTP provenance foundation — 2026-10-30
+
+Migration202 adds dedicated caller_test_number OTP purpose and immutable enrollment-scoped challenge binding with tenant-composite FKs to enrollment, OTP and owner. Initial binding requires active enrollment, active tenant owner, pending unexpired SMS challenge with zero attempts and matching destination hash. One OTP binds only once. Bound OTP identity/code/destination/expiry/attempt limit cannot change; attempts cannot decrease or jump, terminal challenges cannot reset, and verification timestamps cannot be future/expired/exhausted. Account phone verification and MFA remain separate.
+
+bindTestNumberChallenge resolves tenant/owner/public IDs, hashes the canonical enrolled destination using server-only pepper, and binds under tenant and challenge locks. Replay returns the same binding; responses explicitly verified:false. It sends no SMS and creates no verification proof. Challenge generation/delivery, rate limits, code-verification endpoint, owner revocation checks at verification, proof lifecycle and sender integration remain pending; no user-facing verification button enabled.
+
+Authored unrun rollback fixture for purpose hash separation, foreign tenant, mismatched destination pepper, exact replay, destination retarget rejection and attempt reset rejection. Schema assertions authored. Local migration202 applied after private backup /private/tmp/caller-otp-202.1yyK3v/haisly_caller_before_202.dump. DB-first rollout; rollback refuses caller challenge history. OTP retention must preserve these references until the approved retention flow handles them. No tests/typecheck/lint/build/schema/browser/SMS/provider checks run as instructed. Goal active.
