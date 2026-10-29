@@ -1836,3 +1836,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='188_inbound_greeting_pins.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_inbound_greeting_pins'::regclass AND tgname='caller_inbound_greeting_pin_guard' AND NOT tgisinternal AND tgenabled='O' AND tgtype=31 AND tgfoid=to_regprocedure('public.guard_inbound_greeting_pin()')) THEN
+   RAISE EXCEPTION 'Inbound greeting pin guard missing'; END IF;
+  IF (SELECT count(*) FROM pg_constraint WHERE conrelid='public.caller_inbound_greeting_pins'::regclass AND contype='f' AND convalidated AND array_length(conkey,1)=2)<>3 THEN
+   RAISE EXCEPTION 'Inbound greeting pin scoped relationships missing'; END IF;
+ END IF;
+END $$;
+SQL
