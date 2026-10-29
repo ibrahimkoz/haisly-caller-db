@@ -2418,3 +2418,12 @@ Test dispatch preparation now locks active enrollment and requires its consumed 
 Verification success now writes verified_at with PostgreSQL clock_timestamp and returns the stored timestamp, avoiding millisecond truncation before binding.created_at that could make an immediate valid verification disappear from proof projection. Authored unrun fixture: unverified preparation denied, synthetic enrollment proof through existing issuance/verification services, overlapping production-call guard still reached after proof, and revocation after preparation denies first submission. Schema assertion authored. No real ownership claim is inferred from fixtures.
 
 Local migration206 applied after backup /private/tmp/caller-otp-206.ihvWhb/haisly_caller_before_206.dump. No tests/typecheck/lint/build/schema/browser/provider checks run per user instruction. Rollback removes gate without rewriting history and must only be considered with dispatch disabled. Goal active; full admission and external acceptance remain pending.
+
+
+### F7 test submission contact restriction recheck — 2026-10-30
+
+Test intent transition prepared→submitting now rechecks canonical tenant contact restrictions under tenant/customer/status locks. Shared readTestContactRestrictions loads the status under FOR SHARE after locking the contact, preventing a concurrent status-definition change from bypassing the check. DNC, archive, nonactive legacy state, unready identity, missing/blocking number status and missing country block submission. Existing exact replay is state observation, never new send authorization; definitive provider outcomes remain recordable after preference changes.
+
+Migration207 enforces matching contact restrictions for direct INSERT and first submission using tenant/customer/status locks. Missing canonical contact imposes no contact-record restriction but still requires206 enrollment proof and all remaining admission gates; legacy/unbound identity/suppression coverage is not claimed. Authored unrun fixture creates a DNC contact after preparation, rejects service submission and direct SQL submission, then rolls back fixture state. Schema assertion authored.
+
+Local207 applied after backup /private/tmp/caller-otp-207.vzoISo/haisly_caller_before_207.dump. No tests/typecheck/lint/build/schema/browser/provider checks run per instruction. Rollback removes gate only; keep dispatch disabled during rollback. No real calls or worker activation. Goal active.

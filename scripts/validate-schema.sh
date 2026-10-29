@@ -2033,3 +2033,13 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='207_test_dispatch_contact_gate.sql')
+ AND NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_test_dispatch_intents'::regclass
+ AND tgname='caller_02_test_dispatch_contact' AND tgenabled='O' AND tgtype=23) THEN
+  RAISE EXCEPTION 'Test dispatch contact gate missing';
+ END IF;
+END $$;
+SQL
