@@ -1768,3 +1768,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='181_transfer_event_receipts.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_transfer_event_receipts'::regclass AND tgname='caller_transfer_receipt_guard' AND NOT tgisinternal AND tgenabled='O' AND tgtype=31 AND tgfoid=to_regprocedure('public.guard_caller_transfer_receipt()')) THEN
+   RAISE EXCEPTION 'Transfer receipt immutability guard missing'; END IF;
+  IF (SELECT count(*) FROM pg_constraint WHERE conrelid='public.caller_transfer_event_receipts'::regclass AND contype='f' AND convalidated AND array_length(conkey,1)=2)<>3 THEN
+   RAISE EXCEPTION 'Transfer receipt scoped relationships missing'; END IF;
+ END IF;
+END $$;
+SQL
