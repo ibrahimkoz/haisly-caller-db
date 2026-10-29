@@ -1962,3 +1962,12 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='200_guard_test_dispatch_release.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.billing_reservations'::regclass AND tgname='caller_test_dispatch_release_guard' AND tgdeferrable AND tginitdeferred AND tgenabled='O') THEN
+   RAISE EXCEPTION 'Test dispatch deferred cost release guard missing'; END IF;
+ END IF;
+END $$;
+SQL
