@@ -1869,3 +1869,26 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='192_call_capacity_policies.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='public.caller_capacity_policies'::regclass AND conname='caller_capacity_scope_contract' AND convalidated) THEN
+   RAISE EXCEPTION 'Call capacity scope contract missing'; END IF;
+  IF to_regclass('public.caller_capacity_platform_unique') IS NULL OR to_regclass('public.caller_capacity_tenant_unique') IS NULL OR to_regclass('public.caller_capacity_provider_unique') IS NULL THEN
+   RAISE EXCEPTION 'Call capacity scope uniqueness missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_capacity_policies'::regclass AND tgname='caller_capacity_write_lock' AND tgtype=62 AND tgenabled='O') THEN
+   RAISE EXCEPTION 'Call capacity configuration serialization missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_capacity_policies'::regclass AND tgname='caller_capacity_no_truncate' AND tgtype=34 AND tgenabled='O') THEN
+   RAISE EXCEPTION 'Call capacity truncate guard missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.tenants'::regclass AND tgname='caller_tenant_capacity_provision' AND tgtype=5 AND tgenabled='O') THEN
+   RAISE EXCEPTION 'Tenant capacity provisioning missing'; END IF;
+ END IF;
+END $$;
+SQL
+python3 - <<'PY'
+from pathlib import Path
+note='''\n\n### F8/F10 persisted shared capacity configuration — 2026-10-30\n\nMigration192 adds caller_capacity_policies for singleton platform, tenant and tenant-owned provider scopes, with unique scope indexes, composite provider ownership FK, immutable scope/identity, version advancement and deletion/truncate protection. Platform is initially20; existing and newly created tenants receive assigned2/requested2 via tenant provisioning trigger. Tenant requested capacity must remain between0 and assigned quota. Provider capacity is deliberately unconfigured until explicitly assigned; zero limits disable new work. Lowering an assigned tenant limit requires an accompanying valid requested limit.\n\nAPI internal configuration reader validates IDs and takes tenant then global shared-capacity advisory lock, returning effective limits and policy versions without granting dispatch or reserving slots. Statement-level policy writer locking occurs before row locks and shares the future claim serialization key; writers must not subsequently acquire tenant locks. The reader is internal and has no HTTP route. Protected platform/owner mutation services, audit, UI and actual claims remain pending.\n\nAdded unrun fixture coverage for default provisioning, explicit provider assignment, tenant-scoped provider lookup, requested-limit lowering/version increment, over-quota rejection, scope immutability and zero shutdown; added schema assertions. Local migration192 applied after private backup /private/tmp/caller-capacity-192.OKmBfv/haisly_caller_before_192.dump. No tests/typecheck/lint/build/schema/browser/provider checks run. Rollback serializes with writers and refuses to discard changed/provider policies; future claim dependencies also prevent unsafe table drop. No production changes or provider calls. Goal active; durable claims, occupancy inventory and final dispatch integration are still incomplete.\n'''
+for p in [Path('docs/outbound-caller-implementation-plan.md'),*[Path(r)/'docs/caller-phase-6.md' for r in ['haisly-caller-api','haisly-caller-db','haisly-caller-client']]]:
+ with p.open('a') as f:f.write(note)
+PY
