@@ -1739,3 +1739,19 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ DECLARE table_name text; relation regclass; BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='178_transfer_configuration.sql') THEN
+  FOREACH table_name IN ARRAY ARRAY['caller_transfer_team_policies','caller_transfer_destinations'] LOOP
+   relation:=to_regclass('public.'||table_name);
+   IF relation IS NULL THEN RAISE EXCEPTION 'Transfer configuration table missing: %',table_name; END IF;
+   IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid=relation AND NOT tgisinternal AND tgenabled='O'
+     AND tgtype=31 AND tgfoid=to_regprocedure('public.guard_caller_transfer_configuration()')) THEN
+    RAISE EXCEPTION 'Transfer configuration guard missing: %',table_name; END IF;
+   IF NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid=relation AND contype='f' AND convalidated AND array_length(conkey,1)=2) THEN
+    RAISE EXCEPTION 'Transfer tenant scope foreign key missing: %',table_name; END IF;
+  END LOOP;
+ END IF;
+END $$;
+SQL
