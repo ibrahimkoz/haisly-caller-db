@@ -1991,3 +1991,12 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='203_test_number_issuance_limits.sql') THEN
+  IF to_regclass('public.caller_test_number_challenge_rate_idx') IS NULL THEN
+   RAISE EXCEPTION 'Test challenge rate window index missing'; END IF;
+ END IF;
+END $$;
+SQL
