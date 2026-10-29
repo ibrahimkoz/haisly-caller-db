@@ -1755,3 +1755,16 @@ DO $$ DECLARE table_name text; relation regclass; BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='179_transfer_attempts.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid='public.caller_transfer_attempts'::regclass AND attname='capacity_held' AND attgenerated='s' AND NOT attisdropped) THEN
+   RAISE EXCEPTION 'Transfer generated occupancy missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_transfer_attempts'::regclass AND tgname='caller_transfer_attempt_guard' AND NOT tgisinternal AND tgenabled='O' AND tgtype=31 AND tgfoid=to_regprocedure('public.guard_caller_transfer_attempt()')) THEN
+   RAISE EXCEPTION 'Transfer attempt guard missing'; END IF;
+  IF (SELECT count(*) FROM pg_constraint WHERE conrelid='public.caller_transfer_attempts'::regclass AND contype='f' AND convalidated AND array_length(conkey,1)=2)<>4 THEN
+   RAISE EXCEPTION 'Transfer attempt tenant foreign keys missing'; END IF;
+ END IF;
+END $$;
+SQL
