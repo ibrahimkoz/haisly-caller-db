@@ -1971,3 +1971,12 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='201_test_dispatch_cooldowns.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_test_dispatch_intents'::regclass AND tgname='caller_01_test_cooldown_guard' AND tgtype=7 AND tgenabled='O') THEN
+   RAISE EXCEPTION 'Test dispatch cooldown guard missing'; END IF;
+ END IF;
+END $$;
+SQL
