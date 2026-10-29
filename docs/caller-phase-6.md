@@ -2282,3 +2282,12 @@ Migration201 enforces known same-tenant/number history at test intent INSERT und
 readTestDispatchHistory now returns the latest production end, latest inbound human completion and combined active/uncertain flag alongside test history. It still explicitly requires additional legacy/unbound history. Authored unrun integration assertions for production-open visibility and funded retry rejected immediately after a completed test; existing pure policy boundary cases remain for final batch. Cross-source DB boundary/concurrency tests remain pending. Schema assertion authored.
 
 Local migration201 applied after private backup /private/tmp/caller-cooldown-201.9UC6Jh/haisly_caller_before_201.dump. Stop test admissions before rollback. No tests/typecheck/lint/build/schema/browser/provider checks run as instructed. No ownership proof, DNC exemption or final send authorization is inferred from this guard. Goal active.
+
+
+### F7 test preparation contact restrictions — 2026-10-30
+
+Extracted shared contactRestrictionBlockers from existing production eligibility without changing purpose-consent behavior. Test preparation now reads the tenant-owned canonical contact under the shared tenant lock and rejects DNC, archived/inactive, unready identity, blocking/missing number status and missing country. Test enrollment cannot override those restrictions. The query returns only restriction flags, no contact identity/PII. Absent canonical contact means no canonical-contact restriction found, not ownership proof or calling consent.
+
+Purpose-specific production consent remains required by mapContactEligibility; verified test-number ownership/consent remains a separate unfinished gate. Existing intent replay preserves idempotency and does not grant dispatch; final sender must recheck current restrictions. Legacy phone matching and direct SQL enforcement remain separate final-admission work. No external API or schema change; DB201 unchanged.
+
+Authored unrun shared-policy unit cases and rollback fixture for DNC on the production contact plus no-contact test number. No tests/typecheck/lint/build/schema/browser/provider checks run as instructed. No real calls or ownership claims. Goal active.
