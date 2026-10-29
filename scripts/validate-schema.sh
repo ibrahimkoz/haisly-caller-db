@@ -2011,3 +2011,15 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='205_test_otp_payload_expiry.sql') THEN
+  IF to_regclass('public.caller_test_otp_expired_payload_idx') IS NULL THEN
+   RAISE EXCEPTION 'Expired test OTP payload index missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='public.caller_test_otp_deliveries'::regclass
+   AND conname='caller_test_otp_payload_lifecycle' AND convalidated) THEN
+   RAISE EXCEPTION 'Test OTP payload lifecycle constraint missing'; END IF;
+ END IF;
+END $$;
+SQL
