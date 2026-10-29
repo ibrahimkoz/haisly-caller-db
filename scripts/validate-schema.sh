@@ -1847,3 +1847,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='190_inbound_admission_quota_guard.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_inbound_greeting_pins'::regclass AND tgname='caller_inbound_greeting_admission_guard' AND NOT tgisinternal AND tgenabled='O' AND tgtype=7 AND tgfoid=to_regprocedure('public.guard_inbound_admission_quota()')) THEN
+   RAISE EXCEPTION 'Inbound quota insert guard missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.quota_policies'::regclass AND tgname='caller_quota_configuration_lock' AND NOT tgisinternal AND tgenabled='O' AND tgtype=62 AND tgfoid=to_regprocedure('public.lock_caller_quota_configuration()')) THEN
+   RAISE EXCEPTION 'Quota writer statement lock missing'; END IF;
+ END IF;
+END $$;
+SQL
