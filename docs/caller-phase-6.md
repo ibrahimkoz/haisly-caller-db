@@ -2309,3 +2309,12 @@ Added strict enrollment/challenge/six-digit code validation and verifyTestNumber
 Authenticated verifyTestNumber service owns the transaction, commits failure counters before raising generic422, and writes a minimal successful verification audit atomically. It returns call_available:false. No HTTP route or UI button enabled yet: SMS issuance/delivery, request throttling, read projection/proof consumption and final sender integration are still pending. Existing list response remains unverified until that projection is implemented. DB202 unchanged.
 
 Authored unrun rollback fixture for persisted successive failures, successful code, single-use consumption, exhaustion and rejection of correct code after exhaustion, plus strict-input unit cases. Full endpoint commit/concurrency/expiry/revoked-owner validation remains for final batch. No tests/typecheck/lint/build/schema/browser/SMS/provider checks run as instructed. Goal active.
+
+
+### F7 verified test number projection — 2026-10-30
+
+Added bounded batch readTestNumberVerifications projection using active enrollment identity and matching tenant/owner/destination-bound dedicated verified OTP. It excludes missing timestamps, expired-at-verification and exhausted proofs. No N+1 query: list reads at most50 enrollment IDs and grouped proof dates. Enrollment replay now reflects current verification instead of always returning unverified. Revoked records return unverified; fresh enrollment IDs cannot inherit old proof. Proof has no new arbitrary lifetime policy; OTP must have been valid when consumed and enrollment must remain active.
+
+OpenAPI and client type now allow verified/unverified. Account settings renders verified status while keeping Calls unavailable, prioritizes revoked display and avoids falsely announcing pending verification on enrollment replay. call_available remains false in every response. Projection is available to final admission, but final sender integration is still pending; no provider request is authorized by this read.
+
+Authored unrun DB fixture assertions for unverified/verified projection, tenant isolation and revocation removal, plus client verified/revoked presentation case. OpenAPI generated only. No tests/typecheck/lint/build/schema/browser/provider checks run as instructed. DB202 unchanged. SMS issuance, verify endpoint/UI, throttling and real delivery remain pending. Goal active.
