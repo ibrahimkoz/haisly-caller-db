@@ -1725,3 +1725,17 @@ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='177_simulation_definition_binding.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid='public.caller_release_simulation_results'::regclass
+   AND attname='definition_hash' AND NOT attisdropped AND atttypid='text'::regtype) THEN
+   RAISE EXCEPTION 'Simulation definition hash column missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_release_simulation_results'::regclass
+   AND tgname='caller_simulation_definition_guard' AND NOT tgisinternal AND tgenabled='O' AND tgtype=7
+   AND tgfoid=to_regprocedure('public.guard_simulation_definition_binding()')) THEN
+   RAISE EXCEPTION 'Simulation definition guard missing'; END IF;
+ END IF;
+END $$;
+SQL
