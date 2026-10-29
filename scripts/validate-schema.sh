@@ -2063,3 +2063,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='210_test_submission_history.sql')
+ AND (SELECT count(*) FROM pg_trigger WHERE tgrelid='public.caller_test_dispatch_intents'::regclass
+ AND tgname IN ('caller_00_test_submission_phone','caller_01_test_submission_cooldown')
+ AND tgenabled='O' AND tgtype=19 AND tgqual IS NOT NULL)<>2 THEN
+  RAISE EXCEPTION 'Test submission history gates missing';
+ END IF;
+END $$;
+SQL

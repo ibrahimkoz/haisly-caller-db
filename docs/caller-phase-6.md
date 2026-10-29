@@ -2445,3 +2445,12 @@ Migration209 checks platform/tenant-requested/provider limits at prepared→subm
 Full all-source admission is still incomplete: legacy/unclaimed occupancy requires coordinated writer serialization beyond this registered-claim check. No provider send path enabled. Authored unrun regressions temporarily close platform, tenant and provider capacity after claim allocation and expect submission rejection; DNC direct-write fixture now runs with capacity configured/claimed so it isolates contact protection. Schema assertion authored.
 
 Local209 applied after backup /private/tmp/caller-otp-209.erIqcK/haisly_caller_before_209.dump. No tests/typecheck/lint/build/schema/browser/provider checks run per instruction. Goal active.
+
+
+### F7 first test submission history recheck — 2026-10-30
+
+Migration210 reuses the existing shared phone-admission and test cooldown guards on prepared→submitting only. It rechecks open production and unresolved bound inbound calls, five-minute completed test cooldown,24-hour production cooldown and24-hour completed human inbound cooldown. Same tenant lock/READ COMMITTED behavior applies; existing outcomes/replay are not mistaken for a new submission. Preparation checks remain in place. No duplicated policy SQL introduced.
+
+Authored unrun transactional fixture creates/binds an inbound call after the test intent/slot exist, expects submission rejection while inbound remains unresolved, finalizes it through recordInboundCompletion as human, then expects24-hour cooldown rejection. All fixture calls are local synthetic DB records, not provider activity. Legacy/unbound history and full final admission remain pending. Schema assertions authored.
+
+Local210 applied after backup /private/tmp/caller-otp-210.eeHNGw/haisly_caller_before_210.dump. No tests/typecheck/lint/build/schema/browser/provider checks run per instruction. Rollback removes only submission triggers; keep dispatch disabled during rollback. Goal active.
