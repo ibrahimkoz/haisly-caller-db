@@ -2454,3 +2454,12 @@ Migration210 reuses the existing shared phone-admission and test cooldown guards
 Authored unrun transactional fixture creates/binds an inbound call after the test intent/slot exist, expects submission rejection while inbound remains unresolved, finalizes it through recordInboundCompletion as human, then expects24-hour cooldown rejection. All fixture calls are local synthetic DB records, not provider activity. Legacy/unbound history and full final admission remain pending. Schema assertions authored.
 
 Local210 applied after backup /private/tmp/caller-otp-210.eeHNGw/haisly_caller_before_210.dump. No tests/typecheck/lint/build/schema/browser/provider checks run per instruction. Rollback removes only submission triggers; keep dispatch disabled during rollback. Goal active.
+
+
+### F13 tenant-keyed suppression digest foundation — 2026-10-30
+
+Inspection confirmed current contact DNC gates do not implement the spec§14 minimal HMAC suppression record after personal-data erasure. Added createPhoneSuppressionDigest: strict canonical E164 input, canonical tenant UUID, key version and dedicated32-byte canonical-base64 random master key. HMAC-SHA256 derives a domain-separated tenant/version key then a domain-separated phone digest. Different tenants, phones, key versions and master keys do not share identifiers. Mutable derived/key buffers are cleared after use; validation errors contain neither phone nor key. The digest remains personal data, not anonymous information.
+
+This is a cryptographic building block only. Durable suppression event ledger, owner-only evidenced release, dedicated key provisioning/rotation, DNC writes/backfill, import/CRM/test/production admission checks and restore replay are still outstanding; no protection after actual erasure is claimed yet. Existing owner release rules and DNC behavior remain unchanged. Authored unrun tests cover stability, scope/key separation, normalized input including trailing-newline rejection and nonleaking invalid-key errors. No keys generated outside fixtures and no production configuration changed.
+
+No tests/typecheck/lint/build/schema/browser/provider checks run per instruction. DB remains210. Goal active; F13 and full final acceptance are incomplete.
