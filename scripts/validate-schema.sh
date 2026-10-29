@@ -1920,3 +1920,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='196_test_dispatch_intents.sql') THEN
+  IF to_regclass('public.caller_test_dispatch_open_phone') IS NULL OR to_regclass('public.caller_test_dispatch_acceptance_idx') IS NULL THEN
+   RAISE EXCEPTION 'Test dispatch phone/quota indexes missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_test_dispatch_intents'::regclass AND tgname='caller_test_dispatch_guard' AND tgtype=31 AND tgenabled='O') THEN
+   RAISE EXCEPTION 'Test dispatch lifecycle guard missing'; END IF;
+ END IF;
+END $$;
+SQL
