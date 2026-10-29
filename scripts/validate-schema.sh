@@ -1909,3 +1909,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='195_capacity_assignment_receipts.sql') THEN
+  IF to_regclass('public.caller_capacity_assignment_policy_idx') IS NULL THEN
+   RAISE EXCEPTION 'Capacity assignment history index missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_capacity_assignment_receipts'::regclass AND tgname='caller_capacity_assignment_receipt_no_truncate' AND tgtype=34 AND tgenabled='O') THEN
+   RAISE EXCEPTION 'Capacity assignment receipt truncate guard missing'; END IF;
+ END IF;
+END $$;
+SQL
