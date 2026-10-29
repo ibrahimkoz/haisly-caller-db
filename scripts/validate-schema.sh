@@ -1814,3 +1814,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='186_inbound_topic_confirmations.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_inbound_topic_confirmations'::regclass AND tgname='caller_inbound_topic_guard' AND NOT tgisinternal AND tgenabled='O' AND tgtype=31 AND tgfoid=to_regprocedure('public.guard_inbound_topic_confirmation()')) THEN
+   RAISE EXCEPTION 'Inbound topic evidence guard missing'; END IF;
+  IF (SELECT count(*) FROM pg_constraint WHERE conrelid='public.caller_inbound_topic_confirmations'::regclass AND contype='f' AND convalidated AND array_length(conkey,1)=2)<>2 THEN
+   RAISE EXCEPTION 'Inbound topic tenant relationships missing'; END IF;
+ END IF;
+END $$;
+SQL
