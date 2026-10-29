@@ -1982,3 +1982,10 @@ Migration182 adds immutable, tenant-scoped failure→task provenance with one ta
 Active same-identity contacts receive call-linked follow-up; changed/archived contacts produce generic unassigned identity-review tasks with no customer/call association. Archived team falls back to unassigned manager queue. Fixed text only; no number, SIP URI or transcript copied. Authored unrun no-evidence/no-task integration assertion and schema guards. Positive bound-event/task deduplication, assignment/identity-change acceptance still need final integration coverage and execution.
 
 Local DB182 applied after private backup /private/tmp/caller-transfer-182.fDsHF6/haisly_caller_before_182.dump. No tests/typecheck/lint/build/schema/browser/provider checks run. Service remains internal until authenticated provider adapter is connected. Goal active.
+
+
+### F10 bound transfer integration fixture and task timestamp correction — 2026-10-30
+
+Extended the existing accepted-dispatch/runtime fixture with savepoint-isolated transfer scenarios using real DB relationships and synthetic normalized adapter observations: failed transfer creates one task/outbox intent, replay returns the same receipt/task, conflicting event-key and leg reference are rejected, receipts resist deletion, connected→completed releases occupancy without creating a failure task, and an archived contact receives unlinked unassigned review. Added wrong-environment rejection. Fixture rolls back all transfer/contact changes before other runtime scenarios. This is not real provider acceptance evidence.
+
+Source inspection while writing the fixture identified task created_at defaulting to transaction start, potentially predating its transfer reservation. Failure-task creation now explicitly uses DB clock_timestamp(), matching the provenance guard. No tests/typecheck/lint/build/browser/schema/provider checks run; all newly authored scenarios remain unverified until final batch. DB182 unchanged. Positive concurrency/identity-revision-change/real provider acceptance and remaining phases remain open. Goal active.
