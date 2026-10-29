@@ -1858,3 +1858,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='191_inbound_quota_policy_contract.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='public.quota_policies'::regclass AND conname='caller_inbound_quota_policy_contract' AND convalidated) THEN
+   RAISE EXCEPTION 'Inbound quota policy contract missing'; END IF;
+  IF to_regclass('public.caller_inbound_quota_tenant_unique') IS NULL THEN
+   RAISE EXCEPTION 'Inbound tenant quota uniqueness missing'; END IF;
+ END IF;
+END $$;
+SQL
