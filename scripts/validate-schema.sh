@@ -1951,3 +1951,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='199_test_dispatch_event_receipts.sql') THEN
+  IF to_regclass('public.caller_test_dispatch_event_receipts_history') IS NULL THEN
+   RAISE EXCEPTION 'Test provider event history index missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_test_dispatch_event_receipts'::regclass AND tgname='caller_test_dispatch_event_receipt_no_truncate' AND tgtype=34 AND tgenabled='O') THEN
+   RAISE EXCEPTION 'Test provider receipt truncate guard missing'; END IF;
+ END IF;
+END $$;
+SQL
