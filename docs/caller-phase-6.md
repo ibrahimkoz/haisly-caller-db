@@ -1943,3 +1943,10 @@ Migration179 adds transfer attempts with composite tenant call/environment/polic
 Fixed pure lifecycle policy to persist conflict_hold in state, rather than returning a transient hold flag that a duplicate could discard. Authored unrun concurrent-claim, uncertain-capacity, proven-failure release, sticky conflict and delete-rejection integration cases plus schema assertions. Local DB179 applied in one transaction after private backup /private/tmp/caller-transfer-179.XnO1EU/haisly_caller_before_179.dump; migration row read. No tests/typecheck/lint/build/schema/browser/provider checks run.
 
 Deployment order DB179→API; no provider or public claim entry point enabled. Runtime creation still requires verified target, human intent, call/environment binding, budget and active scope checks in the service. Authenticated receipt persistence, atomic follow-up creation, authoritative conflict resolution, unsent-reservation recovery and retention remain pending; ordinary updates deliberately cannot clear conflict holds until that workflow exists. Management destination lock ordering must be aligned before connecting runtime claims. Goal active.
+
+
+### F10 management/runtime lock ordering and schedule validation — 2026-10-30
+
+Destination updates now resolve immutable parent identity without locking the destination, acquire policy lock first, then lock/re-read the tenant-scoped destination and validate optimistic version. This aligns management with runtime policy→destination ordering and removes the inverse-lock path identified in DB179 notes. Transfer schedule API now rejects impossible calendar exclusions and enforces the DB timezone length boundary; frontend validation alone was insufficient.
+
+Extended unrun integration fixture to edit a destination, reject an old destination-version claim, and claim using the new version; added leap/non-leap/calendar exclusion tests. Source diff reviewed; no tests/typecheck/lint/build/browser/schema checks run. Concurrency behavior still needs final real-DB validation. No migration; DB179 unchanged. Runtime claim service, verification, provider receipts and reconciliation remain pending. Goal active.
