@@ -1940,3 +1940,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='198_test_call_capacity_claims.sql') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='public.caller_capacity_claims'::regclass AND conname='caller_capacity_claim_test_source_fk' AND contype='f') THEN
+   RAISE EXCEPTION 'Test capacity source foreign key missing'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_test_dispatch_intents'::regclass AND tgname='caller_test_dispatch_terminal_capacity' AND tgtype=17 AND tgenabled='O') THEN
+   RAISE EXCEPTION 'Test terminal capacity release missing'; END IF;
+ END IF;
+END $$;
+SQL
