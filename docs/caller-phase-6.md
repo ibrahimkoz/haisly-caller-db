@@ -1996,3 +1996,10 @@ Source inspection while writing the fixture identified task created_at defaultin
 Added GET /api/v1/transfer-attempts with agents.manage+users.manage+calls.read, tenant/policy-scoped cursor pagination and no-store responses/errors. Explicit projection includes status, times, version, occupancy and reconciliation flag only; no address, provider reference, request key or contact data. Archived policy history remains readable. Team policy cards now have a permission-gated lazy history panel, actor-scoped cache, refresh/older pagination, loading/empty/error states and stale-result suppression. Existing editor locks also disable history controls. OpenAPI regenerated.
 
 Migration183 adds tenant/policy/id history index; local DB183 applied after private backup /private/tmp/caller-transfer-183.ff9plD/haisly_caller_before_183.dump. Authored unrun API pagination/foreign tenant/bad cursor/projection assertions and UI lazy-read/access-failure/uncertain-occupancy tests. No tests/typecheck/lint/build/schema/browser/provider checks run. No actual transfers or worker started; provider authentication, verification/claim workflow, reconciliation and remaining full goal scope remain open.
+
+
+### F10 reordered provider connection evidence — 2026-10-30
+
+Fixed lifecycle handling of delayed connected events after completed: when immutable completion receipt proves the leg ended at or after that connection, record historical observation without reopening capacity or incrementing attempt version. Terminal time is reconstructed from the first applied terminal receipt, never updated_at or duplicate event arrival. Missing completion evidence and connection claims after completion remain conflicts; existing conflict holds never clear implicitly. Pre-submission events remain stale even for terminal attempts.
+
+Added unrun pure-state cases for historical/new connection, absent proof and sticky holds, plus bound DB fixture replay with a distinct event key and retained released occupancy. No tests/typecheck/lint/build/browser/schema/provider checks run. DB183 unchanged. Authoritative conflict resolution and real provider adapter remain pending; goal active.
