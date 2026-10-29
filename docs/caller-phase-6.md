@@ -1920,3 +1920,10 @@ Authored unrun UI tests for on-demand scoped reads and cached-address suppressio
 Connected new/edit/archive destination form to scoped mutation hooks with idempotency key and If-Match. E.164/basic SIP input checks, read-only verification notice, busy double-submit guard and frozen key/body retry on uncertain responses. Uncertain/busy forms block route/browser exit; parent transfer/teams controls stay locked while editor is open. Definitive errors permit correction/reopen; successful save refreshes destination history. Mutation caches reset on unmount. Archived policies cannot create targets; backend remains authoritative for updates/reactivation.
 
 Authored unrun UI cases for exact uncertain replay and phone rejection. No tests/typecheck/lint/build/browser/provider calls run. Team policy creation/edit and environment selection UI still pending; target verification/runtime remains disabled. DB178 unchanged. Goal active.
+
+
+### F10 transfer policy editor UI — 2026-10-29
+
+Connected team policy create/edit/archive UI with active environment pagination through the existing minimal binding-options endpoint, scoped per actor. Editor supports IANA timezone, capacity1–100, up to14 weekly windows, midnight end boundary and per-window excluded dates; impossible calendar dates rejected locally. Frozen idempotent requests handle uncertain writes, optimistic updates retain version, busy/uncertain navigation is blocked and parent controls lock while editing. Success refreshes policy history.
+
+Authored unrun UI cases for exact uncertain replay and impossible date rejection. No tests/typecheck/lint/build/browser/provider calls run. No DB migration; local version178 unchanged. Provider verification, atomic capacity reservation and real transfer execution remain pending. Staging unavailable by user confirmation; offline development continues. Goal active.
