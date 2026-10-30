@@ -2696,3 +2696,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Callback relaxation uses only the immutable dispatch link and a still-pending plan within its start window; a newly pending unmatched plan, canceled plan or expired callback blocks submission.
 - Authored unrun regressions for self-exclusion, preserved accepted history, mismatched number and canceled-request exclusion rejection. Existing cooldown/callback fixtures remain in final validation scope.
 - No tests/typecheck/lint/build/schema/browser/provider checks run. Local DB remains 213. This still does not certify complete legacy/unbound history; all-source admission, release certification and final acceptance remain pending. Goal active.
+
+
+### Provider outage at first submission — 2026-10-30 (F08-T03/T04)
+
+- First production submission rechecks the provider circuit under the existing tenant/provider lock order. Previously prepared requests cannot bypass a subsequently opened circuit or consume probe permission as an ordinary call.
+- Provider binding returns its server-resolved public ID for the shared circuit service. No caller-supplied circuit state or provider override is accepted.
+- Authored an unrun regression that records three connectivity failures after preparation, rejects submission, preserves prepared state and held reservation, and permits cancellation. Outcome/replay paths remain independent of current provider outage.
+- No tests/typecheck/lint/build/schema/browser/provider checks executed. No migration, real provider request or worker activation; local DB remains 213. Complete scheduler/release/legacy-history admission and final phase acceptance remain pending; goal active.
