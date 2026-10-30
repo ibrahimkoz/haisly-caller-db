@@ -2753,3 +2753,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Candidate selection and final missed-task materialization share one tenant/target/source/time SQL predicate. Retry count/backoff and dead-letter limits are preserved. Recovery does not place a call or bypass the 30-minute callback window; the existing task, notification and audit transaction remains authoritative.
 - Added unrun PostgreSQL predicate scenarios for all dispatch states, source exclusion, tenant/target isolation, prior ended calls and exact confirmation-time boundaries. Wired into existing callback integration fixtures; no tests/typecheck/lint/build/schema/browser/provider checks executed.
 - No migration, worker activation or external request. Local DB remains215. End-to-end concurrency/worker recovery, actual provider reconciliation and full phase acceptance remain outstanding; goal active.
+
+
+### Target lifecycle counts in operations — 2026-10-30 (F08-T06 / F12-T01)
+
+- Operations API now reports held/canceled/expired target counts separately from historical started/unstarted and accepted-attempt totals. All counts use one tenant/campaign-scoped aggregate in the existing repeatable-read summary transaction; no person data is exposed.
+- Client shows open, canceled and expired targets and explicitly explains that open targets still need eligibility checks and historical attempts include terminal targets. Existing10-second polling and stale-response/error handling remain unchanged.
+- Added unrun expiry-fixture assertions that lifecycle counters move while historical totals remain identical, plus foreign-tenant empty counts, empty/normal operations API expectations and client lifecycle labels. OpenAPI regenerated; no tests/typecheck/lint/build/schema/browser/provider checks executed.
+- No migration or worker activation; local DB remains215. Deploy the additive API fields before this client. These counters do not calculate campaign completion or replace future complete waiting-reason/scheduler reporting. Goal and final acceptance remain active.
