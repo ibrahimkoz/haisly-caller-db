@@ -2784,3 +2784,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Client renders a bilingual callback summary in the existing10-second operations panel. It explains overlapping pending subsets and that started callbacks still need separate call-end confirmation. No identities, phone numbers or task contents are exposed.
 - Authored unrun cases for empty API counts, pending plan counts, review/exhausted receipt subsets, foreign-tenant isolation, pause preservation/cancel transition and UI subset wording. OpenAPI regenerated; no tests/typecheck/lint/build/schema/browser/provider checks run.
 - No migration, live call or worker activation; local DB remains216. API precedes client rollout. Full campaign completion, scheduler and provider acceptance remain incomplete; goal active.
+
+
+### Durable test-call outcome for release evidence — 2026-10-30 (F07-T02/T04/T05)
+
+- Migration217 adds nullable normalized test-dispatch end_reason with ended-only enum constraint and immutable terminal outcome. Existing/omitted outcomes remain NULL (unknown); no historical end becomes successful by default. Rollback refuses discarding recorded outcomes.
+- Internal test observation/transition contracts accept an optional verified end reason; replay/conflict checks include it. Existing event hashes remain unchanged when the field is omitted. New conflicting observations cannot rewrite successful/failed outcomes or enrich unknown history silently. No public provider endpoint or live sender was enabled.
+- Authored unrun schema cases for known outcomes, unknown legacy ends and rejection on non-ended events; extended provider-event fixture for persisted completed outcome and conflicting reason/key rejection. No tests/typecheck/lint/build/schema/browser/provider checks run.
+- Applied217 only to local haisly_caller after backup `/private/tmp/caller-outcome-217.EXRZIS/haisly_caller_before_217.dump`. DB must precede updated API. Durable release-test evidence reader/publication integration and actual provider certification remain pending; goal active.
