@@ -2768,3 +2768,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Migration216 requires a held target when inserting a production dispatch, acquiring the tenant lock and target row lock. This closes the direct-SQL preparation gap for canceled/expired targets while keeping provider outcome updates, existing cancellation and historical accounting available. Existing submission-time checks remain independent.
 - API preparation now distinguishes target_expired from target_canceled. Authored unrun expiry-fixture assertions for blocked preparation with no new reservation and direct-SQL insertion rejection. No tests/typecheck/lint/build/schema/browser/provider checks run.
 - Applied216 only to local haisly_caller after backup `/private/tmp/caller-target-216.i3nABj/haisly_caller_before_216.dump`. Rollback script removes only the insert guard and requires dispatch disabled operationally; existing history is retained. No worker activation or live call. Full release/scheduler/provider acceptance remains incomplete; goal active.
+
+
+### Target lifecycle list views — 2026-10-30 (F08-T06)
+
+- Added held/canceled/expired target views alongside existing all/unstarted/started views. API validates the enum and applies lifecycle filtering before cursor pagination within the existing tenant-scoped read transaction. Historical totals remain campaign-wide.
+- Client offers open/canceled/expired options and labels totals as all campaign targets. Existing current-view matching hides stale results after filter changes; subsequent pages retain the selected view. Open is not a dispatch eligibility assertion.
+- Authored unrun API cases for lifecycle filtering, empty terminal views, held cursor pagination, preserved campaign totals and invalid view rejection. OpenAPI regenerated. No tests/typecheck/lint/build/schema/browser/provider checks run.
+- No schema or worker change; local DB remains216. API must precede client rollout. Complete scheduler/reporting and final phase acceptance remain outstanding; goal active.
