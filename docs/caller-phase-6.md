@@ -2808,3 +2808,10 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Simulation detail now shows the selected release's test assessment with localized blocker explanations, validity and refresh/polling. Viewer-scoped cache, release matching and error handling hide stale results; local expiry removes a positive status. Assessment explicitly covers stored tests only and never authorizes publication/current configuration/provider readiness.
 - Authored unrun API cases for absent real test, anonymous/foreign access, no-store and query override rejection; UI cases for expiry, access failure and release mismatch. OpenAPI regenerated. No tests/typecheck/lint/build/schema/browser/provider checks run.
 - No migration or real calls; DB remains217. API precedes client rollout. Final publication orchestration, provider staging and phase acceptance remain unfinished; goal active.
+
+
+### Release configuration drift assessment — 2026-10-30 (F07-T05)
+
+- Shared the existing local pinned agent/phone/tool/compiler validation between tool resolution and release-test assessment. Matching, changed and unavailable configuration are returned independently of historical test eligibility; unexpected infrastructure errors still propagate. This does not validate provider readiness, current campaign drafts, consent or budgets.
+- Client displays configuration drift or unavailability separately from stored test success. Added unrun matching/changed/disabled binding assertions and UI coverage for changed configuration with valid historical tests. OpenAPI updated.
+- No tests/typecheck/lint/build/schema/browser/provider checks run, per user instruction. No migration, real call or worker activation; local DB remains217. API precedes client rollout. Final dispatch/publication integration and phase acceptance remain unfinished; goal active.
