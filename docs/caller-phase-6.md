@@ -2616,3 +2616,10 @@ Authored unrun fixture coverage for missing projection, matching projection, new
 Extracted validateSuppressionKeys as the shared tenant-locked validator for bounded unique versions, canonical key material and complete registered fingerprint coverage. Every supplied key is validated, including newly introduced versions. Phone lookup reuses it; personal DNC audit explicitly invokes it on empty or noncanonical pages, so missing/wrong retained keys cannot hide behind zero lookup results. Validation registers nothing and grants no readiness/erasure/dispatch authority.
 
 Authored unrun empty-page tests for wrong material, missing registered version and valid keys returning an uncertified empty page. Existing lookup tests continue through the common validator. No tests/typecheck/lint/build/schema/browser/provider checks run. DB remains212; no secrets provisioned or operational audit executed. Backfill orchestration/remediation, erasure/restore and full final acceptance remain pending; goal active.
+
+
+### F13 operator suppression audit command — 2026-10-30
+
+Added npm suppression:audit with explicit tenant UUID, bounded max-pages and secure environment key loading. Each short transaction validates retained keys and pages source-event gaps/personal DNC projections. It prints aggregates only and sanitized errors. Exit2 reports gaps or incomplete traversal; exit1 reports failure. It never writes/backfills data, enables workers or certifies erasure/dispatch. Added repository maintenance usage/limitations documentation, including non-snapshot cross-page traversal and no checkpoint resume.
+
+No command execution, tests/typecheck/lint/build/schema/browser/provider checks or real data scan performed. DB remains212; no secrets provisioned. Existing primitive tests remain deferred. Repair orchestration, historical identity/release remediation, erasure/restore and full final acceptance remain pending; goal active.
