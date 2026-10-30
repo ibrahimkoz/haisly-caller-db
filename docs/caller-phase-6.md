@@ -2663,3 +2663,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Campaign agent options exclude inactive environments. Explicit settings updates reject such agents under shared version/agent/environment locks. Existing drafts remain readable and report the blocker if their environment is subsequently disabled.
 - Added bilingual client explanations and permission-gated telephony navigation. Authored API coverage for missing/active/paused provider accounts, environment deactivation, hidden choices and rejected settings; existing pending verification remains asserted.
 - Tests/typecheck/lint/build/schema/browser checks not run per user instruction. No external calls, migrations or credentials added. Local DB remains 213; full phase acceptance and goal remain incomplete.
+
+
+### Production provider binding recheck — 2026-10-30 (F07-T01 / F08-T03)
+
+- Added a shared same-transaction check linking captured agent version, agent, active environment, active provider account and selected active outbound number within the tenant. The provider must use the agent environment, and the current agent configuration must still match the captured configuration.
+- Production preparation runs this before cost reservation; first prepared-to-submitting transition rechecks under shared locks. Historical replay/outcome reconciliation and cancellation do not depend on current configuration availability.
+- Authored unrun regressions for inactive-environment preparation without a reservation, environment/provider/phone changes before submission, and cancellation despite provider deactivation.
+- No test/typecheck/lint/build/schema/browser/provider checks run. No new migration or actual calls; local DB remains 213. This is an application configuration gate, not DB-level enforcement or provider/ownership/release certification. Final scheduler authorization and phase acceptance remain incomplete; goal active.
