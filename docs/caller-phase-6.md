@@ -2729,3 +2729,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Increasing a paused budget does not resume a prepared request. Cancellation and historical outcomes remain available. A held reservation from a prior UTC month blocks submission and must be canceled/reprepared for the current month's admission; no historical accounting timestamp is rewritten.
 - Authored unrun regressions for manual campaign-budget pause, raising that paused budget without resume, and permitted cancellation. Month-boundary end-to-end coverage remains part of final acceptance.
 - No tests/typecheck/lint/build/schema/browser/provider checks run. No migration or production action; local DB stays 214. Scheduler handling of blocked/reprepared requests and final all-source admission remain incomplete; goal active.
+
+
+### Expired prepared dispatch maintenance — 2026-10-30 (F05-T03 / F08-T03)
+
+- Added a runtime-authenticated, tenant/environment-scoped maintenance endpoint that cancels at most 25 still-prepared, held-funded requests when the immutable campaign deadline elapsed or the reservation belongs to an earlier UTC month. Existing cancellation atomically releases funding and capacity; transaction rollback preserves all three states.
+- Optional worker flag `CALLER_PREPARED_DISPATCH_CLEANUP_ENABLED` defaults false. Bounded batches, tenant lock, no-store responses and aggregate health metrics are implemented. No worker was enabled.
+- Authored unrun regressions for expired cancellation, unaffected current request, environment isolation, idempotent repetition, rollback, preserved uncertain funding, endpoint authorization and worker response handling. OpenAPI regenerated; no tests/typecheck/lint/build/schema/browser/provider checks executed.
+- No migration or client behavior change; local DB stays 214. This does not reprepare requests, finish campaign targets or certify provider outcomes. Scheduler recovery, all-source admission and final acceptance remain incomplete; goal active.
