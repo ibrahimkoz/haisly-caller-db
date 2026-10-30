@@ -2679,3 +2679,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Retained HMAC suppression remains an additional independent gate. Historical outcomes, replays and cancellation are not blocked by later contact/consent changes.
 - Authored unrun regression cases for archive, changed canonical phone, consent withdrawal, unchanged prepared state after rejection and cancellation after withdrawal.
 - No tests/typecheck/lint/build/schema/browser/provider checks executed. No migration or external call; local DB stays at 213. Final timing/history/capacity/release admission and direct DB enforcement remain separate incomplete work; goal active.
+
+
+### Submission-time schedule and policy — 2026-10-30 (F08-T01/T03)
+
+- First production submission now reloads captured campaign dates/windows and the target's accepted attempt count, resolves the current recipient timezone, and evaluates current country/tenant calling policy using the DB clock. Shared locks preserve the configuration through the transition transaction.
+- Reuses the existing campaign schedule, timezone/window and platform policy engines. A stale preparation cannot bypass ended/not-started campaign dates, local hours, disabled policy or exhausted attempts. Reconciliation/replay/cancellation remain independent.
+- Authored unrun regression scenarios for exhausted attempts after preparation, a newly disabled tenant policy and cancellation despite that policy. Existing pure schedule/window tests remain part of the deferred final batch.
+- No tests/typecheck/lint/build/schema/browser/provider checks run. No migration or real calls; DB stays at 213. All-source history, release certification and final atomic scheduler admission remain incomplete. Goal active.
