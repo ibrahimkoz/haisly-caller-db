@@ -2800,3 +2800,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Shared enrollment/OTP proof SQL now supports an acceptance-time cutoff. Current ownership reads preserve their existing behavior; publication evidence cannot use a later verification to retroactively prove ownership. Revoked registrations remain in historical evidence with no valid ownership proof.
 - Added internal stored-test orchestration combining durable call evidence and existing immutable simulation evidence through the seven-day certification policy. It still returns publication_authorized=false; public preflight/publication transaction and real provider acceptance remain separate unfinished work.
 - Authored unrun fixture cases for unknown ends, missing/present provider receipts, pre-call proof, foreign tenant and revoked registration. No tests/typecheck/lint/build/schema/browser/provider checks run. No migration or worker activation; local DB remains217. Goal active.
+
+
+### Authorized release-test assessment API and UI — 2026-10-30 (F07-T05)
+
+- Added no-store GET caller-releases/:release_public_id/test-certification requiring agents.manage and caller.campaigns.read. Tenant lookup returns404 for foreign/missing releases; strict empty query rejects caller-supplied eligibility. Repeatable-read assessment returns release hash, checked time, missing-evidence codes, selected public evidence IDs and validity, never raw calls/phones/prompts.
+- Simulation detail now shows the selected release's test assessment with localized blocker explanations, validity and refresh/polling. Viewer-scoped cache, release matching and error handling hide stale results; local expiry removes a positive status. Assessment explicitly covers stored tests only and never authorizes publication/current configuration/provider readiness.
+- Authored unrun API cases for absent real test, anonymous/foreign access, no-store and query override rejection; UI cases for expiry, access failure and release mismatch. OpenAPI regenerated. No tests/typecheck/lint/build/schema/browser/provider checks run.
+- No migration or real calls; DB remains217. API precedes client rollout. Final publication orchestration, provider staging and phase acceptance remain unfinished; goal active.
