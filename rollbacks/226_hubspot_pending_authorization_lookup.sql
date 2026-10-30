@@ -1,0 +1,1 @@
+DROP INDEX public.caller_hubspot_consumed_state_scope_idx;
