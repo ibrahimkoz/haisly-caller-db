@@ -2776,3 +2776,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Client offers open/canceled/expired options and labels totals as all campaign targets. Existing current-view matching hides stale results after filter changes; subsequent pages retain the selected view. Open is not a dispatch eligibility assertion.
 - Authored unrun API cases for lifecycle filtering, empty terminal views, held cursor pagination, preserved campaign totals and invalid view rejection. OpenAPI regenerated. No tests/typecheck/lint/build/schema/browser/provider checks run.
 - No schema or worker change; local DB remains216. API must precede client rollout. Complete scheduler/reporting and final phase acceptance remain outstanding; goal active.
+
+
+### Callback backlog in campaign operations — 2026-10-30 (F08-T06 / F09-T04 / F12-T01)
+
+- Operations response now includes tenant/campaign-scoped callback totals: pending, started, missed, canceled, overdue pending, pending review and exhausted pending processing. One receipt per callback prevents join duplication; processing subsets never add to total or imply completed work.
+- Client renders a bilingual callback summary in the existing10-second operations panel. It explains overlapping pending subsets and that started callbacks still need separate call-end confirmation. No identities, phone numbers or task contents are exposed.
+- Authored unrun cases for empty API counts, pending plan counts, review/exhausted receipt subsets, foreign-tenant isolation, pause preservation/cancel transition and UI subset wording. OpenAPI regenerated; no tests/typecheck/lint/build/schema/browser/provider checks run.
+- No migration, live call or worker activation; local DB remains216. API precedes client rollout. Full campaign completion, scheduler and provider acceptance remain incomplete; goal active.
