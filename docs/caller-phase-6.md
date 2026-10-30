@@ -2998,3 +2998,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Disabled, disconnected or superseded connections cannot be reopened by a late response. Recording/quarantining such late responses and recovery/reconnection remain pending, as does transport orchestration. No provider I/O, public route, worker registration or new secret.
 - Authored deferred result privacy and transaction coverage for issuance/readback, exact/conflicting replay, tenant isolation, immutable receipts and unsuccessful outcomes. No tests/typecheck/lint/build/schema/security/provider checks run.
 - Applied223 only to local haisly_caller after backup `/private/tmp/caller-hubspot-223.kFXvgO/haisly_caller_before_223.dump`; confirmed its migration ledger entry. Goal and F11 remain incomplete.
+
+
+### HubSpot single-send refresh orchestration — 2026-10-30 (F11-T01 partial)
+
+- Connected reservation, token transport and completion through an internal default-disabled service. Root DB connection is required; reservation commits before provider I/O and completion uses a separate transaction. An ambiguous commit failure prevents sending, and an existing intent never permits a second POST.
+- Preabort/disabled calls do not reserve. Cancellation after reservation records not_started; cancellation after sending does not suppress persistence of a late rotation response. Thrown/malformed adapter results become uncertain; cross-account issued results are discarded and recorded as account_mismatch. Public orchestration results contain only safe state/intent metadata, never tokens or provider errors.
+- Failed completion returns completion_pending without reissuing the request. Durable recovery/quarantine of responses that cannot be applied remains pending; a lost rotated token may require reconnection. No route or worker enables this service, no provider request was executed, and successful persistence is not connection verification.
+- Authored deferred cases for ordering, cancellation timing, disabled/duplicate/failed-commit no-send behavior, account binding, normalized exceptions and failed completion without retry. No tests/typecheck/lint/build/security/provider checks run; formatting only. No migration or secrets added. Goal and F11 remain incomplete.
