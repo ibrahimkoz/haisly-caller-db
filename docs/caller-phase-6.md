@@ -2671,3 +2671,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Production preparation runs this before cost reservation; first prepared-to-submitting transition rechecks under shared locks. Historical replay/outcome reconciliation and cancellation do not depend on current configuration availability.
 - Authored unrun regressions for inactive-environment preparation without a reservation, environment/provider/phone changes before submission, and cancellation despite provider deactivation.
 - No test/typecheck/lint/build/schema/browser/provider checks run. No new migration or actual calls; local DB remains 213. This is an application configuration gate, not DB-level enforcement or provider/ownership/release certification. Final scheduler authorization and phase acceptance remain incomplete; goal active.
+
+
+### Production submission contact/consent recheck — 2026-10-30 (F02-T04 / F08-T03)
+
+- First provider submission now rechecks current tenant contact identity and canonical number, archive/legacy/contact status, personal DNC, country and a nonwithdrawn consent for the campaign purpose and current identity. It reuses shared eligibility rules and locks the contact, status and consent proof in the submission transaction.
+- Retained HMAC suppression remains an additional independent gate. Historical outcomes, replays and cancellation are not blocked by later contact/consent changes.
+- Authored unrun regression cases for archive, changed canonical phone, consent withdrawal, unchanged prepared state after rejection and cancellation after withdrawal.
+- No tests/typecheck/lint/build/schema/browser/provider checks executed. No migration or external call; local DB stays at 213. Final timing/history/capacity/release admission and direct DB enforcement remain separate incomplete work; goal active.
