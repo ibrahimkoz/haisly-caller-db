@@ -2574,3 +2574,10 @@ Authored unrun bound-call fixture for missing keys, retained-only DNC blocking a
 Manual contact creation now locks an existing canonical match and restores a newer retained DNC timestamp before returning reused:true. It preserves a newer personal timestamp, increments version only on restoration, and records a minimal updated event without fabricating a new preference. Configuration/history failure rolls back the mutation. Existing contact identity/profile is reused; mutation receipt replay does not repeat restoration.
 
 Extended the unrun HTTP preference test to simulate a missing personal timestamp, manually reuse the same phone, check200/reused/original timestamp/version and identical receipt replay. No tests/typecheck/lint/build/schema/browser/provider checks run. DB remains212; no secrets provisioned. Initial audience/read consistency, CRM/backfill/erasure/restore and full final acceptance remain pending; goal active.
+
+
+### F4/F13 retained suppression in campaign audience view — 2026-10-30
+
+Campaign audience pages now batch-check canonical phones in the returned page against retained preference history and add do_not_call without duplicate blockers. Missing configured keys adds suppression_unavailable and makes contact_prerequisites_met false. Existing totals remain source population counts, not eligible counts; no targets are created by this read. Historical key errors do not silently return eligibility. The UI explains unavailable preference history in Turkish/English and retains the existing do-not-call label.
+
+Extended the unrun audience support fixture to require missing-key blocker and negative prerequisites consistent with the single-contact eligibility endpoint; added a client bilingual message test. Underlying batch lookup retains its separate unrun retained-history/rotation tests. No tests/typecheck/lint/build/schema/browser/provider checks run. DB remains212; no secrets provisioned. Initial publication enforcement, CRM/backfill/erasure/restore and complete final acceptance remain pending; goal active.
