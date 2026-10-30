@@ -2638,3 +2638,12 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Missing snapshots, invalid canonical phones and events outside the archive interval remain unresolved. The current owner's phone is never substituted. Existing release evidence/owner guards remain in force.
 - Added regression scenarios for missing archives, original-phone replay and key rotation after identity change. Tests and all runtime validation remain deferred to the final batch by user instruction; these changes are not a coverage certificate or erasure/dispatch authorization.
 - No DB migration, client behavior change, live provider connection or production action in this slice.
+
+
+### Dispatch snapshot consistency — 2026-10-30 (F04-T06 / F08-T03)
+
+- Rebinding an unstarted target now rejects changes while a prepared, submitting, uncertain or accepted dispatch exists. Selecting its existing snapshot remains a no-op; canceled/rejected pre-acceptance attempts do not permanently freeze the target.
+- Production preparation explicitly rejects canceled targets; first submission rechecks target state and snapshot. Existing provider outcome reconciliation and cancellation remain available.
+- Migration 213 adds DB guards against direct snapshot changes with open dispatches and stale/canceled first submissions. Applied only to local haisly_caller after backup `/private/tmp/caller-snapshot-213.SUj7PS/haisly_caller_before_213.dump`; no production action. Local migration level is 213.
+- Regression coverage authored for service rejection, unchanged selection, direct SQL rejection, and successful rebind after cancellation. Tests/typecheck/lint/build/schema/browser checks remain deferred by user instruction; migration execution alone is not behavioral acceptance.
+- Full release/publication gates, scheduler orchestration and final acceptance remain incomplete. Goal stays active.
