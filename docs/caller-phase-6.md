@@ -2792,3 +2792,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Internal test observation/transition contracts accept an optional verified end reason; replay/conflict checks include it. Existing event hashes remain unchanged when the field is omitted. New conflicting observations cannot rewrite successful/failed outcomes or enrich unknown history silently. No public provider endpoint or live sender was enabled.
 - Authored unrun schema cases for known outcomes, unknown legacy ends and rejection on non-ended events; extended provider-event fixture for persisted completed outcome and conflicting reason/key rejection. No tests/typecheck/lint/build/schema/browser/provider checks run.
 - Applied217 only to local haisly_caller after backup `/private/tmp/caller-outcome-217.EXRZIS/haisly_caller_before_217.dump`. DB must precede updated API. Durable release-test evidence reader/publication integration and actual provider certification remain pending; goal active.
+
+
+### Stored release test evidence reader — 2026-10-30 (F07-T04/T05)
+
+- Added bounded tenant/environment/release-hash call evidence projection from durable test intents and matching ended provider-event receipts. Only explicit completed outcome maps to successful evidence; unknown/other outcomes remain failed evidence, missing receipts do not prove completion, and truncated history fails certification.
+- Shared enrollment/OTP proof SQL now supports an acceptance-time cutoff. Current ownership reads preserve their existing behavior; publication evidence cannot use a later verification to retroactively prove ownership. Revoked registrations remain in historical evidence with no valid ownership proof.
+- Added internal stored-test orchestration combining durable call evidence and existing immutable simulation evidence through the seven-day certification policy. It still returns publication_authorized=false; public preflight/publication transaction and real provider acceptance remain separate unfinished work.
+- Authored unrun fixture cases for unknown ends, missing/present provider receipts, pre-call proof, foreign tenant and revoked registration. No tests/typecheck/lint/build/schema/browser/provider checks run. No migration or worker activation; local DB remains217. Goal active.
