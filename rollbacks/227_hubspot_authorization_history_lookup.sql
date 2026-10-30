@@ -1,0 +1,1 @@
+DROP INDEX public.caller_hubspot_oauth_state_history_scope_idx;
