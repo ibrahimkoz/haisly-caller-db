@@ -2761,3 +2761,10 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Client shows open, canceled and expired targets and explicitly explains that open targets still need eligibility checks and historical attempts include terminal targets. Existing10-second polling and stale-response/error handling remain unchanged.
 - Added unrun expiry-fixture assertions that lifecycle counters move while historical totals remain identical, plus foreign-tenant empty counts, empty/normal operations API expectations and client lifecycle labels. OpenAPI regenerated; no tests/typecheck/lint/build/schema/browser/provider checks executed.
 - No migration or worker activation; local DB remains215. Deploy the additive API fields before this client. These counters do not calculate campaign completion or replace future complete waiting-reason/scheduler reporting. Goal and final acceptance remain active.
+
+
+### Terminal target admission boundary — 2026-10-30 (F08-T03/T05)
+
+- Migration216 requires a held target when inserting a production dispatch, acquiring the tenant lock and target row lock. This closes the direct-SQL preparation gap for canceled/expired targets while keeping provider outcome updates, existing cancellation and historical accounting available. Existing submission-time checks remain independent.
+- API preparation now distinguishes target_expired from target_canceled. Authored unrun expiry-fixture assertions for blocked preparation with no new reservation and direct-SQL insertion rejection. No tests/typecheck/lint/build/schema/browser/provider checks run.
+- Applied216 only to local haisly_caller after backup `/private/tmp/caller-target-216.i3nABj/haisly_caller_before_216.dump`. Rollback script removes only the insert guard and requires dispatch disabled operationally; existing history is retained. No worker activation or live call. Full release/scheduler/provider acceptance remains incomplete; goal active.
