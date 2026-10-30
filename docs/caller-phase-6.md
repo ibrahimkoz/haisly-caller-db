@@ -2609,3 +2609,10 @@ Authored unrun fixture assertions for both versions missing, one version missing
 Added readPersonalSuppressionGaps to complement source-event gap discovery. It pages all tenant personal records with DNC timestamps, including archived/legacy rows and records without preference events, and batch-compares canonical phones against retained history. Results identify missing retained blocks, retained blocks older than the personal refusal, or unavailable canonical identities. Returned items expose only contact public ID/revision and issue; no phone/digest/secret is returned and no evidence or preference is fabricated.
 
 Authored unrun fixture coverage for missing projection, matching projection, newer personal refusal and missing canonical identity. Output never authorizes erasure/dispatch or certifies global coverage; source-event gaps, erased history, key validation on empty/noncanonical pages and restore evidence remain separate concerns. No tests/typecheck/lint/build/schema/browser/provider checks run; no operational audit executed. DB remains212; no secrets provisioned. Goal active; orchestration/remediation and full final acceptance remain pending.
+
+
+### F13 phone-independent suppression key validation — 2026-10-30
+
+Extracted validateSuppressionKeys as the shared tenant-locked validator for bounded unique versions, canonical key material and complete registered fingerprint coverage. Every supplied key is validated, including newly introduced versions. Phone lookup reuses it; personal DNC audit explicitly invokes it on empty or noncanonical pages, so missing/wrong retained keys cannot hide behind zero lookup results. Validation registers nothing and grants no readiness/erasure/dispatch authority.
+
+Authored unrun empty-page tests for wrong material, missing registered version and valid keys returning an uncertified empty page. Existing lookup tests continue through the common validator. No tests/typecheck/lint/build/schema/browser/provider checks run. DB remains212; no secrets provisioned or operational audit executed. Backfill orchestration/remediation, erasure/restore and full final acceptance remain pending; goal active.
