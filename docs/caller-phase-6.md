@@ -2647,3 +2647,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Migration 213 adds DB guards against direct snapshot changes with open dispatches and stale/canceled first submissions. Applied only to local haisly_caller after backup `/private/tmp/caller-snapshot-213.SUj7PS/haisly_caller_before_213.dump`; no production action. Local migration level is 213.
 - Regression coverage authored for service rejection, unchanged selection, direct SQL rejection, and successful rebind after cancellation. Tests/typecheck/lint/build/schema/browser checks remain deferred by user instruction; migration execution alone is not behavioral acceptance.
 - Full release/publication gates, scheduler orchestration and final acceptance remain incomplete. Goal stays active.
+
+
+### Empty initial audience preflight — 2026-10-30 (F04-T03 / F07-T05)
+
+- Draft preflight now reports `source_audience_empty` when selected active lists have no members and no campaign target baseline exists. Existence queries are tenant-scoped and bounded; no full audience is loaded or counted.
+- Previously captured targets survive list membership removal and do not receive this initial-publication warning. A nonempty list does not establish contact consent, eligibility, or publication readiness; remaining live gates stay in force.
+- Client includes Turkish/English guidance and permission-gated navigation to contact lists. Authored API scenarios cover empty-to-populated lists and preserved captured audiences; client coverage checks bilingual text and list permission navigation.
+- No tests/typecheck/lint/build/schema/browser checks executed, per user instruction. No schema changes or external calls; local DB remains at migration 213. Full publication and final acceptance remain pending.
