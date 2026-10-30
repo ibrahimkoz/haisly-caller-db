@@ -2704,3 +2704,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Provider binding returns its server-resolved public ID for the shared circuit service. No caller-supplied circuit state or provider override is accepted.
 - Authored an unrun regression that records three connectivity failures after preparation, rejects submission, preserves prepared state and held reservation, and permits cancellation. Outcome/replay paths remain independent of current provider outage.
 - No tests/typecheck/lint/build/schema/browser/provider checks executed. No migration, real provider request or worker activation; local DB remains 213. Complete scheduler/release/legacy-history admission and final phase acceptance remain pending; goal active.
+
+
+### Production funding at first submission — 2026-10-30 (F05-T02 / F08-T03)
+
+- First production submission checks the already-locked billing account is active and the exact tenant/campaign/request reservation remains held for production. It does not reserve or charge a second time.
+- Reconciliation accounts and uncertain/released/settled or mismatched reservations block new submission. Cancellation and historical provider outcomes remain available for resolution.
+- Authored unrun cases for account reconciliation, cancellation during reconciliation, uncertain reservation rejection and unchanged prepared state. Existing DB billing invariants continue to protect amounts and release history.
+- No tests/typecheck/lint/build/schema/browser/provider checks executed. No migration, real call or accounting operation outside fixtures; local DB stays 213. Current shared capacity/budget admission and full phase acceptance remain incomplete; goal active.
