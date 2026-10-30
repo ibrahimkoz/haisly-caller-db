@@ -2712,3 +2712,12 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Reconciliation accounts and uncertain/released/settled or mismatched reservations block new submission. Cancellation and historical provider outcomes remain available for resolution.
 - Authored unrun cases for account reconciliation, cancellation during reconciliation, uncertain reservation rejection and unchanged prepared state. Existing DB billing invariants continue to protect amounts and release history.
 - No tests/typecheck/lint/build/schema/browser/provider checks executed. No migration, real call or accounting operation outside fixtures; local DB stays 213. Current shared capacity/budget admission and full phase acceptance remain incomplete; goal active.
+
+
+### Atomic production capacity claim and submission gate — 2026-10-30 (F08-T02/T03)
+
+- New production preparation now reserves a durable capacity claim in the same transaction as funding, dispatch intent and callback link. Missing/exhausted registered capacity causes rollback of the entire preparation. Idempotent replay never creates a second claim or authorizes sending.
+- First submission requires its matching held claim and rechecks platform/tenant/provider/campaign registered-claim limits, counting its own claim once. Migration 214 enforces the same boundary for direct SQL and requires READ COMMITTED. Terminal release/uncertain retention use the existing claim lifecycle.
+- Updated production fixture provisioning and claim replay expectations; authored unrun rollback tests for zero provider capacity plus API/direct-SQL rejection after a limit reduction. Legacy prepared intents without claims are not silently repaired; they require reconciliation or cancellation.
+- Applied migration 214 only to local haisly_caller after backup `/private/tmp/caller-capacity-214.0bLEBK/haisly_caller_before_214.dump`. No tests/typecheck/lint/build/schema/browser/provider checks run, no production action.
+- Registered claims still do not certify complete legacy/unclaimed occupancy or fair scheduling. Final all-source admission, release certification and full phase acceptance remain incomplete; goal active.
