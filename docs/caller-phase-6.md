@@ -2567,3 +2567,10 @@ Authored unrun integration-support coverage for missing keys, a retained-only bl
 Callback plan eligibility checks the accepted source phone against retained suppression before date/window/budget evaluation. Missing server keys returns blocked/suppression_unavailable; retained DNC returns blocked/do_not_call; incomplete historical keys fail closed. Configuration now flows through runtime callback proposals, confirmed scheduling and the trusted confirmation orchestrator. Existing consumed-plan replay remains a read, not new call authorization. The review-task allowlist does not create callback follow-up work for DNC blockers.
 
 Authored unrun bound-call fixture for missing keys, retained-only DNC blocking and no review task for that blocker, isolated by savepoint. No tests/typecheck/lint/build/schema/browser/provider checks run. DB remains212; no secrets provisioned. Real provider consent/event adapter acceptance, initial audience/read consistency, CRM, backfill/erasure/restore and final acceptance remain pending; goal active.
+
+
+### F3/F13 retained DNC on manual contact reuse — 2026-10-30
+
+Manual contact creation now locks an existing canonical match and restores a newer retained DNC timestamp before returning reused:true. It preserves a newer personal timestamp, increments version only on restoration, and records a minimal updated event without fabricating a new preference. Configuration/history failure rolls back the mutation. Existing contact identity/profile is reused; mutation receipt replay does not repeat restoration.
+
+Extended the unrun HTTP preference test to simulate a missing personal timestamp, manually reuse the same phone, check200/reused/original timestamp/version and identical receipt replay. No tests/typecheck/lint/build/schema/browser/provider checks run. DB remains212; no secrets provisioned. Initial audience/read consistency, CRM/backfill/erasure/restore and full final acceptance remain pending; goal active.
