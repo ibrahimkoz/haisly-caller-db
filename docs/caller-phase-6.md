@@ -2687,3 +2687,12 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Reuses the existing campaign schedule, timezone/window and platform policy engines. A stale preparation cannot bypass ended/not-started campaign dates, local hours, disabled policy or exhausted attempts. Reconciliation/replay/cancellation remain independent.
 - Authored unrun regression scenarios for exhausted attempts after preparation, a newly disabled tenant policy and cancellation despite that policy. Existing pure schedule/window tests remain part of the deferred final batch.
 - No tests/typecheck/lint/build/schema/browser/provider checks run. No migration or real calls; DB stays at 213. All-source history, release certification and final atomic scheduler admission remain incomplete. Goal active.
+
+
+### Submission history and callback recheck — 2026-10-30 (F08-T03 / F09-T04)
+
+- First production submission now re-evaluates known production/test-intent/bound-inbound conflicts and production cooldown/rolling limits with the shared spacing engine.
+- History exclusion accepts only the exact still-prepared request in the same tenant, phone and campaign; it excludes that request solely from open-state detection. Accepted history is never excluded.
+- Callback relaxation uses only the immutable dispatch link and a still-pending plan within its start window; a newly pending unmatched plan, canceled plan or expired callback blocks submission.
+- Authored unrun regressions for self-exclusion, preserved accepted history, mismatched number and canceled-request exclusion rejection. Existing cooldown/callback fixtures remain in final validation scope.
+- No tests/typecheck/lint/build/schema/browser/provider checks run. Local DB remains 213. This still does not certify complete legacy/unbound history; all-source admission, release certification and final acceptance remain pending. Goal active.
