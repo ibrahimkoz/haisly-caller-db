@@ -2929,3 +2929,13 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Client shows recorded time, provider completion/cancellation and per-scenario conditions separately from certified simulation results. A provider 404 explicitly does not prove nonexecution. A failed latest check replaces older observation content. No provider requests are made by status polling; refresh remains a database read. Worker lease expiry wording no longer implies active reconciliation.
 - OpenAPI/client types updated. Authored deferred integration cases for latest observation selection, tenant isolation and preservation of accepted transport; UI cases for missing, unavailable, complete/unknown-condition and replaced observations. Tests/typecheck/lint/build/schema/browser/provider checks remain deferred; OpenAPI generation only.
 - Requires DB220; no migration or worker activation in this slice. Configured execution, isolation/spend prerequisites, real provider acceptance and final publication remain pending. Goal and phases remain incomplete.
+
+
+### Initial target/source capture statement consistency — 2026-10-30 (F04/F08)
+
+- Publication-preflight review confirmed initial audience admission is still not fully wired; target_snapshot_pending remains truthful and was not removed. Found an implementation gap in the existing internal initial capture primitive: target insert and provenance insert independently read mutable list membership.
+- Initial capture now materializes source memberships once in a single SQL statement and uses that same population for deduplicated target insertion and all source relations. Server-side INSERT SELECT retains large-audience processing without transferring the population into application memory. Existing identity, source-membership and active-target DB guards remain in force; conflicts abort the publication transaction. List usage marking remains in that transaction.
+- Extended deferred integration coverage to compare every persisted customer/list relation against the selected snapshot sources, alongside existing deduplication, rollback, repeat-capture rejection and later-list-change tests. No tests/typecheck/lint/build/schema/browser checks run. CTE/trigger interaction and concurrent legacy-writer behavior still require final integration validation.
+- No migrations, public capture endpoint or dispatch activation. Final publisher authorization, eligibility gates and full concurrent-writer acceptance remain incomplete; goal active.
+
+- Reviewed PostgreSQL row-trigger visibility documentation while assessing the existing provenance trigger; this is design evidence, not runtime acceptance: https://www.postgresql.org/docs/current/trigger-datachanges.html .
