@@ -2630,3 +2630,11 @@ No command execution, tests/typecheck/lint/build/schema/browser/provider checks 
 Added npm suppression:backfill requiring explicit tenant and1–100 unique --event UUIDs. Default is transactionally rolled-back validation; --apply commits the selection and aggregate system audit together. Existing identity/evidence/key checks and idempotent projection are reused. No auto-selection, worker, erasure or calling enablement. Errors are sanitized and do not falsely promise rollback after an uncertain commit/cleanup failure. Runbook documents secure configuration, sequence advancement during dry-run and receipt reconciliation/same-selection retry.
 
 No command execution, real data backfill, tests/typecheck/lint/build/schema/browser/provider checks performed. DB remains212; no secrets provisioned. Historical identity/owner evidence remediation, complete coverage certification, erasure/restore and full final acceptance remain pending; goal active.
+
+
+### Historical identity suppression projection — 2026-10-30
+
+- DNC projection and missing-event discovery now share original-phone resolution. For a changed identity, only the same tenant/contact/revision immutable profile snapshot covering the source event timestamp is accepted; timestamp comparisons retain PostgreSQL precision.
+- Missing snapshots, invalid canonical phones and events outside the archive interval remain unresolved. The current owner's phone is never substituted. Existing release evidence/owner guards remain in force.
+- Added regression scenarios for missing archives, original-phone replay and key rotation after identity change. Tests and all runtime validation remain deferred to the final batch by user instruction; these changes are not a coverage certificate or erasure/dispatch authorization.
+- No DB migration, client behavior change, live provider connection or production action in this slice.
