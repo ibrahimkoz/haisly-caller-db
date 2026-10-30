@@ -2831,3 +2831,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Preflight shows the selected run time and a clear-selection action. Selection is scoped to campaign and authenticated viewer, cleared on permission loss/context change, and old result selection mismatches remain hidden. History hides selection controls when loading/access fails. Only agents.manage viewers see the selection entry point.
 - Authored unrun UI cases for explicit release identity, selected state, access failure, clearing without a request, campaign/viewer/permission changes and parent-panel wiring. No tests/typecheck/lint/build/browser/provider checks run. No DB/API behavior change; local DB217 remains. Client requires the prior selected-release preflight API.
 - Selection currently uses existing simulation history; releases without a simulation run have no entry in this view. General release catalog, full remediation navigation, final publication/admission and phase acceptance remain incomplete. Goal active.
+
+
+### Release preflight remediation navigation — 2026-10-30 (F07-T05)
+
+- Draft mismatch links to focusable campaign snapshot history; unavailable local configuration links to campaign settings; changed tool configuration links to existing tenant tool bindings. Simulation evidence blockers link to the campaign simulation-history section. These actions navigate only and do not start tests, mutate releases or authorize publication.
+- Remediation supports permission sets and permission-gated sections. Tool navigation requires both the existing tool-page ai.manage gate and backend agents.manage; simulation history requires agents.manage. Missing access displays an authorized-team-member explanation. Sections remain scoped to the current form and keyboard focus follows navigation.
+- No fake launcher is offered for the real verified test-call requirement. Simulation request UI and real test-call workflow remain pending; history navigation only exposes existing results.
+- Authored unrun cases for both tool permissions, permission-gated history focus and absence of a nonexistent real-call action. No tests/typecheck/lint/build/browser/provider checks run. No API/schema/runtime changes; local DB remains217. Goal active; final publication and phase acceptance remain incomplete.
