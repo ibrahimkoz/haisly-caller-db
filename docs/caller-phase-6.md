@@ -2560,3 +2560,10 @@ Extended the unrun suppression import fixture to clear a personal projection, re
 includeSelectedCampaignTargets now accepts trusted server suppression configuration and checks all selected canonical phones in one bounded batch after identity/version/contact prerequisites, before target/source writes. Missing keys or incomplete history fails closed; any retained DNC rejects the whole selection even if the personal timestamp is absent. Existing tenant locking, list membership checks and atomic insertion remain. Successful inclusion still creates held targets, not dispatch permission, and this internal primitive remains unrouted.
 
 Authored unrun integration-support coverage for missing keys, a retained-only blocked preference on an otherwise consented contact, no target creation after rejection, and normal inclusion after fixture rollback. No tests/typecheck/lint/build/schema/browser/provider checks run. DB remains212, no keys provisioned. Initial audience projection/read consistency, callback/CRM, manual existing-record reconciliation, backfill/erasure/restore and final acceptance remain pending; goal active.
+
+
+### F10/F13 retained suppression in callback planning — 2026-10-30
+
+Callback plan eligibility checks the accepted source phone against retained suppression before date/window/budget evaluation. Missing server keys returns blocked/suppression_unavailable; retained DNC returns blocked/do_not_call; incomplete historical keys fail closed. Configuration now flows through runtime callback proposals, confirmed scheduling and the trusted confirmation orchestrator. Existing consumed-plan replay remains a read, not new call authorization. The review-task allowlist does not create callback follow-up work for DNC blockers.
+
+Authored unrun bound-call fixture for missing keys, retained-only DNC blocking and no review task for that blocker, isolated by savepoint. No tests/typecheck/lint/build/schema/browser/provider checks run. DB remains212; no secrets provisioned. Real provider consent/event adapter acceptance, initial audience/read consistency, CRM, backfill/erasure/restore and final acceptance remain pending; goal active.
