@@ -2939,3 +2939,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - No migrations, public capture endpoint or dispatch activation. Final publisher authorization, eligibility gates and full concurrent-writer acceptance remain incomplete; goal active.
 
 - Reviewed PostgreSQL row-trigger visibility documentation while assessing the existing provenance trigger; this is design evidence, not runtime acceptance: https://www.postgresql.org/docs/current/trigger-datachanges.html .
+
+
+### Follow-up team readiness in campaign preflight — 2026-10-30 (F04/F10)
+
+- Extracted the allocator's existing assignable-member query for reuse by read-only preflight. Both use active tenant membership/user, nonremoved available team membership and tenant-scoped task permission. The actual allocator retains its locking, permission witness and cursor update.
+- Preflight returns distinct selected team IDs with unavailable/assignable/queue_only status. Missing/archived teams still block; absence of an eligible assignee is a valid team-queue fallback and adds no false publication blocker. No assignee names/IDs/counts or cursor exposed. Diagnostic reads do not allocate or reserve anyone.
+- Client explains how many selected teams currently fall back to their queue. Existing stale/loading/error guards hide outdated diagnostics. OpenAPI/types updated. Authored deferred integration cases for role-less membership, eligibility, foreign-tenant absence, deduplication, empty scope and unchanged assignment cursor; UI coverage for queue explanation without publish action. No tests/typecheck/lint/build/schema/browser checks run; OpenAPI generation only.
+- No migrations or task creation. The final team-action publication gate remains pending because a live diagnostic is not transactional runtime certification. Goal and phases remain incomplete.
