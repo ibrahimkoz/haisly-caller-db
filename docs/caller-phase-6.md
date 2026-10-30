@@ -2623,3 +2623,10 @@ Authored unrun empty-page tests for wrong material, missing registered version a
 Added npm suppression:audit with explicit tenant UUID, bounded max-pages and secure environment key loading. Each short transaction validates retained keys and pages source-event gaps/personal DNC projections. It prints aggregates only and sanitized errors. Exit2 reports gaps or incomplete traversal; exit1 reports failure. It never writes/backfills data, enables workers or certifies erasure/dispatch. Added repository maintenance usage/limitations documentation, including non-snapshot cross-page traversal and no checkpoint resume.
 
 No command execution, tests/typecheck/lint/build/schema/browser/provider checks or real data scan performed. DB remains212; no secrets provisioned. Existing primitive tests remain deferred. Repair orchestration, historical identity/release remediation, erasure/restore and full final acceptance remain pending; goal active.
+
+
+### F13 explicit suppression backfill maintenance command — 2026-10-30
+
+Added npm suppression:backfill requiring explicit tenant and1–100 unique --event UUIDs. Default is transactionally rolled-back validation; --apply commits the selection and aggregate system audit together. Existing identity/evidence/key checks and idempotent projection are reused. No auto-selection, worker, erasure or calling enablement. Errors are sanitized and do not falsely promise rollback after an uncertain commit/cleanup failure. Runbook documents secure configuration, sequence advancement during dry-run and receipt reconciliation/same-selection retry.
+
+No command execution, real data backfill, tests/typecheck/lint/build/schema/browser/provider checks performed. DB remains212; no secrets provisioned. Historical identity/owner evidence remediation, complete coverage certification, erasure/restore and full final acceptance remain pending; goal active.
