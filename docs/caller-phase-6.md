@@ -2721,3 +2721,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Updated production fixture provisioning and claim replay expectations; authored unrun rollback tests for zero provider capacity plus API/direct-SQL rejection after a limit reduction. Legacy prepared intents without claims are not silently repaired; they require reconciliation or cancellation.
 - Applied migration 214 only to local haisly_caller after backup `/private/tmp/caller-capacity-214.0bLEBK/haisly_caller_before_214.dump`. No tests/typecheck/lint/build/schema/browser/provider checks run, no production action.
 - Registered claims still do not certify complete legacy/unclaimed occupancy or fair scheduling. Final all-source admission, release certification and full phase acceptance remain incomplete; goal active.
+
+
+### Submission budget pause and UTC period — 2026-10-30 (F05-T03 / F08-T03)
+
+- First production submission checks persisted monthly/campaign budgets and current usage under the billing lock. Missing, paused or exhausted budgets block new submission. Existing reserved amounts are already counted; the check adds no reservation or charge.
+- Increasing a paused budget does not resume a prepared request. Cancellation and historical outcomes remain available. A held reservation from a prior UTC month blocks submission and must be canceled/reprepared for the current month's admission; no historical accounting timestamp is rewritten.
+- Authored unrun regressions for manual campaign-budget pause, raising that paused budget without resume, and permitted cancellation. Month-boundary end-to-end coverage remains part of final acceptance.
+- No tests/typecheck/lint/build/schema/browser/provider checks run. No migration or production action; local DB stays 214. Scheduler handling of blocked/reprepared requests and final all-source admission remain incomplete; goal active.
