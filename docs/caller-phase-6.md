@@ -2737,3 +2737,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Optional worker flag `CALLER_PREPARED_DISPATCH_CLEANUP_ENABLED` defaults false. Bounded batches, tenant lock, no-store responses and aggregate health metrics are implemented. No worker was enabled.
 - Authored unrun regressions for expired cancellation, unaffected current request, environment isolation, idempotent repetition, rollback, preserved uncertain funding, endpoint authorization and worker response handling. OpenAPI regenerated; no tests/typecheck/lint/build/schema/browser/provider checks executed.
 - No migration or client behavior change; local DB stays 214. This does not reprepare requests, finish campaign targets or certify provider outcomes. Scheduler recovery, all-source admission and final acceptance remain incomplete; goal active.
+
+
+### Campaign target expiry — 2026-10-30 (F08-T05/T06)
+
+- Migration215 adds distinct expired target state and server-clock expired_at. Only a held target past its immutable snapshot deadline with no prepared/submitting/uncertain/accepted dispatch or pending callback may expire. Expired targets cannot reopen/rebind or receive new callback plans; attempts remain unchanged. Cancellation closure accepts already expired targets.
+- Existing optional prepared-cleanup job now additionally expires at most250 eligible targets per batch, scoped to the captured agent environment. API response/worker metrics add targets_expired; target list API/client distinguish expiry from cancellation. Unresolved calls and pending callbacks drain separately; no provider hangup is inferred.
+- Authored unrun regressions for open-dispatch rejection, terminal immutability, atomic expiry/release and client expiry wording. Generated OpenAPI. No tests/typecheck/lint/build/schema/browser/provider checks executed.
+- Applied215 to local haisly_caller after backup `/private/tmp/caller-expiry-215.90wJUT/haisly_caller_before_215.dump`. Worker remains disabled. Deploy DB first, then API/worker together with cleanup disabled during version mismatch, then client. Campaign completed-state calculation, callback deadline recovery, complete scheduler admission and final acceptance remain outstanding; goal active.
