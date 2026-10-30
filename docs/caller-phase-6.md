@@ -3036,3 +3036,10 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Panel distinguishes missing, unverified, reconnection-required and disconnected state. Local disconnection explicitly does not remove HubSpot app authorization. Requires a confirmation checkbox and sends current connection If-Match with an idempotency key. Lost/ambiguous responses retain the exact request for retry; definitive client errors require renewed confirmation. Duplicate clicks are guarded synchronously.
 - Fresh controls are hidden while metadata refetches or errors. Pending mutation identity survives parent integration cache invalidation. Success invalidates integration/audit caches; no secrets, raw JSON configuration or provider IDs shown.
 - Authored deferred component coverage for confirmation, exact retry after network error, stale/error controls and missing/disconnected distinctions. Formatting only; no tests/typecheck/lint/build/browser checks run. No real provider activity. OAuth setup/reconnection, remote revocation, complete CRM operations and acceptance remain pending; goal/F11 incomplete.
+
+
+### Prevent generic HubSpot activation bypass — 2026-10-30 (F11-T01 partial)
+
+- Generic integration creation now permits HubSpot only in draft state, including mixed-case/whitespace provider inputs. Generic status changes reject HubSpot so callers cannot bypass OAuth readiness or reopen a locally disconnected connection through the legacy endpoint. Other providers retain their existing behavior.
+- Updated OpenAPI descriptions and regenerated the contract. Extended deferred management API coverage for non-draft create rejection, default draft creation and all legacy status changes after disconnection leaving the integration disabled. No tests/typecheck/lint/build/security/provider checks run.
+- No database mutation/migration or provider activity. Existing legacy rows are not rewritten; actual OAuth readiness, enrollment and provider revocation remain pending. Goal and F11 incomplete.
