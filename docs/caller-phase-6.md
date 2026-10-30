@@ -3208,3 +3208,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Source inspection found HubSpot controller importing badRequest from customer-case/errors which does not export it; corrected to existing integration-automation/errors helper. No runtime verification claim.
 - Added/generated OpenAPI and authored deferred HTTP cases for list/privacy, versioned dismissal, exact/key-payload replay, filters, unauthenticated/foreign tenant access, invalid page limit/cursor and one audit event. Formatting/source review/OpenAPI generation only; tests/typecheck/lint/build/security/browser checks not run.
 - No migration/provider request. Queue UI, actual verified resolution/rebinding, full importer and capability certification remain pending; F11/goal incomplete.
+
+
+### HubSpot conflict review client panel — 2026-10-30 (F11-T05 partial)
+
+- Added typed RTK Query list/dismiss endpoints and a tenant/user/session-keyed conflict panel requiring tenant.manage and caller.contacts.manage. Open/dismissed/resolved filters, bounded next/previous pagination, loading/error/empty states and manual refresh use currentData; stale results do not expose review actions.
+- Review shows normalized conflict reason and external record reference. Dismissal requires a nonempty bounded reason and explicitly states that contact bindings/calling preferences are unchanged. No unsupported resolved/rebind action is exposed.
+- Maintains exact idempotency key/version/reason after uncertain failure; sync ref prevents double submit, pagination/filter navigation is locked while pending. Definitive validation/auth/version errors require reopening current data. Selection remains mounted through query invalidation so pending replay state is not lost. Session/tenant change resets panel scope.
+- Authored deferred component cases for pagination, stale controls, required reason, lost-response exact replay and version-conflict reopening. Formatting/source review only; no tests/typecheck/lint/build/browser/security checks run. Real resolution/rebinding, full import orchestration and provider capability acceptance remain pending; F11/goal incomplete.
