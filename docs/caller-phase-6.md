@@ -3199,3 +3199,12 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Added bindOrQueueHubSpotContact internal transaction orchestration over the permission/lock-aware binding primitive. Binding conflicts are inserted or reused, with one safe audit event for a new issue; audit and queue insertion share the caller transaction. No change to contact/DNC/campaign targets. Authenticated import provenance, resolution decisions and public/UI integration are still pending.
 - Authored deferred DB/service fixture cases for first enqueue/exact replay, audit deduplication/privacy and replay after dismissal. Formatting/source review only; no tests/typecheck/lint/build/schema/security checks run.
 - Applied only to local haisly_caller after backup `/private/tmp/caller-hubspot-229.0Etk9V/haisly_caller_before_229.dump`. No real CRM traffic or production access; F11 and overall goal incomplete.
+
+
+### HubSpot conflict queue management API — 2026-10-30 (F11-T02/T05 partial)
+
+- Added tenant/integration-scoped GET contact-conflicts with open/resolved/dismissed filters, default25/max100 limit and public-ID cursor resolved under the same tenant/integration. SQL pagination uses ordered internal ID without exposing it; DTO includes external CRM reference and local public contact ID but no phone/name/token payload. Requires tenant.manage and caller.contacts.manage.
+- Added POST contact-conflicts/:id/dismiss with strict reason, If-Match conflict version and Idempotency-Key. Existing mutation receipt/audit transaction provides exact replay and conflict handling; closes open issues as dismissed only, never performs identity reassignment, DNC changes or campaign enrollment. Audit entity type now correctly identifies HubSpot contact conflict rather than integration for this scope.
+- Source inspection found HubSpot controller importing badRequest from customer-case/errors which does not export it; corrected to existing integration-automation/errors helper. No runtime verification claim.
+- Added/generated OpenAPI and authored deferred HTTP cases for list/privacy, versioned dismissal, exact/key-payload replay, filters, unauthenticated/foreign tenant access, invalid page limit/cursor and one audit event. Formatting/source review/OpenAPI generation only; tests/typecheck/lint/build/security/browser checks not run.
+- No migration/provider request. Queue UI, actual verified resolution/rebinding, full importer and capability certification remain pending; F11/goal incomplete.
