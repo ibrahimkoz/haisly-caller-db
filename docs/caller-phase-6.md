@@ -3118,3 +3118,10 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Client panel now reads this diagnostic and distinguishes callback waiting, unresolved exchange, expired authorization, recorded denial/failure and missing permissions. New authorization controls require fresh diagnostics and do not appear while exchange recovery is pending, callback is awaiting completion or issued credentials already exist. Manual refresh reads local state only.
 - Updated OpenAPI and authored deferred API/UI cases for tenant isolation, no-state/waiting/pending/recorded transitions, older pending precedence, safe metadata and stale-control suppression. No tests/typecheck/lint/build/schema/browser checks run; formatting/OpenAPI generation only.
 - Migration227 adds tenant/integration history lookup index; applied only locally after backup `/private/tmp/caller-hubspot-227.tHUMBL/haisly_caller_before_227.dump`. No live request or configuration. Recovery/reconnect, remote revocation, cross-origin session flow and account/capability acceptance remain pending; goal and F11 incomplete.
+
+
+### HubSpot OAuth configuration boundary — 2026-10-30 (F11-T01 partial)
+
+- Both authenticated OAuth HTTP entry points now validate the trusted OAuth configuration before state issuance/consumption. Null or malformed OAuth configuration yields a sanitized 409 instead of a disabled success or generic 500; invalid encryption key material also maps to the existing safe configuration conflict. Internal disabled adapters remain available.
+- Added deferred API regression cases for null/malformed OAuth configuration, invalid write key and missing maintenance key across authorization and callback, including no-store and secret-free error responses. Tests/typecheck/lint/build/security checks were not run per user instruction; formatting only.
+- No DB schema/client runtime changes, provider requests or configuration provisioned. Recovery/reconnect and actual account/capability acceptance remain pending; F11 and the overall goal remain incomplete.
