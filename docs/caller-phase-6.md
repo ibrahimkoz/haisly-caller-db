@@ -2745,3 +2745,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Existing optional prepared-cleanup job now additionally expires at most250 eligible targets per batch, scoped to the captured agent environment. API response/worker metrics add targets_expired; target list API/client distinguish expiry from cancellation. Unresolved calls and pending callbacks drain separately; no provider hangup is inferred.
 - Authored unrun regressions for open-dispatch rejection, terminal immutability, atomic expiry/release and client expiry wording. Generated OpenAPI. No tests/typecheck/lint/build/schema/browser/provider checks executed.
 - Applied215 to local haisly_caller after backup `/private/tmp/caller-expiry-215.90wJUT/haisly_caller_before_215.dump`. Worker remains disabled. Deploy DB first, then API/worker together with cleanup disabled during version mismatch, then client. Campaign completed-state calculation, callback deadline recovery, complete scheduler admission and final acceptance remain outstanding; goal active.
+
+
+### Callback review recovery after unsubmitted cancellation — 2026-10-30 (F09-T04 / F08-T05)
+
+- Expired pending callback plans previously put into needs_review can now re-enter the existing bounded worker only when their later dispatch conflict no longer exists. Definitive canceled/rejected requests no longer strand the plan; prepared/submitting/uncertain/accepted and potentially fulfilling ended calls still require reconciliation.
+- Candidate selection and final missed-task materialization share one tenant/target/source/time SQL predicate. Retry count/backoff and dead-letter limits are preserved. Recovery does not place a call or bypass the 30-minute callback window; the existing task, notification and audit transaction remains authoritative.
+- Added unrun PostgreSQL predicate scenarios for all dispatch states, source exclusion, tenant/target isolation, prior ended calls and exact confirmation-time boundaries. Wired into existing callback integration fixtures; no tests/typecheck/lint/build/schema/browser/provider checks executed.
+- No migration, worker activation or external request. Local DB remains215. End-to-end concurrency/worker recovery, actual provider reconciliation and full phase acceptance remain outstanding; goal active.
