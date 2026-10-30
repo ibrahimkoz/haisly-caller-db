@@ -2655,3 +2655,11 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Previously captured targets survive list membership removal and do not receive this initial-publication warning. A nonempty list does not establish contact consent, eligibility, or publication readiness; remaining live gates stay in force.
 - Client includes Turkish/English guidance and permission-gated navigation to contact lists. Authored API scenarios cover empty-to-populated lists and preserved captured audiences; client coverage checks bilingual text and list permission navigation.
 - No tests/typecheck/lint/build/schema/browser checks executed, per user instruction. No schema changes or external calls; local DB remains at migration 213. Full publication and final acceptance remain pending.
+
+
+### Campaign environment/provider diagnostics — 2026-10-30 (F04-T02 / F07-T05)
+
+- Preflight separates missing outbound provider configuration, inactive selected agent environment, and no active matching provider account in that same tenant/environment. These read-only diagnostics never substitute for ownership, adapter capability or real provider certification; publication remains unavailable.
+- Campaign agent options exclude inactive environments. Explicit settings updates reject such agents under shared version/agent/environment locks. Existing drafts remain readable and report the blocker if their environment is subsequently disabled.
+- Added bilingual client explanations and permission-gated telephony navigation. Authored API coverage for missing/active/paused provider accounts, environment deactivation, hidden choices and rejected settings; existing pending verification remains asserted.
+- Tests/typecheck/lint/build/schema/browser checks not run per user instruction. No external calls, migrations or credentials added. Local DB remains 213; full phase acceptance and goal remain incomplete.
