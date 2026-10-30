@@ -3084,3 +3084,12 @@ No command execution, real data backfill, tests/typecheck/lint/build/schema/brow
 - Migration226 indexes consumed state lookup by tenant/integration. Applied only locally after backup `/private/tmp/caller-hubspot-226.rLqD1V/haisly_caller_before_226.dump`.
 - Extended deferred DB/API fixture coverage for unresolved prior outcome, keyring failure with no send, prepared authorization through mocked token exchange into a durable issued receipt, required-scope satisfaction, no activation and existing-connection replay prevention. No tests/typecheck/lint/build/schema/security/provider checks run; no real provider call.
 - Public OAuth initiation/callback transport, browser session restoration, reconnection/recovery, remote revocation and account/subscription probes remain pending. Goal and F11 incomplete.
+
+
+### Configuration-gated HubSpot OAuth API — 2026-10-30 (F11-T01 partial)
+
+- Added POST .../hubspot-connection/authorize and .../callback under tenant.manage. Server dependencies may explicitly inject enrollment configuration; ordinary startup has none and returns 409, never starts OAuth implicitly. Setup validates write-key readability before issuing an authorization URL. Existing app dependency resolution now preserves only this explicit optional runtime configuration.
+- Callback is an authenticated JSON POST (code/state never required in the API URL), bounded to 8192 bytes and normalized without secret-bearing validation diagnostics. It checks the initiating session via the existing store; no generic idempotency receipt retains state/code. 202 completion_pending means recovery is needed, never automatic code replay.
+- Initiation and consumption each write a safe audit event atomically with state changes. Audit stores only public state identity; raw state/code/tokens absent. Sensitive-action rate limiting and no-store/no-referrer response hooks apply, including handled errors. Existing request-body logger redaction remains in force.
+- Updated/generated OpenAPI and authored deferred API coverage for default-disabled configuration, private invalid callback diagnostics, configured initiation/denial without provider I/O and safe start/consume audits. No tests/typecheck/lint/build/security/browser checks run; formatting/OpenAPI generation only.
+- No configuration/secret provisioned, actual token request, migration or browser redirect. Client callback/session restoration, reconnect/recovery, remote revocation and real account/subscription acceptance remain pending. Goal and F11 incomplete.
