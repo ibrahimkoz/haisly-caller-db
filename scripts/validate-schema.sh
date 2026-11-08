@@ -1315,7 +1315,21 @@ DO $$ BEGIN
    OR to_regclass('public.caller_campaign_source_lists_list_idx') IS NULL THEN
    RAISE EXCEPTION 'Campaign draft schema incomplete';
   END IF;
-  IF EXISTS(SELECT 1 FROM public.caller_campaigns WHERE state <> 'draft') THEN
+  IF NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='public.caller_campaigns'::regclass
+    AND conname='caller_campaigns_state_check' AND contype='c' AND convalidated) THEN
+   RAISE EXCEPTION 'Campaign state constraint missing';
+  END IF;
+  -- Later migrations permit stop/cancel states without enabling publication.
+  -- A schema check must also work after those legitimate lifecycle transitions.
+  IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='123_campaign_terminal_cancellation.sql') THEN
+   IF EXISTS(SELECT 1 FROM public.caller_campaigns WHERE state NOT IN ('draft','pausing','paused','canceled')) THEN
+    RAISE EXCEPTION 'Unsupported campaign state';
+   END IF;
+  ELSIF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='120_campaign_stop_states.sql') THEN
+   IF EXISTS(SELECT 1 FROM public.caller_campaigns WHERE state NOT IN ('draft','pausing','paused')) THEN
+    RAISE EXCEPTION 'Unsupported campaign stop state';
+   END IF;
+  ELSIF EXISTS(SELECT 1 FROM public.caller_campaigns WHERE state <> 'draft') THEN
    RAISE EXCEPTION 'Publication is not enabled in draft foundation';
   END IF;
  END IF;
