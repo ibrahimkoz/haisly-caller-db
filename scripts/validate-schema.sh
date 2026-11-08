@@ -24,6 +24,8 @@ if [[ "${duplicate_migrations}" != "0" ]]; then
   exit 1
 fi
 
+campaign_owned_instructions="$(psql_command "${URL}" -tA -c "SELECT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '234_campaign_owned_instructions.sql');")"
+
 applied_count="$(psql_command "${URL}" -tA -c "SELECT COUNT(*) FROM public.schema_migrations;")"
 
 core_tenant_applied="$(psql_command "${URL}" -tA -c "SELECT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '001_create_core_tenant_schema.sql');")"
@@ -153,7 +155,7 @@ fi
 
 voice_setup_applied="$(psql_command "${URL}" -tA -c "SELECT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '006_create_voice_setup_schema.sql');")"
 
-if [[ "${voice_setup_applied}" == "t" ]]; then
+if [[ "${voice_setup_applied}" == "t" && "${campaign_owned_instructions}" != "t" ]]; then
   missing_voice_tables="$(psql_command "${URL}" -tA -c "SELECT COUNT(*) FROM (VALUES ('public.ai_agents'), ('public.phone_numbers'), ('public.routing_rules')) AS required_table(name) WHERE to_regclass(required_table.name) IS NULL;")"
 
   if [[ "${missing_voice_tables}" != "0" ]]; then
@@ -356,7 +358,7 @@ fi
 
 agent_config_versioning_applied="$(psql_command "${URL}" -tA -c "SELECT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '013_create_agent_config_version_schema.sql');")"
 
-if [[ "${agent_config_versioning_applied}" == "t" ]]; then
+if [[ "${agent_config_versioning_applied}" == "t" && "${campaign_owned_instructions}" != "t" ]]; then
   missing_agent_config_tables="$(psql_command "${URL}" -tA -c "SELECT COUNT(*) FROM (VALUES ('public.agent_config_versions'), ('public.agent_config_publish_requests'), ('public.agent_config_bindings')) AS required_table(name) WHERE to_regclass(required_table.name) IS NULL;")"
 
   if [[ "${missing_agent_config_tables}" != "0" ]]; then
@@ -552,7 +554,7 @@ fi
 
 knowledge_vector_applied="$(psql_command "${URL}" -tA -c "SELECT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '020_create_knowledge_vector_schema.sql');")"
 
-if [[ "${knowledge_vector_applied}" == "t" ]]; then
+if [[ "${knowledge_vector_applied}" == "t" && "${campaign_owned_instructions}" != "t" ]]; then
   vector_extension_exists="$(psql_command "${URL}" -tA -c "SELECT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'vector');")"
 
   if [[ "${vector_extension_exists}" != "t" ]]; then
@@ -584,7 +586,8 @@ fi
 
 compliance_consent_applied="$(psql_command "${URL}" -tA -c "SELECT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '021_create_compliance_consent_schema.sql');")"
 
-if [[ "${compliance_consent_applied}" == "t" ]]; then
+personal_data_removed="$(psql_command "${URL}" -tA -c "SELECT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '235_remove_personal_data_management.sql');")"
+if [[ "${compliance_consent_applied}" == "t" && "${personal_data_removed}" != "t" ]]; then
   missing_compliance_tables="$(psql_command "${URL}" -tA -c "SELECT COUNT(*) FROM (VALUES ('public.retention_policies'), ('public.consent_policies'), ('public.consent_records'), ('public.data_export_requests'), ('public.data_deletion_requests'), ('public.pii_redaction_jobs')) AS required_table(name) WHERE to_regclass(required_table.name) IS NULL;")"
 
   if [[ "${missing_compliance_tables}" != "0" ]]; then
@@ -709,7 +712,7 @@ fi
 
 guardrail_schema_applied="$(psql_command "${URL}" -tA -c "SELECT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '025_create_guardrail_schema.sql');")"
 
-if [[ "${guardrail_schema_applied}" == "t" ]]; then
+if [[ "${guardrail_schema_applied}" == "t" && "${campaign_owned_instructions}" != "t" ]]; then
   missing_guardrail_tables="$(psql_command "${URL}" -tA -c "SELECT COUNT(*) FROM (VALUES ('public.guardrail_policies'), ('public.guardrail_policy_versions'), ('public.agent_guardrail_bindings'), ('public.policy_evaluation_logs')) AS required_table(name) WHERE to_regclass(required_table.name) IS NULL;")"
 
   if [[ "${missing_guardrail_tables}" != "0" ]]; then
@@ -735,6 +738,29 @@ fi
 simulation_schema_applied="$(psql_command "${URL}" -tA -c "SELECT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '026_create_simulation_schema.sql');")"
 
 if [[ "${simulation_schema_applied}" == "t" ]]; then
+  legacy_simulation_removed="$(psql_command "${URL}" -tA -c "SELECT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '233_remove_legacy_simulation_panel.sql');")"
+  if [[ "${legacy_simulation_removed}" == "t" ]]; then
+  missing_simulation_tables="$(psql_command "${URL}" -tA -c "SELECT COUNT(*) FROM (VALUES ('public.simulation_scenarios'), ('public.simulation_runs')) AS required_table(name) WHERE to_regclass(required_table.name) IS NULL;")"
+
+  if [[ "${missing_simulation_tables}" != "0" ]]; then
+    echo "Schema validation failed: simulation tables are missing." >&2
+    exit 1
+  fi
+
+  missing_simulation_constraints="$(psql_command "${URL}" -tA -c "SELECT COUNT(*) FROM (VALUES ('simulation_scenarios_tenant_env_code_unique'), ('simulation_runs_scenario_tenant_fk'), ('simulation_runs_gate_decision_requires_terminal_state_check')) AS required_constraint(name) WHERE NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = required_constraint.name);")"
+
+  if [[ "${missing_simulation_constraints}" != "0" ]]; then
+    echo "Schema validation failed: simulation constraints are missing." >&2
+    exit 1
+  fi
+
+  missing_simulation_indexes="$(psql_command "${URL}" -tA -c "SELECT COUNT(*) FROM (VALUES ('simulation_scenarios_tenant_env_status_updated_at_idx'), ('simulation_scenarios_tenant_agent_status_idx'), ('simulation_runs_tenant_env_status_created_at_idx'), ('simulation_runs_tenant_gate_decision_completed_at_idx')) AS required_index(name) WHERE NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = required_index.name);")"
+
+  if [[ "${missing_simulation_indexes}" != "0" ]]; then
+    echo "Schema validation failed: simulation indexes are missing." >&2
+    exit 1
+  fi
+  else
   missing_simulation_tables="$(psql_command "${URL}" -tA -c "SELECT COUNT(*) FROM (VALUES ('public.simulation_scenarios'), ('public.simulation_assertions'), ('public.simulation_runs'), ('public.simulation_run_events')) AS required_table(name) WHERE to_regclass(required_table.name) IS NULL;")"
 
   if [[ "${missing_simulation_tables}" != "0" ]]; then
@@ -754,6 +780,7 @@ if [[ "${simulation_schema_applied}" == "t" ]]; then
   if [[ "${missing_simulation_indexes}" != "0" ]]; then
     echo "Schema validation failed: simulation indexes are missing." >&2
     exit 1
+  fi
   fi
 fi
 
@@ -1154,7 +1181,7 @@ fi
 
 industry_agent_builder_applied="$(psql_command "${URL}" -tA -c "SELECT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '065_create_industry_agent_builder_schema.sql');")"
 
-if [[ "${industry_agent_builder_applied}" == "t" ]]; then
+if [[ "${industry_agent_builder_applied}" == "t" && "${campaign_owned_instructions}" != "t" ]]; then
   missing_industry_agent_builder_tables="$(psql_command "${URL}" -tA -c "SELECT COUNT(*) FROM (VALUES ('public.industry_agent_templates'), ('public.industry_agent_template_versions'), ('public.industry_agent_template_sections'), ('public.agent_config_section_values')) AS required_table(name) WHERE to_regclass(required_table.name) IS NULL;")"
 
   if [[ "${missing_industry_agent_builder_tables}" != "0" ]]; then
@@ -1188,7 +1215,7 @@ fi
 
 relaxed_agent_builder_currency_format_applied="$(psql_command "${URL}" -tA -c "SELECT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '066_relax_agent_builder_currency_format.sql');")"
 
-if [[ "${relaxed_agent_builder_currency_format_applied}" == "t" ]]; then
+if [[ "${relaxed_agent_builder_currency_format_applied}" == "t" && "${campaign_owned_instructions}" != "t" ]]; then
   hotel_currency_format_is_free_text="$(psql_command "${URL}" -tA -c "SELECT section.validation_schema #> '{properties,currencies,items,pattern}' IS NULL FROM public.industry_agent_template_sections section JOIN public.industry_agent_template_versions template_version ON template_version.id = section.industry_agent_template_version_id JOIN public.industry_agent_templates template ON template.id = template_version.industry_agent_template_id WHERE template.code = 'hotel_guest_assistant' AND template_version.version_no = 1 AND section.section_key = 'payment_cancellation';")"
 
   if [[ "${hotel_currency_format_is_free_text}" != "t" ]]; then
@@ -1199,7 +1226,7 @@ fi
 
 agent_config_improvement_runs_applied="$(psql_command "${URL}" -tA -c "SELECT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '067_create_agent_config_improvement_runs.sql');")"
 
-if [[ "${agent_config_improvement_runs_applied}" == "t" ]]; then
+if [[ "${agent_config_improvement_runs_applied}" == "t" && "${campaign_owned_instructions}" != "t" ]]; then
   improvement_runs_table_valid="$(psql_command "${URL}" -tA -c "SELECT to_regclass('public.agent_config_improvement_runs') IS NOT NULL;")"
   missing_improvement_run_constraints="$(psql_command "${URL}" -tA -c "SELECT COUNT(*) FROM (VALUES ('agent_config_improvement_runs_public_id_unique'), ('agent_config_improvement_runs_tenant_id_fk'), ('agent_config_improvement_runs_version_tenant_fk'), ('agent_config_improvement_runs_requester_tenant_fk'), ('agent_config_improvement_runs_status_check'), ('agent_config_improvement_runs_source_hash_check'), ('agent_config_improvement_runs_completion_state_check')) AS required_constraint(name) WHERE NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = required_constraint.name);")"
   missing_improvement_run_indexes="$(psql_command "${URL}" -tA -c "SELECT COUNT(*) FROM (VALUES ('agent_config_improvement_runs_tenant_version_created_idx'), ('agent_config_improvement_runs_expiry_status_idx')) AS required_index(name) WHERE NOT EXISTS (SELECT 1 FROM pg_indexes WHERE schemaname = 'public' AND indexname = required_index.name);")"
@@ -1297,7 +1324,7 @@ SQL
 
 psql_command "${URL}" <<'SQL'
 DO $$ BEGIN
- IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='093_add_campaign_operational_settings.sql') THEN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='093_add_campaign_operational_settings.sql') AND NOT EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='234_campaign_owned_instructions.sql') THEN
   IF to_regclass('public.caller_campaign_versions_agent_idx') IS NULL
    OR NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conname='caller_campaign_versions_window')
    OR NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conname='caller_campaign_versions_dates')
@@ -1842,7 +1869,7 @@ DO $$ BEGIN
  IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='188_inbound_greeting_pins.sql') THEN
   IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_inbound_greeting_pins'::regclass AND tgname='caller_inbound_greeting_pin_guard' AND NOT tgisinternal AND tgenabled='O' AND tgtype=31 AND tgfoid=to_regprocedure('public.guard_inbound_greeting_pin()')) THEN
    RAISE EXCEPTION 'Inbound greeting pin guard missing'; END IF;
-  IF (SELECT count(*) FROM pg_constraint WHERE conrelid='public.caller_inbound_greeting_pins'::regclass AND contype='f' AND convalidated AND array_length(conkey,1)=2)<>3 THEN
+  IF (SELECT count(*) FROM pg_constraint WHERE conrelid='public.caller_inbound_greeting_pins'::regclass AND contype='f' AND convalidated AND array_length(conkey,1)=2)<>(CASE WHEN EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='234_campaign_owned_instructions.sql') THEN 2 ELSE 3 END) THEN
    RAISE EXCEPTION 'Inbound greeting pin scoped relationships missing'; END IF;
  END IF;
 END $$;
@@ -2092,6 +2119,34 @@ DO $$ BEGIN
  AND NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='public.caller_phone_suppression_events'::regclass
  AND conname='caller_suppression_key_fk' AND convalidated) THEN
   RAISE EXCEPTION 'Suppression key history binding missing';
+ END IF;
+END $$;
+SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='234_campaign_owned_instructions.sql') THEN
+  IF to_regclass('public.ai_agents') IS NOT NULL OR to_regclass('public.agent_config_versions') IS NOT NULL
+   OR to_regclass('public.knowledge_sources') IS NOT NULL OR to_regclass('public.guardrail_policies') IS NOT NULL THEN
+   RAISE EXCEPTION 'Retired agent, knowledge or guardrail module tables remain';
+  END IF;
+  IF to_regclass('public.phone_numbers') IS NULL OR to_regclass('public.tenant_environments') IS NULL
+   OR to_regclass('public.caller_campaign_versions_environment_idx') IS NULL
+   OR NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conname='caller_campaign_versions_environment_fk') THEN
+   RAISE EXCEPTION 'Campaign-owned instruction dependencies are incomplete';
+  END IF;
+ END IF;
+END $$;
+SQL
+
+# Runtime consent remains shared infrastructure after removal of its administration UI.
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM schema_migrations WHERE version='235_remove_personal_data_management.sql') THEN
+  IF to_regclass('public.retention_policies') IS NOT NULL OR to_regclass('public.data_export_requests') IS NOT NULL OR to_regclass('public.data_deletion_requests') IS NOT NULL OR to_regclass('public.pii_redaction_jobs') IS NOT NULL THEN
+   RAISE EXCEPTION 'Retired personal data management tables remain'; END IF;
+  IF to_regclass('public.consent_policies') IS NULL OR to_regclass('public.consent_records') IS NULL OR NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conname='consent_records_policy_tenant_fk' AND convalidated) THEN
+   RAISE EXCEPTION 'Runtime consent infrastructure missing'; END IF;
  END IF;
 END $$;
 SQL

@@ -1,5 +1,13 @@
 # Haisly DB
 
+Personal data administration was retired in migration 235: its navigation, public management APIs, retention policies, export/deletion requests and redaction jobs are removed. Runtime consent policies/records and contact DNC/preferences remain shared campaign infrastructure. Restore the pre-235 backup with the matching application to recover removed records.
+
+## Caller module cleanup (migration 234)
+
+This edition uses outbound campaign calls only. Assistant identity and behavior/topic/objective instructions belong to the campaign. Standalone AI agents/config versions, configurable guardrails, and the knowledge base have been removed from the UI, API and database. Campaign release simulations remain; DNC, consent, authorization and spending checks remain enforced. New campaigns automatically resolve a tenant environment without requiring an agent.
+
+Migration `234_campaign_owned_instructions.sql` removes the retired tables. Restore the pre-migration database backup together with the matching application version to undo this destructive migration. Local `haisly_caller` was migrated; the live server was not modified.
+
 PostgreSQL schema, migrations, rollbacks, seeds, fixtures, validation scripts, and data contract documentation for the Haisly App.
 
 ## Scope
@@ -70,3 +78,17 @@ routes before applying the migration. Take a full backup first. The rollback
 recreates empty booking tables; it does not recover deleted rows or reactivate
 credentials/automations. Restore the pre-migration dump for full data recovery.
 Do not deploy this caller-only migration to the running inbound Haisly product.
+
+## HubSpot removal — 2026-11-05
+
+HubSpot is removed from Caller scope. Historical phase notes describe retired
+work, not pending delivery. OAuth, CRM synchronization and conflict review are
+not supported. Native contact/list, lead and task management remain.
+
+Database migration 230 removes HubSpot-specific tables/functions and credentials
+and disables legacy integration mappings/automations. Back up before applying;
+recovery requires the pre-migration backup. Keep earlier migrations as history.
+
+### Genel simülasyon panelinin kaldırılması
+
+233 numaralı migration, kaldırılan genel panelin `simulation_assertions` ve `simulation_run_events` tablolarını siler. Kampanya sürümü testlerinde kullanılan `simulation_scenarios` ve `simulation_runs` korunur; kampanya testine bağlı olmayan eski kayıtlar temizlenir. Rollback yalnız tablo yapısını geri kurar; silinen kayıtlar için migration öncesi yedek gerekir.
