@@ -5,6 +5,12 @@ set -euo pipefail
 # shellcheck disable=SC1091
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
+mode="${1:---reference}"
+if [[ "$#" -gt 1 || ( "$mode" != "--reference" && "$mode" != "--with-demo" ) ]]; then
+  echo "Usage: $0 [--reference|--with-demo]" >&2
+  exit 2
+fi
+
 load_local_env
 require_command psql
 
@@ -28,6 +34,9 @@ for seed_file in "${SEEDS[@]}"; do
     exit 2
   fi
 
+  if [[ "$mode" == "--reference" && "$seed_name" == "002_demo_owner.sql" ]]; then
+    continue
+  fi
   echo "Applying seed: ${seed_name}"
   psql_command "${URL}" --single-transaction -f "${seed_file}"
 done

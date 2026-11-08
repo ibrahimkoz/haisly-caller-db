@@ -43,10 +43,10 @@ Connection conventions are documented in `docs/connection-conventions.md`.
 ```bash
 ./scripts/migrate.sh
 ./scripts/validate-schema.sh
-./scripts/seed.sh
+./scripts/seed.sh --reference
 ./scripts/fixture.sh
 ./scripts/rollback.sh --last
-./scripts/verify.sh
+TEST_DATABASE_URL=postgresql://localhost:5432/haisly_caller_test ./scripts/verify.sh
 ```
 
 Scripts read `.env` when present and otherwise use the current shell environment. They require `psql` and fail fast when connection settings are missing.
@@ -92,3 +92,9 @@ recovery requires the pre-migration backup. Keep earlier migrations as history.
 ### Genel simülasyon panelinin kaldırılması
 
 233 numaralı migration, kaldırılan genel panelin `simulation_assertions` ve `simulation_run_events` tablolarını siler. Kampanya sürümü testlerinde kullanılan `simulation_scenarios` ve `simulation_runs` korunur; kampanya testine bağlı olmayan eski kayıtlar temizlenir. Rollback yalnız tablo yapısını geri kurar; silinen kayıtlar için migration öncesi yedek gerekir.
+
+## Caller clean setup (R01)
+
+See [API local setup](../haisly-caller-api/docs/local-development.md) for the complete three-repository workflow. `seed.sh` defaults to reference data only (permissions and pricing plans); `--with-demo` explicitly adds the legacy demo tenant. New owners should use API `bootstrap:local`.
+
+`verify.sh` now requires an isolated `TEST_DATABASE_URL`, migrates, applies reference seeds and validates the schema. It does not load legacy fixtures or attempt rollback: 234/235 are backup-only reversals. The November 2026 native PostgreSQL 17 + pgvector clean-install check applied all 235 migrations. The Docker image default now includes the required extension; Docker itself was not exercised in that check.

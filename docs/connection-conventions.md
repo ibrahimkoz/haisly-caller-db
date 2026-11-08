@@ -2,24 +2,24 @@
 
 ## Local Database
 
-Local development uses Docker Compose with PostgreSQL 17 by default. PostgreSQL 18 can be tested by overriding `POSTGRES_IMAGE` when a compatible image is available.
+Local development uses Docker Compose with PostgreSQL 17 with pgvector by default. Migration 020 requires vector even though migration 234 later removes the knowledge tables. PostgreSQL 18 can be tested by overriding `POSTGRES_IMAGE` when a compatible image is available.
 
 Required local settings are documented in `.env.example`:
 
 ```txt
-POSTGRES_IMAGE=postgres:17-alpine
-POSTGRES_DB=haisly_db
+POSTGRES_IMAGE=pgvector/pgvector:pg17
+POSTGRES_DB=haisly_caller
 POSTGRES_USER=haisly
 POSTGRES_PASSWORD=haisly_local_password
 POSTGRES_PORT=5432
-DATABASE_URL=postgresql://haisly:haisly_local_password@localhost:5432/haisly_db
+DATABASE_URL=postgresql://haisly:haisly_local_password@localhost:5432/haisly_caller
 ```
 
 These development credentials are not production credentials. Production database users, passwords, hostnames, TLS requirements, and privilege separation must be supplied by the deployment environment or secret management layer.
 
 ## Script Contract
 
-Repository scripts should read `DATABASE_URL` first. If `DATABASE_URL` is not set, scripts may build a connection string from:
+Repository scripts give explicit `TEST_DATABASE_URL` priority over `.env`; that override must end in `_test`. Otherwise they read `DATABASE_URL` first. If `DATABASE_URL` is not set, scripts may build a connection string from:
 
 - `POSTGRES_DB`
 - `POSTGRES_USER`
