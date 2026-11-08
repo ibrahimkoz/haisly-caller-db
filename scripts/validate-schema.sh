@@ -2164,3 +2164,14 @@ DO $$ BEGIN
  END IF;
 END $$;
 SQL
+
+psql_command "${URL}" <<'SQL'
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM public.schema_migrations WHERE version='236_campaign_soft_delete.sql') THEN
+  IF to_regclass('public.caller_campaign_deletions') IS NULL OR NOT EXISTS(
+   SELECT 1 FROM pg_trigger WHERE tgrelid='public.caller_campaign_deletions'::regclass
+    AND tgname='caller_campaign_deletion_guard' AND tgenabled='O' AND NOT tgisinternal
+  ) THEN RAISE EXCEPTION 'Campaign soft deletion contract missing'; END IF;
+ END IF;
+END $$;
+SQL

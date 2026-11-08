@@ -98,3 +98,7 @@ recovery requires the pre-migration backup. Keep earlier migrations as history.
 See [API local setup](../haisly-caller-api/docs/local-development.md) for the complete three-repository workflow. `seed.sh` defaults to reference data only (permissions and pricing plans); `--with-demo` explicitly adds the legacy demo tenant. New owners should use API `bootstrap:local`.
 
 `verify.sh` now requires an isolated `TEST_DATABASE_URL`, migrates, applies reference seeds and validates the schema. It does not load legacy fixtures or attempt rollback: 234/235 are backup-only reversals. The November 2026 native PostgreSQL 17 + pgvector clean-install check applied all 235 migrations. The Docker image default now includes the required extension; Docker itself was not exercised in that check.
+
+## Campaign soft delete (migration 236)
+
+Caller campaign deletion writes an immutable tenant-scoped tombstone to `caller_campaign_deletions`. Campaigns, snapshots, calls and accounting history remain intact; the API hides deleted campaigns from normal listing/editing and rejects new target/test preparation. Cancel ongoing work before deleting. Rollback refuses to remove existing deletion history, because doing so would silently restore deleted campaigns.
